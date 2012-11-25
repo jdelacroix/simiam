@@ -1,4 +1,4 @@
-classdef fifo_queue < dl_list
+classdef fifo_queue < mcodekit.list.dl_list
 
 % Copyright (C) 2012 Jean-Pierre de la Croix
 % see the LICENSE file included with this software
@@ -9,7 +9,7 @@ classdef fifo_queue < dl_list
     
     methods
         function obj = fifo_queue()
-            obj = obj@dl_list();
+            obj = obj@mcodekit.list.dl_list();
         end
         
         function enqueue(obj, key)

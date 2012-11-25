@@ -7,6 +7,7 @@ classdef dl_list < handle
         head_
         tail_
         size_
+        iterator_
     end
     
     methods
@@ -17,7 +18,7 @@ classdef dl_list < handle
         end
         
         function insert_key(obj, key, index)
-            n = dl_list_node(key);
+            n = mcodekit.list.dl_list_node(key);
             index = max(min(index, obj.size_+1), 1);
             if (obj.size_ == 0)
                 obj.head_ = n;
@@ -87,8 +88,7 @@ classdef dl_list < handle
         end
         
         function iterator = get_iterator(obj)
-            iterator = dl_list_iterator(obj);
+           iterator = mcodekit.list.dl_list_iterator(obj); 
         end
     end
 end
-

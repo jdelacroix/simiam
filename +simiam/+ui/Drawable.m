@@ -14,7 +14,7 @@ classdef Drawable < handle
            obj.pose = simiam.ui.Pose2D(x, y, theta);
            obj.parent = parent;
            
-           obj.surfaces = dl_list();
+           obj.surfaces = mcodekit.list.dl_list();
         end
         
         function updatePose(obj, x, y, theta)
