@@ -1,5 +1,8 @@
-classdef simi < handle
-    
+classdef AppWindow < handle
+
+% Copyright (C) 2012 Jean-Pierre de la Croix
+% see the LICENSE file included with this software
+
     properties
         parent_
         layout_
@@ -19,7 +22,7 @@ classdef simi < handle
     
     methods
         
-        function obj = simi()
+        function obj = AppWindow()
             obj.ui_colors_ = struct('gray',  [220 220 220]/255, ...
                                     'green', [ 57 200  67]/255, ...
                                     'red',   [221  23  31]/255, ...

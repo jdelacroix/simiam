@@ -11,7 +11,10 @@ classdef Simulator < handle
 %   step            - Executes one time step of the simulation.
 %   start           - Starts the simulation.
 %   stop            - Stops the simulation.
-    
+
+% Copyright (C) 2012 Jean-Pierre de la Croix
+% see the LICENSE file included with this software
+
     properties
         %% PROPERTIES
         

@@ -81,6 +81,14 @@ classdef dl_list < handle
                 obj.size_ = obj.size_-1;
             end
         end
+        
+        function append_key(obj, key)
+            obj.insert_key(key, obj.size_+1);
+        end
+        
+        function iterator = get_iterator(obj)
+            iterator = dl_list_iterator(obj);
+        end
     end
 end
 

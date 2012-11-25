@@ -9,7 +9,7 @@ classdef Khepera3 < simiam.robot.Robot
         ticks_per_rev
         speed_factor
         
-        encoders = simiam.robot.sensor..WheelEncoder.empty(1,0);
+        encoders = simiam.robot.sensor.WheelEncoder.empty(1,0);
         ir_array = simiam.robot.sensor.ProximitySensor.empty(1,0);
     end
     
@@ -23,7 +23,7 @@ classdef Khepera3 < simiam.robot.Robot
            
            % Add surfaces: Khepera3 in top-down 2D view
            k3_top_plate =  [ -0.031   0.043    1;
-                             -0.031  -s0.043    1;
+                             -0.031  -0.043    1;
                               0.033  -0.043    1;
                               0.052  -0.021    1;
                               0.057       0    1;
@@ -53,7 +53,7 @@ classdef Khepera3 < simiam.robot.Robot
             obj.speed_factor = 6.2953e-6;
             
             obj.encoders(1) = simiam.robot.sensor.WheelEncoder('right_wheel', obj.wheel_radius, obj.wheel_base_length, obj.ticks_per_rev);
-            obj.encoders(2) = simiam.robot.sensor.WheelEncoder('left_wheel', obj.wheel_radius, obj.whee_base_length, obj.ticks_per_rev);
+            obj.encoders(2) = simiam.robot.sensor.WheelEncoder('left_wheel', obj.wheel_radius, obj.wheel_base_length, obj.ticks_per_rev);
             
             import simiam.robot.sensor.ProximitySensor;
             import simiam.ui.Drawable;
