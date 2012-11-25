@@ -3,28 +3,32 @@ classdef Drawable < handle
 % Copyright (C) 2012 Jean-Pierre de la Croix
 % see the LICENSE file included with this software
     
-    properties (SetAccess = protected)
-        parent
-        pose
+    properties
         surfaces
+        parent
+    end
+    
+    properties (Access = protected)
+        pose
     end
     
     methods
-        function obj = Drawable(parent, x, y, theta)
-           obj.pose = simiam.ui.Pose2D(x, y, theta);
+        function obj = Drawable(parent, pose)
+           obj.pose = pose;
            obj.parent = parent;
-           
            obj.surfaces = mcodekit.list.dl_list();
         end
-        
-        function updatePose(obj, x, y, theta)
-           obj.pose.state = [x y theta];
-           obj.drawSurfaces();
+    end
+    
+    methods (Access = protected)
+        function update_pose(obj, pose)
+           obj.pose.set_pose(pose);
+           obj.draw_surfaces();
         end
         
-        function addSurface(obj, geometry, color)
+        function add_surface(obj, geometry, color)
             surface_g = geometry;
-            T = obj.pose.transformationMatrix();
+            T = obj.pose.get_transformation_matrix();
             surface_h = patch('Parent', obj.parent, ...
                             'Vertices', geometry*T', ...
                             'Faces', 1:size(geometry,1), ...
@@ -34,19 +38,13 @@ classdef Drawable < handle
             obj.surfaces.append_key(surface);
         end
         
-        function drawSurfaces(obj)
-            T = obj.pose.transformationMatrix();
+        function draw_surfaces(obj)
+            T = obj.pose.get_transformation_matrix();
             i = obj.surfaces.get_iterator();
             while(i.has_next())
                 surface = i.next();
                 set(surface.handle, 'Vertices', surface.geometry*T');
             end
-        end
-    end
-    
-    methods (Static)
-        function rad = deg2rad(deg)
-           rad = deg*pi/180; 
         end
     end
 end

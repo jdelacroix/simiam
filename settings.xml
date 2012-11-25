@@ -1,0 +1,29 @@
+<simulation>
+    <robot type="Khepera3">
+        <pose x="0" y="0" theta="0" />
+    </robot>
+    
+    <robot type="Khepera3">
+        <pose x="1" y="1" theta="1.5708" />
+    </robot>
+    
+    <obstacle>
+        <pose x="0" y="1" theta="0" />
+        <geometry>
+            <point x="0" y="0" />
+            <point x="0.3" y="0" />
+            <point x="0.3" y="0.3" />
+            <point x="0" y="0.3" />
+        </geometry>
+    </obstacle>
+    
+    <obstacle>
+        <pose x="1" y="0" theta="0.7854" />
+        <geometry>
+            <point x="0" y="0" />
+            <point x="0.3" y="0" />
+            <point x="0.3" y="0.3" />
+            <point x="0" y="0.3" />
+        </geometry>
+    </obstacle>
+</simulation>

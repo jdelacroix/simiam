@@ -11,15 +11,18 @@ classdef Khepera3 < simiam.robot.Robot
         
         encoders = simiam.robot.sensor.WheelEncoder.empty(1,0);
         ir_array = simiam.robot.sensor.ProximitySensor.empty(1,0);
+        
+        dynamics
     end
     
-    properties (Dependent = true)
-        state
+    properties (SetAccess = private)
+        right_wheel_speed
+        left_wheel_speed
     end
     
     methods
-        function obj = Khepera3(parent)
-           obj = obj@simiam.robot.Robot(parent);
+        function obj = Khepera3(parent, pose)
+           obj = obj@simiam.robot.Robot(parent, pose);
            
            % Add surfaces: Khepera3 in top-down 2D view
            k3_top_plate =  [ -0.031   0.043    1;
@@ -43,10 +46,10 @@ classdef Khepera3 < simiam.robot.Robot
                         -0.048   0.010    1;
                         -0.042   0.043    1];
             
-            obj.addSurface(k3_base, [ 0.8 0.8 0.8 ]);
-            obj.addSurface(k3_top_plate, [ 0.0 0.0 0.0 ]);
+            obj.add_surface(k3_base, [ 0.8 0.8 0.8 ]);
+            obj.add_surface(k3_top_plate, [ 0.0 0.0 0.0 ]);
             
-            % Add parts to the Khepera3 robot
+            % Add sensors: wheel encoders and IR proximity sensors
             obj.wheel_radius = 0.021;           % 42mm
             obj.wheel_base_length = 0.0885;     % 88.5mm
             obj.ticks_per_rev = 2765;
@@ -56,22 +59,91 @@ classdef Khepera3 < simiam.robot.Robot
             obj.encoders(2) = simiam.robot.sensor.WheelEncoder('left_wheel', obj.wheel_radius, obj.wheel_base_length, obj.ticks_per_rev);
             
             import simiam.robot.sensor.ProximitySensor;
-            import simiam.ui.Drawable;
             import simiam.robot.Khepera3;
+            import simiam.ui.Pose2D;
             
-            obj.ir_array(1) = ProximitySensor(parent, 'IR', -0.038,  0.048,  Drawable.deg2rad(128),  0.2, Drawable.deg2rad(20), @Khepera3.ir_distance_to_raw);
-            obj.ir_array(2) = ProximitySensor(parent, 'IR',  0.019,  0.064,  Drawable.deg2rad(75),   0.2, Drawable.deg2rad(20), @Khepera3.ir_distance_to_raw);
-            obj.ir_array(3) = ProximitySensor(parent, 'IR',  0.050,  0.050,  Drawable.deg2rad(42),   0.2, Drawable.deg2rad(20), @Khepera3.ir_distance_to_raw);
-            obj.ir_array(4) = ProximitySensor(parent, 'IR',  0.070,  0.017,  Drawable.deg2rad(13),   0.2, Drawable.deg2rad(20), @Khepera3.ir_distance_to_raw);
-            obj.ir_array(5) = ProximitySensor(parent, 'IR',  0.070, -0.017,  Drawable.deg2rad(-13),  0.2, Drawable.deg2rad(20), @Khepera3.ir_distance_to_raw);
-            obj.ir_array(6) = ProximitySensor(parent, 'IR',  0.050, -0.050,  Drawable.deg2rad(-42),  0.2, Drawable.deg2rad(20), @Khepera3.ir_distance_to_raw);
-            obj.ir_array(7) = ProximitySensor(parent, 'IR',  0.019, -0.064,  Drawable.deg2rad(-75),  0.2, Drawable.deg2rad(20), @Khepera3.ir_distance_to_raw);
-            obj.ir_array(8) = ProximitySensor(parent, 'IR', -0.038, -0.048,  Drawable.deg2rad(-128), 0.2, Drawable.deg2rad(20), @Khepera3.ir_distance_to_raw);
-            obj.ir_array(9) = ProximitySensor(parent, 'IR', -0.048,      0,  Drawable.deg2rad(180),  0.2, Drawable.deg2rad(20), @Khepera3.ir_distance_to_raw);
+            ir_pose = Pose2D(-0.038, 0.048, Pose2D.deg2rad(128));
+            obj.ir_array(1) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), @Khepera3.ir_distance_to_raw);
+            
+            ir_pose = Pose2D(0.019, 0.064, Pose2D.deg2rad(75));
+            obj.ir_array(2) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), @Khepera3.ir_distance_to_raw);
+            
+            ir_pose = Pose2D(0.050, 0.050, Pose2D.deg2rad(42));
+            obj.ir_array(3) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), @Khepera3.ir_distance_to_raw);
+            
+            ir_pose = Pose2D(0.070, 0.017, Pose2D.deg2rad(13));
+            obj.ir_array(4) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), @Khepera3.ir_distance_to_raw);
+            
+            ir_pose = Pose2D(0.070, -0.017, Pose2D.deg2rad(-13));
+            obj.ir_array(5) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), @Khepera3.ir_distance_to_raw);
+            
+            ir_pose = Pose2D(0.050, -0.050, Pose2D.deg2rad(-42));
+            obj.ir_array(6) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), @Khepera3.ir_distance_to_raw);
+            
+            ir_pose = Pose2D(0.019, -0.064, Pose2D.deg2rad(-75));
+            obj.ir_array(7) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), @Khepera3.ir_distance_to_raw);
+            
+            ir_pose = Pose2D(-0.038, -0.048, Pose2D.deg2rad(-128));
+            obj.ir_array(8) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), @Khepera3.ir_distance_to_raw);
+            
+            ir_pose = Pose2D(-0.048, 0.000, Pose2D.deg2rad(180));
+            obj.ir_array(9) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), @Khepera3.ir_distance_to_raw);
+            
+            % Add dynamics: two-wheel differential drive
+            obj.dynamics = simiam.robot.dynamics.DifferentialDrive(obj.wheel_radius, obj.wheel_base_length);
+            
+            obj.right_wheel_speed = 0;
+            obj.left_wheel_speed = 0;
         end
         
-        function val = get.state(obj)
-            error('The state of the robot is not directly observable. Check the sensors instead!');
+        
+        function pose = drive(obj, pose, dt)
+            sf = obj.speed_factor;
+            R = obj.wheel_radius;
+            
+            vel_r = obj.right_wheel_speed*(sf/R);     % mm/s
+            vel_l = obj.left_wheel_speed*(sf/R);      % mm/s
+            
+            pose = obj.dynamics.apply_dynamics(pose, dt, vel_r, vel_l);
+            obj.update_pose(obj, pose);
+            
+            for k=1:length(obj.ir_array)
+                obj.ir_array(k).update_pose(pose);
+            end
+        end
+        
+        function sense(obj, dt)
+            
+            % update IR proximity sensors
+            
+            
+            % update wheel encoders
+            sf = obj.speed_factor;
+            R = obj.wheel_radius;
+            
+            vel_r = obj.right_wheel_speed*(sf/R); %% mm/s
+            vel_l = obj.left_wheel_speed*(sf/R); %% mm/s
+            
+            obj.encoders(1).update_ticks(vel_r, dt);
+            obj.encoders(2).update_ticks(vel_l, dt);
+        end
+        
+        function set_wheel_speeds(obj, vel_r, vel_l)
+            [vel_r, vel_l] = obj.limit_speeds(vel_r, vel_l);
+            
+            sf = obj.speed_factor;
+            R = obj.wheel_radius;
+            
+            obj.right_wheel_speed = floor(vel_r*(R/sf));
+            obj.left_wheel_speed = floor(vel_l*(R/sf));
+        end
+        
+        function [vel_r, vel_l] = limit_speeds(obj, vel_r, vel_l)
+            % actuator hardware limits
+            [v,w] = obj.dynamics.diff_to_uni(vel_r, vel_l);
+            v = max(min(v,0.314),-0.3148);
+            w = max(min(w,2.276),-2.2763);
+            [vel_r, vel_l] = obj.dynamics.uni_to_diff(v,w);
         end
     end
     

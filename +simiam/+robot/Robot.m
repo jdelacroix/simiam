@@ -7,8 +7,8 @@ classdef Robot < simiam.ui.Drawable
     end
     
     methods
-        function obj = Robot(parent)
-            obj = obj@simiam.ui.Drawable(parent, 0, 0, 0);
+        function obj = Robot(parent, start_pose)
+            obj = obj@simiam.ui.Drawable(parent, start_pose);
         end
     end
     

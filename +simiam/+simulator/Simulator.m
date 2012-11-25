@@ -22,12 +22,14 @@ classdef Simulator < handle
         clock           % Global timer for the simulation
         time_step       % Time step for the simulation
         split           % Split between calls to step()
+        
+        world           % A virtual world for the simulator
     end
     
     methods
         %% METHODS
         
-        function obj = Simulator(parent, time_step)
+        function obj = Simulator(parent, world, time_step)
         %% SIMULATOR Constructor
         %   obj = Simulator(parent, time_step) is the default constructor
         %   that sets the graphics handle and the time step for the
@@ -38,6 +40,7 @@ classdef Simulator < handle
             obj.clock = timer('Period', obj.time_step, ...
                               'TimerFcn', @obj.step, ...
                               'ExecutionMode', 'fixedRate');
+            obj.world = world;
         end
         
         function step(obj, src, event)
@@ -59,6 +62,11 @@ classdef Simulator < handle
         %% STOP Stops the simulation.
         
             stop(obj.clock);
+        end
+        
+        function shutdown(obj)
+            obj.stop();
+            delete(obj.clock);
         end
     end
     

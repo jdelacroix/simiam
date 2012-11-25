@@ -18,6 +18,8 @@ classdef AppWindow < handle
         zoom_level_
         boundary_
         ratio_
+        
+        simulator_
     end
     
     methods
@@ -36,6 +38,19 @@ classdef AppWindow < handle
         function load_ui(obj)
             obj.create_layout();
             obj.create_callbacks();
+            obj.create_simulator();
+        end
+        
+        function create_simulator(obj)
+            [filename, pathname] = uigetfile({'*.xml', 'XML file'}, 'Load a world for the simulator.');
+            if (isequal(filename, 0) || isequal(pathname, 0))
+                delete(obj.parent_);
+                error('No file was selected.');
+            end
+            world = simiam.simulator.World(obj.view_);
+            world.build_from_file(fullfile(pathname, filename));
+            obj.simulator_ = simiam.simulator.Simulator(obj.view_, world, 0.01);
+            obj.simulator_.shutdown();
         end
         
         function create_layout(obj)
