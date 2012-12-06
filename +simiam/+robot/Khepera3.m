@@ -63,31 +63,31 @@ classdef Khepera3 < simiam.robot.Robot
             import simiam.ui.Pose2D;
             
             ir_pose = Pose2D(-0.038, 0.048, Pose2D.deg2rad(128));
-            obj.ir_array(1) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), @Khepera3.ir_distance_to_raw);
+            obj.ir_array(1) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), 'simiam.robot.Khepera3.ir_distance_to_raw');
             
             ir_pose = Pose2D(0.019, 0.064, Pose2D.deg2rad(75));
-            obj.ir_array(2) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), @Khepera3.ir_distance_to_raw);
+            obj.ir_array(2) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), 'simiam.robot.Khepera3.ir_distance_to_raw');
             
             ir_pose = Pose2D(0.050, 0.050, Pose2D.deg2rad(42));
-            obj.ir_array(3) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), @Khepera3.ir_distance_to_raw);
+            obj.ir_array(3) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), 'simiam.robot.Khepera3.ir_distance_to_raw');
             
             ir_pose = Pose2D(0.070, 0.017, Pose2D.deg2rad(13));
-            obj.ir_array(4) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), @Khepera3.ir_distance_to_raw);
+            obj.ir_array(4) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), 'simiam.robot.Khepera3.ir_distance_to_raw');
             
             ir_pose = Pose2D(0.070, -0.017, Pose2D.deg2rad(-13));
-            obj.ir_array(5) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), @Khepera3.ir_distance_to_raw);
+            obj.ir_array(5) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), 'simiam.robot.Khepera3.ir_distance_to_raw');
             
             ir_pose = Pose2D(0.050, -0.050, Pose2D.deg2rad(-42));
-            obj.ir_array(6) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), @Khepera3.ir_distance_to_raw);
+            obj.ir_array(6) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), 'simiam.robot.Khepera3.ir_distance_to_raw');
             
             ir_pose = Pose2D(0.019, -0.064, Pose2D.deg2rad(-75));
-            obj.ir_array(7) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), @Khepera3.ir_distance_to_raw);
+            obj.ir_array(7) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), 'simiam.robot.Khepera3.ir_distance_to_raw');
             
             ir_pose = Pose2D(-0.038, -0.048, Pose2D.deg2rad(-128));
-            obj.ir_array(8) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), @Khepera3.ir_distance_to_raw);
+            obj.ir_array(8) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), 'simiam.robot.Khepera3.ir_distance_to_raw');
             
             ir_pose = Pose2D(-0.048, 0.000, Pose2D.deg2rad(180));
-            obj.ir_array(9) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), @Khepera3.ir_distance_to_raw);
+            obj.ir_array(9) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), 'simiam.robot.Khepera3.ir_distance_to_raw');
             
             % Add dynamics: two-wheel differential drive
             obj.dynamics = simiam.robot.dynamics.DifferentialDrive(obj.wheel_radius, obj.wheel_base_length);
@@ -97,7 +97,7 @@ classdef Khepera3 < simiam.robot.Robot
         end
         
         
-        function pose = drive(obj, pose, dt)
+        function pose = update_state(obj, pose, dt)
             sf = obj.speed_factor;
             R = obj.wheel_radius;
             
@@ -105,17 +105,11 @@ classdef Khepera3 < simiam.robot.Robot
             vel_l = obj.left_wheel_speed*(sf/R);      % mm/s
             
             pose = obj.dynamics.apply_dynamics(pose, dt, vel_r, vel_l);
-            obj.update_pose(obj, pose);
+            obj.update_pose(pose);
             
             for k=1:length(obj.ir_array)
                 obj.ir_array(k).update_pose(pose);
             end
-        end
-        
-        function sense(obj, dt)
-            
-            % update IR proximity sensors
-            
             
             % update wheel encoders
             sf = obj.speed_factor;
@@ -148,7 +142,8 @@ classdef Khepera3 < simiam.robot.Robot
     end
     
     methods (Static)
-        function raw = ir_distance_to_raw(distance)
+        function raw = ir_distance_to_raw(varargin)
+            distance = cell2mat(varargin);
             if(distance < 0.02)
                 raw = 3960;
             else

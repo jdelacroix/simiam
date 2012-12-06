@@ -15,11 +15,12 @@ classdef dl_list_iterator < handle
         end
         
         function bool = has_next(obj)
-            if(isa(obj.index_, 'dl_list_node') && ~isvalid(obj.index_))
-                warning('dl_list:MutatedList', 'List was mutated. Resetting iterator');
-                obj.reset();
-            end
+%             if(isa(obj.index_, 'dl_list_node') && ~isvalid(obj.index_))
+%                 warning('dl_list:MutatedList', 'List was mutated. Resetting iterator');
+%                 obj.reset();
+%             end
             bool = ~isempty(obj.index_);
+%             bool = ~(obj.index_ == []);
         end
         
         function reset(obj)

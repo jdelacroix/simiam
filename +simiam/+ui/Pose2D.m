@@ -3,7 +3,7 @@ classdef Pose2D < handle
 % Copyright (C) 2012 Jean-Pierre de la Croix
 % see the LICENSE file included with this software
     
-    properties (Access = private)
+    properties
         x
         y
         theta
@@ -17,13 +17,13 @@ classdef Pose2D < handle
         end
         
         function set_pose(obj, pose)
-            if isa(pose, 'simiam.ui.Pose2D')
-                obj.set_pose(pose.unpack());
-            else
+%             if isa(pose, 'simiam.ui.Pose2D')
+%                 obj.set_pose(pose.unpack());
+%             else
                 obj.x = pose(1);
                 obj.y = pose(2);
                 obj.theta = pose(3);
-            end
+%             end
         end
         
         function [x, y, theta] = unpack(obj)
@@ -41,7 +41,11 @@ classdef Pose2D < handle
     
     methods (Static)
         function rad = deg2rad(deg)
-           rad = deg*pi/180; 
+            rad = deg*pi/180;
+        end
+        
+        function deg = rad2deg(rad)
+            deg = rad*180/pi;
         end
     end
 end

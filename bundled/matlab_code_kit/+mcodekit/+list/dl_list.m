@@ -87,8 +87,28 @@ classdef dl_list < handle
             obj.insert_key(key, obj.size_+1);
         end
         
+        function key = get_key(obj, index)
+            assert(index > 0, 'index has to be positive');
+            index = max(min(index, obj.size_), 1);
+            n = obj.head_;
+            for i = 2:index
+                n = n.next_;
+            end
+            key = n.key_;
+        end
+        
+        function key = get_first_key(obj)
+            assert(obj.size_ > 0, 'list is empty');
+            key = obj.head_.key_;
+        end
+        
+        function key = get_last_key(obj)
+            assert(obj.size_ > 0, 'list is empty');
+            key = obj.tail_.key_;
+        end
+        
         function iterator = get_iterator(obj)
-           iterator = mcodekit.list.dl_list_iterator(obj); 
+            iterator = mcodekit.list.dl_list_iterator(obj);
         end
     end
 end

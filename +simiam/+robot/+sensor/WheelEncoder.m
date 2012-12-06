@@ -23,7 +23,7 @@ classdef WheelEncoder < handle
         end
         
         function update_ticks(obj, wheel_velocity, dt)
-            obj.count = obj.count + obj.distance_to_ticks(wheel_velocity*dt);
+            obj.ticks = obj.ticks + obj.distance_to_ticks(wheel_velocity*dt);
         end
         
         function reset_ticks(obj)

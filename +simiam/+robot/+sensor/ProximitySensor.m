@@ -37,7 +37,7 @@ classdef ProximitySensor < simiam.ui.Drawable
                              sqrt(r^2-r1^2)   -r1   1;
                              sqrt(r^2-r2^2)   -r2   1];
             obj.add_surface(sensor_cone*T', [ 0.8 0.8 1 ]);
-            set(obj.surfaces.get_iterator().next().handle, 'EdgeColor', 'b');
+            set(obj.surfaces.head_.key_.handle_, 'EdgeColor', 'b');
             
             obj.range = r;
             obj.spread = phi;
@@ -45,8 +45,10 @@ classdef ProximitySensor < simiam.ui.Drawable
             obj.max_range = r_max;
             obj.min_range = r_min;
             
-            if nargin == 1 && isa(varargin{1}, 'function_handle')
-                obj.map = varargin{1};
+            if ((nargin-7) == 1)
+                obj.map = str2func(varargin{1});
+            else
+                obj.map = str2func('simiam.robot.sensor.ProximitySensor.identity_map');
             end
         end
                
@@ -55,37 +57,43 @@ classdef ProximitySensor < simiam.ui.Drawable
             
             r1 = distance*tan(obj.spread/4);
             r2 = distance*tan(obj.spread/2);
-            sensor_cone =  [                0    0   1;
-                             sqrt(val^2-r2^2)   r2   1;
-                             sqrt(val^2-r1^2)   r1   1;
-                                     distance   0   1;
-                             sqrt(val^2-r1^2)  -r1   1;
-                             sqrt(val^2-r2^2)  -r2   1];
+            sensor_cone =  [                     0    0   1;
+                             sqrt(distance^2-r2^2)   r2   1;
+                             sqrt(distance^2-r1^2)   r1   1;
+                                          distance    0   1;
+                             sqrt(distance^2-r1^2)  -r1   1;
+                             sqrt(distance^2-r2^2)  -r2   1];
             T = obj.location.get_transformation_matrix();
-            surface = obj.surfaces.get_iterator().next();
-            surface.geometry = sensor_cone*T';
-            if (distance < obj.r_max)
-                set(surface.handle, 'EdgeColor', 'r');
-                set(surface.handle, 'FaceColor', [1 0.8 0.8]);
+%             surface = obj.surfaces.get_iterator().next();
+            surface = obj.surfaces.head_.key_;
+%             surface.geometry_ = sensor_cone*T';
+            surface.update_geometry(sensor_cone*T');
+            if (distance < obj.max_range)
+                set(surface.handle_, 'EdgeColor', 'r');
+                set(surface.handle_, 'FaceColor', [1 0.8 0.8]);
             else
-                set(surface.handle, 'EdgeColor', 'b')
-                set(surface.handle, 'FaceColor', [0.8 0.8 1]);
+                set(surface.handle_, 'EdgeColor', 'b')
+                set(surface.handle_, 'FaceColor', [0.8 0.8 1]);
             end
             obj.draw_surfaces();
         end
         
         function raw = get_range(obj)
-            if(isa(obj.map, 'function_handle'))
-                % convert IR sensor value from [mm] to raw units
-                raw = obj.map(obj.range);
-            else
-                raw = obj.range;
-            end
+            s = obj.map;
+            raw = s(obj.range);
         end
         
         function distance = limit_to_sensor(obj, distance)
             distance = min(max(distance, obj.min_range), obj.max_range);
         end
         
+    end
+    
+    methods (Static)
+        
+        function raw = identity_map(varargin)
+            distance = cell2mat(varargin);
+            raw = distance;
+        end
     end
 end

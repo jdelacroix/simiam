@@ -12,8 +12,8 @@ classdef Obstacle < simiam.ui.Drawable
             obj = obj@simiam.ui.Drawable(parent, pose);
             obj.type = 'obstacle';
             geometry(:,3) = ones(size(geometry,1),1);
-            obj.add_surface(geometry, [1 0.4 0.4]);
-            set(obj.surfaces.get_iterator().next().handle, 'EdgeColor', 'r');
+            surface = obj.add_surface(geometry, [1 0.4 0.4]);
+            set(surface.handle_, 'EdgeColor', 'r');
         end
     end
     

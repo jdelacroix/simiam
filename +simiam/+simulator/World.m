@@ -7,6 +7,7 @@ classdef World < handle
         robots
         obstacles
         parent
+        apps
     end
     
     methods
@@ -14,6 +15,7 @@ classdef World < handle
             obj.parent = parent;
             obj.robots = mcodekit.list.dl_list(); %struct('robot', {}, 'pose', {});
             obj.obstacles = mcodekit.list.dl_list(); %struct('obstacle', {}, 'pose', {});
+            obj.apps = mcodekit.list.dl_list();
         end
         
         function build_from_file(obj, file)
@@ -22,12 +24,21 @@ classdef World < handle
             blueprint = xmlread(file);
             
             % Parse XML file for robot configurations
+            app_list = blueprint.getElementsByTagName('app').item(0);
+            app = char(app_list.getAttribute('type'));
+            
+            r = str2func(strcat('simiam.app.', app));
+            obj.apps.append_key(r());
+            
             robot_list = blueprint.getElementsByTagName('robot');
             
             for k = 0:(robot_list.getLength-1)
                robot = robot_list.item(k);
                
-               type = robot.getAttribute('type');
+               type = char(robot.getAttribute('type'));
+               
+               s = robot.getElementsByTagName('supervisor').item(0);
+               spv = char(s.getAttribute('type'));
                
                pose = robot.getElementsByTagName('pose').item(0);
                x = str2double(pose.getAttribute('x'));
@@ -35,7 +46,7 @@ classdef World < handle
                theta = str2double(pose.getAttribute('theta'));
                
 
-               obj.add_robot(type, x, y, theta);
+               obj.add_robot(type, spv, x, y, theta);
             end
             
             % Parse XML file for obstacle configurations
@@ -63,12 +74,20 @@ classdef World < handle
             end
         end
         
-        function add_robot(obj, type, x, y, theta)
+        function add_robot(obj, type, spv, x, y, theta)
            pose = simiam.ui.Pose2D(x, y, theta);
-%            strcat('simiam.robot.', type)
-%            r = str2func(strcat('simiam.robot.', type));
-           s = struct('robot', simiam.robot.Khepera3(obj.parent, pose), 'pose', pose);
+           
+           r = str2func(strcat('simiam.robot.', type));
+           robot = r(obj.parent, pose);
+           
+           r = str2func(strcat('simiam.controller.', spv));
+           supervisor = r();
+           
+           supervisor.attach_robot(robot, pose);
+           
+           s = struct('robot', robot, 'supervisor', supervisor, 'pose', pose);
            obj.robots.append_key(s);
+           obj.apps.head_.key_.supervisors.append_key(supervisor);
         end
         
         function add_obstacle(obj, x, y, theta, geometry)
