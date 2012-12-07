@@ -103,15 +103,18 @@ classdef AppWindow < handle
 
             
             % Create UI buttons
-            icon_img = fullfile(pwd, 'resources/splash/simiam_splash.png');
-            icon_url = strrep(['file://' icon_img],'\', '/');
+            icon_file = fullfile(pwd, 'resources/splash/simiam_splash.png');
+            if(isunix)
+                icon_url = ['file://' icon_file];
+            else
+                icon_url = strrep(['file:/' icon_file],'\','/');
+            end
             button_string = ['<html><div style="text-align: center"><img src="' icon_url '"/>' ...
                    '<br>Welcome to <b>Sim.I.am</b>, a robot simulator.' ...
                    '<br>This release is codenamed <em>Sim the First</em>.' ...
                    '<br>The simulator is maintained by the GRITSLab at' ...
                    '<br><a href="http://gritslab.gatech.edu/projects/robot-simulator">http://gritslab.gatech.edu/projects/robot-simulator</a>' ...
-                   '</div><br><ol><li>Start the demo by clicking the play button.</li><li>Use the mouse to pan and zoom.</li><li>Double click anywhere on the grid to send the robot to that location.</li><li>Select the robot to follow it</li><li>If your robot crashes, press the rewind button.</li></ol>' ...
-                   '</html>'];
+                   '</div></html>'];
             ui_args = {'Style','pushbutton', 'String', button_string, 'ForegroundColor', 'w', 'FontWeight', 'bold', 'BackgroundColor', obj.ui_colors_.gray, 'Callback', @obj.ui_button_start};
             ui_parent = obj.layout_.Cell(2,1);
             obj.logo_ = uicontrol(ui_parent, ui_args{:});
@@ -200,7 +203,11 @@ classdef AppWindow < handle
         
         function ui_set_button_icon(obj, ui_button, icon)
             icon_file = fullfile(pwd, 'resources/icons', icon);
-            icon_url = strrep(['file://' icon_file],'\','/');
+            if(isunix)
+                icon_url = ['file://' icon_file];
+            else
+                icon_url = strrep(['file:/' icon_file],'\','/');
+            end
             button_string = ['<html><img src="' icon_url '"/></html>'];
             set(ui_button, 'String', button_string);
         end
@@ -318,8 +325,12 @@ classdef AppWindow < handle
             view_parent = obj.layout_.Cell(2,1);
             set(view_parent, 'Children', []);
             Update(obj.layout_);
-            icon_image = fullfile(pwd, 'resources/splash/simiam_splash.png');
-            icon_url = strrep(['file://' icon_image],'\', '/');
+            icon_file = fullfile(pwd, 'resources/splash/simiam_splash.png');
+            if(isunix)
+                icon_url = ['file://' icon_file];
+            else
+                icon_url = strrep(['file:/' icon_file],'\','/');
+            end
             button_string = ['<html><div style="text-align: center"><img src="' icon_url '"/>' ...
                              '<br>Welcome to <b>Sim.I.am</b>, a robot simulator.' ...
                              '<br>This release is codenamed <em>Sim the First</em>.' ...
