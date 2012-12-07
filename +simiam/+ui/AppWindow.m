@@ -114,7 +114,8 @@ classdef AppWindow < handle
                    '<br>This release is codenamed <em>Sim the First</em>.' ...
                    '<br>The simulator is maintained by the GRITSLab at' ...
                    '<br><a href="http://gritslab.gatech.edu/projects/robot-simulator">http://gritslab.gatech.edu/projects/robot-simulator</a>' ...
-                   '</div></html>'];
+                   '</div><br><ol><li>Start the demo by clicking the play button.</li><li>Use the mouse to pan and zoom.</li><li>Double click anywhere on the grid to send the robot to that location.</li><li>Select the robot to follow it</li><li>If your robot crashes, press the rewind button.</li></ol>' ...
+                   '</html>'];
             ui_args = {'Style','pushbutton', 'String', button_string, 'ForegroundColor', 'w', 'FontWeight', 'bold', 'BackgroundColor', obj.ui_colors_.gray, 'Callback', @obj.ui_button_start};
             ui_parent = obj.layout_.Cell(2,1);
             obj.logo_ = uicontrol(ui_parent, ui_args{:});
@@ -140,6 +141,18 @@ classdef AppWindow < handle
             obj.ui_set_button_icon(load, 'ui_control_home.png');
             obj.ui_toggle_control(load, false);
             
+            ui_args = {'Style', 'pushbutton', 'ForegroundColor', 'w', 'FontWeight', 'bold', 'Callback', @obj.ui_button_zoom_in};
+            ui_parent = obj.layout_.Cell(4,11);
+            zoom_in = uicontrol(ui_parent, ui_args{:});
+            obj.ui_set_button_icon(zoom_in, 'ui_control_zoom_in.png');
+            obj.ui_toggle_control(zoom_in, false);
+            
+            ui_args = {'Style', 'pushbutton', 'ForegroundColor', 'w', 'FontWeight', 'bold', 'Callback', @obj.ui_button_zoom_out};
+            ui_parent = obj.layout_.Cell(4,10);
+            zoom_out = uicontrol(ui_parent, ui_args{:});
+            obj.ui_set_button_icon(zoom_out, 'ui_control_zoom_out.png');
+            obj.ui_toggle_control(zoom_out, false);
+            
             
             ui_args = {'Style', 'pushbutton', 'BackgroundColor', obj.ui_colors_.gray};
             ui_parent = obj.layout_.Cell(1,9);
@@ -164,7 +177,9 @@ classdef AppWindow < handle
                          'refresh', refresh, ...
                          'load', load, ...
                          'status', status, ...
-                         'time', time); 
+                         'time', time, ...
+                         'zoom_in', zoom_in, ...
+                         'zoom_out', zoom_out); 
             obj.ui_update_clock(0);
 
             % Set minimum size for figure
@@ -302,6 +317,8 @@ classdef AppWindow < handle
             
             obj.is_ready_ = true;
             obj.ui_toggle_control(obj.ui_buttons_.load, true);
+            obj.ui_toggle_control(obj.ui_buttons_.zoom_in, true);
+            obj.ui_toggle_control(obj.ui_buttons_.zoom_out, true);
             obj.time_ = 0;
             obj.ui_update_clock(0);
             obj.simulator_.start();
@@ -311,6 +328,8 @@ classdef AppWindow < handle
             obj.is_ready_ = false;
             obj.center_ = simiam.ui.Pose2D(0,0,0);
             
+            obj.ui_toggle_control(obj.ui_buttons_.zoom_in, false);
+            obj.ui_toggle_control(obj.ui_buttons_.zoom_out, false);
             obj.ui_toggle_control(obj.ui_buttons_.refresh, false);
             obj.ui_set_button_icon(obj.ui_buttons_.status, 'ui_status_ok.png');
             obj.time_ = 0;
@@ -362,13 +381,13 @@ classdef AppWindow < handle
         end
         
         function ui_focus_view(obj, src, event, robot)
-            disp('clicked robot');
+%             disp('clicked robot');
             
             switch(get(obj.parent_, 'SelectionType'))
                 case 'normal'
-                    disp('single click')
+%                     disp('single click')
                 case 'open'
-                    disp('double click')
+%                     disp('double click')
                 otherwise
             end
             
@@ -443,6 +462,16 @@ classdef AppWindow < handle
             obj.ui_set_axes();
         end
         
+        function ui_button_zoom_in(obj, src, event)
+            event.VerticalScrollCount = -1;
+            obj.ui_zoom_view(src, event);
+        end
+        
+        function ui_button_zoom_out(obj, src, event)
+            event.VerticalScrollCount = 1;
+            obj.ui_zoom_view(src, event);
+        end
+        
         function ui_press_mouse(obj, src, event, handles)
             click = get(obj.view_, 'CurrentPoint');
             obj.click_src_ = click(1,1:2)';
@@ -463,11 +492,11 @@ classdef AppWindow < handle
         end
         
         function ui_press_key(obj, src, event, handles)
-            disp(event.Key);
+%             disp(event.Key);
         end
         
         function ui_release_mouse(obj, src, event, handles)
-            disp('released')
+%             disp('released')
             setptr(obj.parent_, 'arrow');
             set(obj.parent_, 'WindowButtonMotionFcn', @obj.ui_no_op);
         end
