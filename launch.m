@@ -6,9 +6,10 @@ function launch()
 clear java;
 clear classes;
 
-addpath(genpath('bundled'));
+root_path = fileparts(which(mfilename));
+addpath(genpath(root_path));
 
-app = simiam.ui.AppWindow();
+app = simiam.ui.AppWindow(root_path);
 app.load_ui();
 
 end

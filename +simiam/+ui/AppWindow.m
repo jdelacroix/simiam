@@ -31,11 +31,14 @@ classdef AppWindow < handle
         
         ticks_
         time_
+        
+        root_
     end
     
     methods
         
-        function obj = AppWindow()
+        function obj = AppWindow(root)
+            obj.root_ = root;
             obj.ui_colors_ = struct('gray',  [220 220 220]/255, ...
                                     'green', [ 57 200  67]/255, ...
                                     'red',   [221  23  31]/255, ...
@@ -103,7 +106,7 @@ classdef AppWindow < handle
 
             
             % Create UI buttons
-            icon_file = fullfile(pwd, 'resources/splash/simiam_splash.png');
+            icon_file = fullfile(obj.root_, 'resources/splash/simiam_splash.png');
             if(isunix)
                 icon_url = ['file://' icon_file];
             else
@@ -217,7 +220,7 @@ classdef AppWindow < handle
         end
         
         function ui_set_button_icon(obj, ui_button, icon)
-            icon_file = fullfile(pwd, 'resources/icons', icon);
+            icon_file = fullfile(obj.root_, 'resources/icons', icon);
             if(isunix)
                 icon_url = ['file://' icon_file];
             else
@@ -309,7 +312,7 @@ classdef AppWindow < handle
             
             obj.create_callbacks();
 %             obj.create_simulator(fullfile(pathname, filename));
-            obj.create_simulator(fullfile(pwd, 'settings.xml'));
+            obj.create_simulator(fullfile(obj.root_, 'settings.xml'));
             
             obj.ui_buttons_.play_state = true;
             obj.ui_set_button_icon(obj.ui_buttons_.play, 'ui_control_pause.png');
@@ -344,7 +347,7 @@ classdef AppWindow < handle
             view_parent = obj.layout_.Cell(2,1);
             set(view_parent, 'Children', []);
             Update(obj.layout_);
-            icon_file = fullfile(pwd, 'resources/splash/simiam_splash.png');
+            icon_file = fullfile(obj.root_, 'resources/splash/simiam_splash.png');
             if(isunix)
                 icon_url = ['file://' icon_file];
             else
