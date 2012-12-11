@@ -67,7 +67,9 @@ classdef AvoidObstacles < simiam.controller.Controller
             v = Kv*norm(u)*cos(theta_d-theta);
             w = Kw*norm(u)*sin(theta_d-theta);
             
-            fprintf('(v,w) = (%0.4g,%0.4g)\n', v,w);
+            v = inputs.v;
+            
+%             fprintf('(v,w) = (%0.4g,%0.4g)\n', v,w);
             
             % Transform from v,w to v_r,v_l and set the speed of the robot
 %             [vel_r, vel_l] = obj.uni_to_diff(robot,v,w);

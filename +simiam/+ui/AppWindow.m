@@ -88,6 +88,9 @@ classdef AppWindow < handle
                                  'Color', obj.ui_colors_.gray);
             ui_size = get(obj.parent_, 'Position');
             ui_size(3:4) = obj.ui_size_(3:4);
+            screen_size = get(0, 'ScreenSize');
+            margins = (screen_size(3:4)-obj.ui_size_(3:4))/2;
+            ui_size(1:2) = margins;
             set(obj.parent_, 'Position', ui_size);
 
                                   

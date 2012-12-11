@@ -16,6 +16,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
     
         prev_ticks          % Previous tick count on the left and right wheels
         goal
+        reached_goal
     end
     
     methods
@@ -36,6 +37,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
             obj.prev_ticks = struct('left', 0, 'right', 0);
             
             obj.goal = [0;0];
+            obj.reached_goal = false;
         end
         
         function execute(obj, dt)
@@ -66,12 +68,17 @@ classdef K3Supervisor < simiam.controller.Supervisor
                 
                 obj.robot.set_wheel_speeds(vel_r, vel_l);
             else
+                obj.reached_goal = true;
                 obj.robot.set_wheel_speeds(0,0);
             end
             
             obj.update_odometry();
 %             [x, y, theta] = obj.state_estimate.unpack();
 %             fprintf('current_pose: (%0.3f,%0.3f,%0.3f)\n', x, y, theta);
+        end
+        
+        function set_current_controller(obj, k)
+            obj.current_controller = obj.controllers{k};
         end
         
         function update_odometry(obj)
