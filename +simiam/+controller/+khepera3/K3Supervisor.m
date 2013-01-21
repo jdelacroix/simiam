@@ -29,10 +29,9 @@ classdef K3Supervisor < simiam.controller.Supervisor
             % initialize the controllers
             obj.controllers{1} = simiam.controller.AvoidObstacles();
             obj.controllers{2} = simiam.controller.GoToGoal();
-            obj.controllers{3} = simiam.controller.AOAndGTG();
             
             % set the initial controller
-            obj.current_controller = obj.controllers{3};
+            obj.current_controller = obj.controllers{2};
             
             obj.prev_ticks = struct('left', 0, 'right', 0);
             
@@ -48,19 +47,15 @@ classdef K3Supervisor < simiam.controller.Supervisor
         %   See also controller/execute
         
             [x_i, y_i, theta_i] = obj.state_estimate.unpack();       
-            x_j = obj.goal(1); y_j = obj.goal(2);
+            x_g = obj.goal(1); y_g = obj.goal(2);
                         
-            if sqrt((x_i-x_j)^2+(y_i-y_j)^2) > 0.02
+            if sqrt((x_i-x_g)^2+(y_i-y_g)^2) > 0.02
                 
-%                 goal = [x_j; y_j];
                                 
                 inputs = obj.current_controller.inputs;
-                inputs.x_g = x_j;
-                inputs.y_g = y_j;
+                inputs.x_g = x_g;
+                inputs.y_g = y_g;
                 inputs.v = 0.1;
-                
-                inputs.d_c = 0.08;
-                inputs.d_s = 0.1;
                 
                 outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
                 
@@ -106,25 +101,16 @@ classdef K3Supervisor < simiam.controller.Supervisor
             obj.prev_ticks.right = right_ticks;
             obj.prev_ticks.left = left_ticks;
             
-            % Previous estimate
-%             x = obj.state_estimate.x;
-%             y = obj.state_estimate.y;
-%             theta = obj.state_estimate.theta;    
+            % Previous estimate 
             [x, y, theta] = obj.state_estimate.unpack();
             
             % Compute odometry here
             
             m_per_tick = (2*pi*obj.robot.wheel_radius)/obj.robot.encoders(1).ticks_per_rev;
             
-            d_right = (right_ticks-prev_right_ticks)*m_per_tick;
-            d_left = (left_ticks-prev_left_ticks)*m_per_tick;
-            
-            d_center = (d_right + d_left)/2;
-            phi = (d_right - d_left)/obj.robot.wheel_base_length;
-            
-            theta_p = theta + phi;
-            x_p = x + d_center*cos(theta);
-            y_p = y + d_center*sin(theta);
+            theta_p = theta;
+            x_p = x;
+            y_p = y;
                            
 %             fprintf('Estimated pose (x,y,theta): (%0.3g,%0.3g,%0.3g)\n', x_p, y_p, theta_p);
             

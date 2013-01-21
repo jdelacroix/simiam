@@ -1,5 +1,5 @@
 <simulation>
-    <app type="DemoApp" />
+    <app type="ControlApp" />
     
     <robot type="Khepera3">
         <supervisor type="khepera3.K3Supervisor" />
