@@ -41,16 +41,13 @@ classdef Supervisor < handle
             [x, y, theta] = pose.unpack();
             obj.state_estimate.set_pose([x, y, theta]);
         end
-    end
-    
-    methods (Abstract) 
         
-        execute(obj, dt)
+        function execute(obj, dt)
         %% EXECUTE Selects and executes the current controller.
         %   execute(obj, dt) will select a controller from the list of
         %   available controllers and execute it.
         %
         %   See also controller/execute
-        
+        end
     end
 end
