@@ -185,9 +185,11 @@ Figure \ref{fig:k3_sim} is a screenshot of the graphical user interface (GUI) of
 The following sections serve as a tutorial for getting through the simulator portions of the programming exercises.
 
 \subsection*{Week 2}
-The first week's programming exercises ask you to implement odometry in the \texttt{+simiam/+controller/+khepera3/K3Supervisor.m} file, as well as, the transformation from $(v,\omega)$ to $(v_r,v_\ell)$ in the \texttt{+simiam/+robot/+dynamics/DifferentialDrive.m} file. Since odometry and this particular transformation will be used in all of your controllers, make sure to implement these correctly.
+The first week's programming exercises ask you to implement odometry in the \texttt{+simiam/+controller/+khepera3/} \texttt{K3Supervisor.m} file, as well as, the transformation from $(v,\omega)$ to $(v_r,v_\ell)$ in the \texttt{+simiam/+robot/+dynamics/} \texttt{DifferentialDrive.m} file. Since odometry and this particular transformation will be used in all of your controllers, make sure to implement these correctly.
 
 To test odometry and your transformation, you will likely want to edit \texttt{+simiam/+controller/GoToGoal.m} and implement a P-regulator. Similarily, for converting raw IR values to distances, edit \texttt{+simiam/+controller/}
 \texttt{AvoidObstacle.m}.
+
+\textbf{Note}: The code uses $(x,y,\theta)$ to represent the pose in 2D, while the video lectures refer to $(x,y,\phi)$. Both $\theta$ (\texttt{theta}) and $\phi$ are simply symbols that represent the orientation of the robot.
 
 \end{document}

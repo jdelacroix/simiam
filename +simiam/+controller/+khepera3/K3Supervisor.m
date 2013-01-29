@@ -35,7 +35,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
             
             obj.prev_ticks = struct('left', 0, 'right', 0);
             
-            obj.goal = [0;0];
+            obj.goal = [1;0];
             obj.reached_goal = false;
         end
         

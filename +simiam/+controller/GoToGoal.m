@@ -56,6 +56,8 @@ classdef GoToGoal < simiam.controller.Controller
             outputs = obj.outputs;  % make a copy of the output struct
             outputs.v = v;
             outputs.w = w;
+            
+            fprintf('Happy Birthday\n');
         end
         
     end
