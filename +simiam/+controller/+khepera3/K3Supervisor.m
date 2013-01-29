@@ -29,13 +29,14 @@ classdef K3Supervisor < simiam.controller.Supervisor
             % initialize the controllers
             obj.controllers{1} = simiam.controller.AvoidObstacles();
             obj.controllers{2} = simiam.controller.GoToGoal();
+            obj.controllers{3} = simiam.controller.GoToAngle();
             
             % set the initial controller
-            obj.current_controller = obj.controllers{2};
+            obj.current_controller = obj.controllers{3};
             
             obj.prev_ticks = struct('left', 0, 'right', 0);
             
-            obj.goal = [0;0];
+            obj.goal = [1;0];
             obj.reached_goal = false;
         end
         
@@ -46,28 +47,18 @@ classdef K3Supervisor < simiam.controller.Supervisor
         %
         %   See also controller/execute
         
-            [x_i, y_i, theta_i] = obj.state_estimate.unpack();       
-            x_g = obj.goal(1); y_g = obj.goal(2);
-                        
-            if sqrt((x_i-x_g)^2+(y_i-y_g)^2) > 0.02
                 
-                                
-                inputs = obj.current_controller.inputs;
-                inputs.x_g = x_g;
-                inputs.y_g = y_g;
-                inputs.v = 0.1;
-                
-                outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
-                
-                [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
-                
-                obj.robot.set_wheel_speeds(vel_r, vel_l);
-            else
-                obj.reached_goal = true;
-                obj.robot.set_wheel_speeds(0,0);
-            end
+        inputs = obj.current_controller.inputs;
+        inputs.v = 0.1;
+        inputs.theta_d = pi/4;  % desired angle
+        
+        outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
+        
+        [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
+        
+        obj.robot.set_wheel_speeds(vel_r, vel_l);
             
-            obj.update_odometry();
+        obj.update_odometry();
 %             [x, y, theta] = obj.state_estimate.unpack();
 %             fprintf('current_pose: (%0.3f,%0.3f,%0.3f)\n', x, y, theta);
         end
