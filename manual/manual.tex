@@ -190,4 +190,7 @@ The first homework asks you to implement odometry in the \texttt{+simiam/+contro
 To test odometry and your transformation, you will likely want to edit \texttt{+simiam/+controller/GoToGoal.m} and implement a P-regulator. Similarily, for converting raw IR values to distances, edit \texttt{+simiam/+controller/}
 \texttt{AvoidObstacle.m}.
 
+\subsection*{Project 1}
+The first project requires you to steer the robot to some desired angle (\texttt{theta\_d}). You will need to implement a PID regulator that achieves this quickly and smoothly. Edit \texttt{+simiam/+controller/GoToAngle.m} and implement the PID controller there. Remember, \texttt{execute} is called once every timestep \texttt{dt}, so will probably want to create variable under \texttt{properties} to save a previous error or soemthing else you want to use during the next iteration. In \texttt{+simiam/+controller/+khepera3/K3Supervisor.m}, adjust the desired angle \texttt{inputs.theta\_d = pi/4;} to make sure it works more than just the default. Also, remember to implement homework 0 before you start with this project!
+
 \end{document}
