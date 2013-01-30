@@ -6,7 +6,12 @@ function launch()
 clear java;
 clear classes;
 
-root_path = fileparts(which(mfilename));
+if (isdeployed)
+    [path, folder, ~] = fileparts(ctfroot);
+    root_path = fullfile(path, folder);
+else
+    root_path = fileparts(mfilename('fullpath'));
+end
 addpath(genpath(root_path));
 
 app = simiam.ui.AppWindow(root_path);

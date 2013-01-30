@@ -8,6 +8,7 @@ classdef World < handle
         obstacles
         parent
         apps
+        root_path
     end
     
     methods
@@ -16,19 +17,21 @@ classdef World < handle
             obj.robots = mcodekit.list.dl_list(); %struct('robot', {}, 'pose', {});
             obj.obstacles = mcodekit.list.dl_list(); %struct('obstacle', {}, 'pose', {});
             obj.apps = mcodekit.list.dl_list();
+            obj.root_path = '';
         end
         
-        function build_from_file(obj, file)
+        function build_from_file(obj, root, file)
             
             % Read in XML file
             blueprint = xmlread(file);
+            obj.root_path = root;
             
             % Parse XML file for robot configurations
             app_list = blueprint.getElementsByTagName('app').item(0);
             app = char(app_list.getAttribute('type'));
             
             r = str2func(strcat('simiam.app.', app));
-            obj.apps.append_key(r());
+            obj.apps.append_key(r(root));
             
             robot_list = blueprint.getElementsByTagName('robot');
             
@@ -43,8 +46,7 @@ classdef World < handle
                pose = robot.getElementsByTagName('pose').item(0);
                x = str2double(pose.getAttribute('x'));
                y = str2double(pose.getAttribute('y'));
-               theta = str2double(pose.getAttribute('theta'));
-               
+               theta = str2double(pose.getAttribute('theta'));         
 
                obj.add_robot(type, spv, x, y, theta);
             end
@@ -84,6 +86,12 @@ classdef World < handle
            supervisor = r();
            
            supervisor.attach_robot(robot, pose);
+           
+           parameter_file = fullfile(obj.root_path, 'parameters.xml');
+           [file, path, ~] = uigetfile(parameter_file, 'Pick a XML file with the parameters for the PID regulator.');
+           
+           parameter_file = fullfile(path, file);
+           supervisor.configure_from_file(parameter_file);
            
            s = struct('robot', robot, 'supervisor', supervisor, 'pose', pose);
            obj.robots.append_key(s);

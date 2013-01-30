@@ -1,11 +1,11 @@
-classdef GoToGoal < simiam.controller.Controller
-%% GOTOGOAL steers the robot towards a goal with a constant velocity using PID
+classdef GoToAngle < simiam.controller.Controller
+%% GOTOANGLE steers the robot towards a angle with a constant velocity using PID
 %
 % Properties:
 %   none
 %
 % Methods:
-%   execute - Computes the left and right wheel speeds for go-to-goal.
+%   execute - Computes the left and right wheel speeds for go-to-angle.
     
     properties
         %% PROPERTIES
@@ -27,16 +27,16 @@ classdef GoToGoal < simiam.controller.Controller
     
     properties (Constant)
         % I/O
-        inputs = struct('x_g', 0, 'y_g', 0, 'v', 0);
+        inputs = struct('theta_d', 0, 'v', 0);
         outputs = struct('v', 0, 'w', 0);
     end
     
     methods
     %% METHODS
         
-        function obj = GoToGoal()
-            %% GOTOGOAL Constructor
-            obj = obj@simiam.controller.Controller('go_to_goal');
+        function obj = GoToAngle()
+            %% GOTOANGLE Constructor
+            obj = obj@simiam.controller.Controller('go_to_angle');
             
             % initialize memory banks
             obj.Kp = 10;
@@ -54,29 +54,22 @@ classdef GoToGoal < simiam.controller.Controller
         end
         
         function outputs = execute(obj, robot, state_estimate, inputs, dt)
-        %% EXECUTE Computes the left and right wheel speeds for go-to-goal.
+        %% EXECUTE Computes the left and right wheel speeds for go-to-angle.
         %   [v, w] = execute(obj, robot, x_g, y_g, v) will compute the
         %   necessary linear and angular speeds that will steer the robot
-        %   to the goal location (x_g, y_g) with a constant linear velocity
+        %   to the angle location (x_g, y_g) with a constant linear velocity
         %   of v.
         %
         %   See also controller/execute
         
-            % Retrieve the (relative) goal location
-            x_g = inputs.x_g; 
-            y_g = inputs.y_g;
+            % Retrieve the (relative) angle location
+            theta_d = inputs.theta_d
             
             % Get estimate of current pose
             [x, y, theta] = state_estimate.unpack();
             
-            % Compute the v,w that will get you to the goal
+            % Compute the v,w that will get you to the angle
             v = inputs.v;
-            
-            % desired (goal) heading
-            dx = x_g-x;
-            dy = y_g-y;
-            
-            theta_d = atan2(dy,dx);
             
             % heading error
             e_k = theta_d-theta;
@@ -90,12 +83,12 @@ classdef GoToGoal < simiam.controller.Controller
             obj.e_k_1 = e_k;
             
             % stop when sufficiently close
-            delta = sqrt(dx^2+dy^2);
-            
-            if (delta < 0.02)
-               v=0;
-               w=0;
-            end
+%             delta = sqrt(dx^2+dy^2);
+%             
+%             if (delta < 0.02)
+%                v=0;
+%                w=0;
+%             end
             
             % plot
             [obj.h,obj.g] = obj.p.plot_2d_ref(obj.h, obj.g, dt, theta, theta_d);

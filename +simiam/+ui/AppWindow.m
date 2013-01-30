@@ -65,7 +65,7 @@ classdef AppWindow < handle
         
         function create_simulator(obj, settings_file)
             world = simiam.simulator.World(obj.view_);
-            world.build_from_file(settings_file);
+            world.build_from_file(obj.root_, settings_file);
             
             token_k = world.robots.head_;
             while(~isempty(token_k))

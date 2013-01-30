@@ -19,6 +19,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
         reached_goal
         velocity
         gains
+        theta_d
     end
     
     methods
@@ -31,25 +32,31 @@ classdef K3Supervisor < simiam.controller.Supervisor
             % initialize the controllers
             obj.controllers{1} = simiam.controller.AvoidObstacles();
             obj.controllers{2} = simiam.controller.GoToGoal();
+            obj.controllers{3} = simiam.controller.GoToAngle();
             
             % set the initial controller
-            obj.current_controller = obj.controllers{2};
+            obj.current_controller = obj.controllers{3};
             
             obj.prev_ticks = struct('left', 0, 'right', 0);
             
             obj.goal = [1;0];
             obj.reached_goal = false;
+            obj.theta_d = 0;
+        end
+        
+        function configure_from_file(obj, filename)
+            parameters = xmlread(filename);
             
-            root_path = fileparts(which(mfilename));
-            parameter_file = fullfile(root_path, 'parameters.xml');
-            
-            parameters = xmlread(parameter_file);
-            
-            goal_xml = parameters.getElementsByTagName('goal').item(0);
-            x_g = str2double(goal_xml.getAttribute('x'));
-            y_g = str2double(goal_xml.getAttribute('y'));
-            obj.goal = [x_g;y_g];
-            fprintf('goal: (%0.3f,%0.3f)\n', x_g, y_g);
+%             goal_xml = parameters.getElementsByTagName('goal').item(0);
+%             x_g = str2double(goal_xml.getAttribute('x'));
+%             y_g = str2double(goal_xml.getAttribute('y'));
+%             obj.goal = [x_g;y_g];
+%             fprintf('goal: (%0.3f,%0.3f)\n', x_g, y_g);
+
+            angle_xml = parameters.getElementsByTagName('angle').item(0);
+            theta = str2double(angle_xml.getAttribute('theta'));
+            obj.theta_d = theta;
+            fprintf('theta_d: (%0.3f)\n', theta);
             
             v_xml = parameters.getElementsByTagName('velocity').item(0);
             v = str2double(v_xml.getAttribute('v'));
@@ -64,7 +71,6 @@ classdef K3Supervisor < simiam.controller.Supervisor
             obj.controllers{2}.Kp = k_p;
             obj.controllers{2}.Ki = k_i;
             obj.controllers{2}.Kd = k_d;
-            
         end
         
         function execute(obj, dt)
@@ -81,8 +87,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
                 
                                 
                 inputs = obj.current_controller.inputs;
-                inputs.x_g = x_g;
-                inputs.y_g = y_g;
+                inputs.theta_d = obj.theta_d;
                 inputs.v = obj.velocity;
                 
                 outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
