@@ -13,7 +13,7 @@
     </robot>
     -->
     
-    <obstacle>
+    <!--<obstacle>
         <pose x="1" y="1.2" theta="0" />
         <geometry>
             <point x="0" y="0" />
@@ -61,7 +61,7 @@
             <point x="1.5" y="0.3" />
             <point x="0" y="0.3" />
         </geometry>
-    </obstacle>
+    </obstacle> -->
     
     
     

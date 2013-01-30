@@ -11,6 +11,13 @@ classdef GoToGoal < simiam.controller.Controller
         %% PROPERTIES
         
         % memory banks
+        E_k
+        e_k_1
+        
+        % gains
+        Kp
+        Ki
+        Kd
     end
     
     properties (Constant)
@@ -27,6 +34,13 @@ classdef GoToGoal < simiam.controller.Controller
             obj = obj@simiam.controller.Controller('go_to_goal');
             
             % initialize memory banks
+            obj.Kp = 10;
+            obj.Ki = 0;
+            obj.Kd = 0;
+                        
+            % errors
+            obj.E_k = 0;
+            obj.e_k_1 = 0;
         end
         
         function outputs = execute(obj, robot, state_estimate, inputs, dt)
@@ -49,15 +63,33 @@ classdef GoToGoal < simiam.controller.Controller
             v = inputs.v;
             
             % desired (goal) heading
-            theta_d = 0;
+            dx = x_g-x;
+            dy = y_g-y;
             
-            w = 0;
+            theta_d = atan2(dy,dx);
+            
+            % heading error
+            e_k = theta_d-theta;
+            e_k = atan2(sin(e_k), cos(e_k));
+            
+            % PID for heading
+            w = obj.Kp*e_k + obj.Ki*(obj.E_k+e_k*dt) + obj.Kd*(e_k-obj.e_k_1)/dt;
+            
+            % save errors
+            obj.E_k = obj.E_k+e_k*dt;
+            obj.e_k_1 = e_k;
+            
+            % stop when sufficiently close
+            delta = sqrt(dx^2+dy^2);
+            
+            if (delta < 0.02)
+               v=0;
+               w=0;
+            end
             
             outputs = obj.outputs;  % make a copy of the output struct
             outputs.v = v;
             outputs.w = w;
-            
-            fprintf('Happy Birthday\n');
         end
         
     end

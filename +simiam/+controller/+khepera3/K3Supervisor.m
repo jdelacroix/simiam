@@ -17,6 +17,8 @@ classdef K3Supervisor < simiam.controller.Supervisor
         prev_ticks          % Previous tick count on the left and right wheels
         goal
         reached_goal
+        velocity
+        gains
     end
     
     methods
@@ -37,6 +39,32 @@ classdef K3Supervisor < simiam.controller.Supervisor
             
             obj.goal = [1;0];
             obj.reached_goal = false;
+            
+            root_path = fileparts(which(mfilename));
+            parameter_file = fullfile(root_path, 'parameters.xml');
+            
+            parameters = xmlread(parameter_file);
+            
+            goal_xml = parameters.getElementsByTagName('goal').item(0);
+            x_g = str2double(goal_xml.getAttribute('x'));
+            y_g = str2double(goal_xml.getAttribute('y'));
+            obj.goal = [x_g;y_g];
+            fprintf('goal: (%0.3f,%0.3f)\n', x_g, y_g);
+            
+            v_xml = parameters.getElementsByTagName('velocity').item(0);
+            v = str2double(v_xml.getAttribute('v'));
+            obj.velocity = v;
+            fprintf('velocity: (%0.3f)\n', v);
+            
+            gains_xml = parameters.getElementsByTagName('gains').item(0);
+            k_p = str2double(gains_xml.getAttribute('kp'));
+            k_i = str2double(gains_xml.getAttribute('ki'));
+            k_d = str2double(gains_xml.getAttribute('kd'));
+            fprintf('gains: (%0.3f,%0.3f,%0.3f)\n', k_p, k_i, k_d);
+            obj.controllers{2}.Kp = k_p;
+            obj.controllers{2}.Ki = k_i;
+            obj.controllers{2}.Kd = k_d;
+            
         end
         
         function execute(obj, dt)
@@ -55,7 +83,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
                 inputs = obj.current_controller.inputs;
                 inputs.x_g = x_g;
                 inputs.y_g = y_g;
-                inputs.v = 0.1;
+                inputs.v = obj.velocity;
                 
                 outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
                 
@@ -108,9 +136,15 @@ classdef K3Supervisor < simiam.controller.Supervisor
             
             m_per_tick = (2*pi*obj.robot.wheel_radius)/obj.robot.encoders(1).ticks_per_rev;
             
-            theta_p = theta;
-            x_p = x;
-            y_p = y;
+            d_right = (right_ticks-prev_right_ticks)*m_per_tick;
+            d_left = (left_ticks-prev_left_ticks)*m_per_tick;
+            
+            d_center = (d_right + d_left)/2;
+            phi = (d_right - d_left)/obj.robot.wheel_base_length;
+            
+            theta_p = theta + phi;
+            x_p = x + d_center*cos(theta);
+            y_p = y + d_center*sin(theta);
                            
 %             fprintf('Estimated pose (x,y,theta): (%0.3g,%0.3g,%0.3g)\n', x_p, y_p, theta_p);
             
