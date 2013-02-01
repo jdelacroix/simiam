@@ -39,10 +39,10 @@ classdef K3Supervisor < simiam.controller.Supervisor
             
             obj.goal = [1;0];
             
-            %% BEGIN EDIT BLOCK %%
+            %% BEGIN CODE BLOCK %%
             obj.theta_d = pi/4;
             obj.v = 0.1;
-            %% END EDIT BLOCK %%
+            %% END CODE BLOCK %%
         end
         
         function execute(obj, dt)
