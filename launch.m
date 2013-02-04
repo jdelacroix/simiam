@@ -7,7 +7,7 @@ clear java;
 clear classes;
 
 if (isdeployed)
-    [path, folder, ~] = fileparts(ctfroot);
+    [path, folder, extension] = fileparts(ctfroot);
     root_path = fullfile(path, folder);
 else
     root_path = fileparts(mfilename('fullpath'));
