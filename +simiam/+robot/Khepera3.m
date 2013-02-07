@@ -13,6 +13,8 @@ classdef Khepera3 < simiam.robot.Robot
         ir_array = simiam.robot.sensor.ProximitySensor.empty(1,0);
         
         dynamics
+        
+        prev_ticks
     end
     
     properties (SetAccess = private)
@@ -91,6 +93,7 @@ classdef Khepera3 < simiam.robot.Robot
             
             % Add dynamics: two-wheel differential drive
             obj.dynamics = simiam.robot.dynamics.DifferentialDrive(obj.wheel_radius, obj.wheel_base_length);
+            obj.prev_ticks = struct('left', 0, 'right', 0);
             
             obj.right_wheel_speed = 0;
             obj.left_wheel_speed = 0;
@@ -98,28 +101,32 @@ classdef Khepera3 < simiam.robot.Robot
         
         
         function pose = update_state(obj, pose, dt)
-            sf = obj.speed_factor;
-            R = obj.wheel_radius;
-            
-            vel_r = obj.right_wheel_speed*(sf/R);     % mm/s
-            vel_l = obj.left_wheel_speed*(sf/R);      % mm/s
-            
-            pose = obj.dynamics.apply_dynamics(pose, dt, vel_r, vel_l);
-            obj.update_pose(pose);
-            
-            for k=1:length(obj.ir_array)
-                obj.ir_array(k).update_pose(pose);
+            if (~obj.islinked)
+                sf = obj.speed_factor;
+                R = obj.wheel_radius;
+
+                vel_r = obj.right_wheel_speed*(sf/R);     % mm/s
+                vel_l = obj.left_wheel_speed*(sf/R);      % mm/s
+
+                pose = obj.dynamics.apply_dynamics(pose, dt, vel_r, vel_l);
+                obj.update_pose(pose);
+
+                for k=1:length(obj.ir_array)
+                    obj.ir_array(k).update_pose(pose);
+                end
+
+                % update wheel encoders
+                sf = obj.speed_factor;
+                R = obj.wheel_radius;
+
+                vel_r = obj.right_wheel_speed*(sf/R); %% mm/s
+                vel_l = obj.left_wheel_speed*(sf/R); %% mm/s
+
+                obj.encoders(1).update_ticks(vel_r, dt);
+                obj.encoders(2).update_ticks(vel_l, dt);
+            else
+                obj.update_state_from_hardware(pose, dt);
             end
-            
-            % update wheel encoders
-            sf = obj.speed_factor;
-            R = obj.wheel_radius;
-            
-            vel_r = obj.right_wheel_speed*(sf/R); %% mm/s
-            vel_l = obj.left_wheel_speed*(sf/R); %% mm/s
-            
-            obj.encoders(1).update_ticks(vel_r, dt);
-            obj.encoders(2).update_ticks(vel_l, dt);
         end
         
         function set_wheel_speeds(obj, vel_r, vel_l)
@@ -139,6 +146,79 @@ classdef Khepera3 < simiam.robot.Robot
             w = max(min(w,2.276),-2.2763);
             [vel_r, vel_l] = obj.dynamics.uni_to_diff(v,w);
         end
+        
+        % Hardware connectivty related functions
+        function add_hardware_link(obj, hostname, port)
+            obj.driver = simiam.robot.driver.K3Driver(hostname, port);
+        end
+        
+        function open_hardware_link(obj)
+            obj.driver.init();
+            obj.islinked = true;
+        end
+        
+        function close_hardware_link(obj)
+            obj.islinked = false;
+            obj.driver.close();
+        end
+        
+        function pose = update_state_from_hardware(obj, pose, dt)
+            data = obj.driver.update();
+            
+            % data structure
+            %    battery  -> data(1)
+            %    ir1-ir11 -> data(2:12)
+            %    enc1-2   -> data(13:14)
+            
+            if(~isempty(data))                
+                obj.encoders(1).ticks = double(data(12));
+                obj.encoders(2).ticks = double(data(13));
+                
+                pose = obj.update_pose_from_hardware(pose);
+                obj.update_pose(pose);
+                
+                for i=1:9
+                    obj.ir_array(i).update_pose(pose);
+                    obj.ir_array(i).update_range(log(double(data(i))/3960)/(-30)+0.02);
+                end
+                
+                obj.driver.set_speed(obj.right_wheel_speed, obj.left_wheel_speed);
+            end
+        end
+        
+        function pose_k_1 = update_pose_from_hardware(obj, pose)
+            right_ticks = obj.encoders(1).ticks;
+            left_ticks = obj.encoders(2).ticks;
+            
+            prev_right_ticks = obj.prev_ticks.right;
+            prev_left_ticks = obj.prev_ticks.left;
+            
+            obj.prev_ticks.right = right_ticks;
+            obj.prev_ticks.left = left_ticks;
+            
+            % Previous estimate
+            [x, y, theta] = pose.unpack();
+            
+            % Compute odometry here
+            
+            m_per_tick = (2*pi*obj.wheel_radius)/obj.encoders(1).ticks_per_rev;
+            
+            d_right = (right_ticks-prev_right_ticks)*m_per_tick;
+            d_left = (left_ticks-prev_left_ticks)*m_per_tick;
+            
+            d_center = (d_right + d_left)/2;
+            phi = (d_right - d_left)/obj.wheel_base_length;
+            
+            theta_new = theta + phi;
+            x_new = x + d_center*cos(theta);
+            y_new = y + d_center*sin(theta);
+                           
+%             fprintf('Estimated pose (x,y,theta): (%0.3g,%0.3g,%0.3g)\n', x_new, y_new, theta_new);
+            
+            % Update your estimate of (x,y,theta)
+            pose_k_1 = simiam.ui.Pose2D(x_new, y_new, theta_new);
+        end
+        
     end
     
     methods (Static)

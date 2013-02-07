@@ -45,8 +45,13 @@ classdef GoToAngle < simiam.controller.Controller
             [x, y, theta] = state_estimate.unpack();
             
             % Compute the v,w that will get you to the goal
-            v = inputs.v;          
-            w = 0;
+            v = inputs.v;
+            
+            e_k = theta_d-theta;
+            e_k = atan2(sin(e_k),cos(e_k));
+            
+            Kp = 5;
+            w = Kp*e_k;
             
             outputs = obj.outputs;  % make a copy of the output struct
             outputs.v = v;

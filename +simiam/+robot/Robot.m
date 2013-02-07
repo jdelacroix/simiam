@@ -5,11 +5,17 @@ classdef Robot < simiam.ui.Drawable
     
     properties
         supervisor
+        
+        driver
+        hostname
+        port
+        islinked
     end
     
     methods
         function obj = Robot(parent, start_pose)
             obj = obj@simiam.ui.Drawable(parent, start_pose);
+            obj.islinked = false;
         end
         
         function attach_supervisor(obj, supervisor)

@@ -50,8 +50,8 @@ classdef DifferentialDrive < simiam.robot.dynamics.Dynamics
             R = obj.wheel_radius;
             L = obj.wheel_base_length;
             
-            r = 0;
-            l = 0;
+            r = v/R+(w*L)/(2*R);
+            l = v/R-(w*L)/(2*R);
         end
         
         function [v,w] = diff_to_uni(obj,r,l)

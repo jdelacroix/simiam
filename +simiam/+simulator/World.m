@@ -18,7 +18,7 @@ classdef World < handle
             obj.apps = mcodekit.list.dl_list();
         end
         
-        function build_from_file(obj, file)
+        function build_from_file(obj, file, islinked)
             
             % Read in XML file
             blueprint = xmlread(file);
@@ -45,8 +45,17 @@ classdef World < handle
                y = str2double(pose.getAttribute('y'));
                theta = str2double(pose.getAttribute('theta'));
                
+               r = obj.add_robot(type, spv, x, y, theta);
+               
+               driver = robot.getElementsByTagName('driver').item(0);
+               if(~isempty(driver) && islinked)
+                   hostname = char(driver.getAttribute('ip'));
+                   port = str2double(driver.getAttribute('port'));
+                   r.add_hardware_link(hostname,port);
+                   r.open_hardware_link();
+               end
 
-               obj.add_robot(type, spv, x, y, theta);
+               
             end
             
             % Parse XML file for obstacle configurations
@@ -74,7 +83,7 @@ classdef World < handle
             end
         end
         
-        function add_robot(obj, type, spv, x, y, theta)
+        function robot = add_robot(obj, type, spv, x, y, theta)
            pose = simiam.ui.Pose2D(x, y, theta);
            
            r = str2func(strcat('simiam.robot.', type));

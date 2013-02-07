@@ -24,12 +24,14 @@ classdef Simulator < handle
         
         world           % A virtual world for the simulator
         physics
+        
+        islinked
     end
     
     methods
         %% METHODS
         
-        function obj = Simulator(parent, world, time_step)
+        function obj = Simulator(parent, world, time_step, islinked)
         %% SIMULATOR Constructor
         %   obj = Simulator(parent, time_step) is the default constructor
         %   that sets the graphics handle and the time step for the
@@ -42,6 +44,8 @@ classdef Simulator < handle
                               'ExecutionMode', 'fixedRate');
             obj.world = world;
             obj.physics = simiam.simulator.Physics(world);
+            
+            obj.islinked = islinked;
         end
         
         function step(obj, src, event)
@@ -67,7 +71,11 @@ classdef Simulator < handle
             obj.world.apps.head_.key_.run(split);
 %             fprintf('app: %0.3fs\n', toc(tstart));
             
-            bool = obj.physics.apply_physics();
+            if(~obj.islinked)
+                bool = obj.physics.apply_physics();
+            else
+                bool = false;
+            end
             
 %             tstart = tic;
             obj.parent.ui_update(split, bool);
@@ -83,7 +91,16 @@ classdef Simulator < handle
         
         function stop(obj)
         %% STOP Stops the simulation.
-        
+            if(obj.islinked)
+                token_k = obj.world.robots.head_;
+                while (~isempty(token_k))
+                    robot_s = token_k.key_;
+                    if(robot_s.robot.islinked)
+                        robot_s.robot.close_hardware_link();
+                    end
+                    token_k = token_k.next_;
+                end
+            end
             stop(obj.clock);
         end
         
