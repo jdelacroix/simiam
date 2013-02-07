@@ -15,8 +15,8 @@ classdef K3Supervisor < simiam.controller.Supervisor
     %% PROPERTIES
     
         prev_ticks          % Previous tick count on the left and right wheels
-        goal
-        reached_goal
+        goal_list
+        goal_index
     end
     
     methods
@@ -32,12 +32,12 @@ classdef K3Supervisor < simiam.controller.Supervisor
             obj.controllers{3} = simiam.controller.GoToAngle();
             
             % set the initial controller
-            obj.current_controller = obj.controllers{3};
+            obj.current_controller = obj.controllers{2};
             
             obj.prev_ticks = struct('left', 0, 'right', 0);
             
-            obj.goal = [1;0];
-            obj.reached_goal = false;
+            obj.goal_list = [1 0; 1 1; 0 1];
+            obj.goal_index = 1;
         end
         
         function execute(obj, dt)
@@ -50,13 +50,24 @@ classdef K3Supervisor < simiam.controller.Supervisor
                 
         inputs = obj.current_controller.inputs;
         inputs.v = 0.1;
-        inputs.theta_d = pi/4;  % desired angle
         
-        outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
+        [x, y, theta] = obj.state_estimate.unpack();
         
-        [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
+        % if(NEAR_CURRENT_GOAL)
+            % CHANGE CURRENT GOAL TO NEXT GOAL
+        % end
         
-        obj.robot.set_wheel_speeds(vel_r, vel_l);
+        % if(NOT_AT_LAST_GOAL)
+            inputs.x_g = 0; % SET TO CURRENT GOAL X
+            inputs.y_g = 0; % SET TO CURRENT GOAL Y
+            outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
+            
+            [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
+        
+            obj.robot.set_wheel_speeds(vel_r, vel_l);
+        % else
+            % STOP ROBOT
+        % end
             
         obj.update_odometry();
 %             [x, y, theta] = obj.state_estimate.unpack();
