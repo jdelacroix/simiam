@@ -17,7 +17,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
         prev_ticks          % Previous tick count on the left and right wheels
         goal
         v
-        theta_d
+        d_stop
     end
     
     methods
@@ -33,15 +33,14 @@ classdef K3Supervisor < simiam.controller.Supervisor
             obj.controllers{3} = simiam.controller.GoToAngle();
             
             % set the initial controller
-            obj.current_controller = obj.controllers{3};
+            obj.current_controller = obj.controllers{2};
             
             obj.prev_ticks = struct('left', 0, 'right', 0);
             
-            obj.goal = [1;0];
-            
-            %% BEGIN CODE BLOCK %%
-            obj.theta_d = pi/4;
+            %% START CODE BLOCK %%
+            obj.goal = [-1,0.5];
             obj.v = 0.1;
+            obj.d_stop = 0.02;
             %% END CODE BLOCK %%
         end
         
@@ -53,13 +52,22 @@ classdef K3Supervisor < simiam.controller.Supervisor
         %   See also controller/execute
                                         
             inputs = obj.current_controller.inputs;
-            inputs.theta_d = obj.theta_d;
             inputs.v = obj.v;
+            inputs.x_g = obj.goal(1);
+            inputs.y_g = obj.goal(2);
+            
+            [x,y,theta] = obj.state_estimate.unpack();
+            x_g = obj.goal(1);
+            y_g = obj.goal(2);
+            
+            if(sqrt((x_g-x)^2+(y_g-y)^2)>obj.d_stop)
+                outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
 
-            outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
-
-            [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
-            obj.robot.set_wheel_speeds(vel_r, vel_l);
+                [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
+                obj.robot.set_wheel_speeds(vel_r, vel_l);
+            else
+                obj.robot.set_wheel_speeds(0,0);
+            end
             
             obj.update_odometry();
 %             [x, y, theta] = obj.state_estimate.unpack();
@@ -96,18 +104,18 @@ classdef K3Supervisor < simiam.controller.Supervisor
             L = obj.robot.wheel_base_length;
             m_per_tick = (2*pi*R)/obj.robot.encoders(1).ticks_per_rev;
             
+            d_right = (right_ticks-prev_right_ticks)*m_per_tick;
+            d_left = (left_ticks-prev_left_ticks)*m_per_tick;
+            d_center = (d_right + d_left)/2;
             
-            %% START CODE BLOCK %%
-            x_dt = 0;
-            y_dt = 0;
-            theta_dt = 0;
+            x_dt = d_center*cos(theta);
+            y_dt = d_center*sin(theta);
+            theta_dt = (d_right - d_left)/L;
             
             theta_new = theta + theta_dt;
             x_new = x + x_dt;
             y_new = y + y_dt;                           
 %             fprintf('Estimated pose (x,y,theta): (%0.3g,%0.3g,%0.3g)\n', x_new, y_new, theta_new);
-
-            %% END CODE BLOCK %%
             
             % Save the wheel encoder ticks for the next estimate
             obj.prev_ticks.right = right_ticks;

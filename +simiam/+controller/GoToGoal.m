@@ -39,9 +39,12 @@ classdef GoToGoal < simiam.controller.Controller
             obj = obj@simiam.controller.Controller('go_to_goal');
             
             % initialize memory banks
+            
+            %% START CODE BLOCK
             obj.Kp = 10;
             obj.Ki = 0;
             obj.Kd = 0;
+            %% END CODE BLOCK
                         
             % errors
             obj.E_k = 0;
@@ -72,33 +75,51 @@ classdef GoToGoal < simiam.controller.Controller
             % Compute the v,w that will get you to the goal
             v = inputs.v;
             
-            % desired (goal) heading
-            dx = x_g-x;
-            dy = y_g-y;
+            %% START CODE BLOCK %%
             
-            theta_d = atan2(dy,dx);
+            % 1. Calculate the heading (angle) to the goal.
             
-            % heading error
-            e_k = theta_d-theta;
-            e_k = atan2(sin(e_k), cos(e_k));
+            % distance between goal and robot in x-direction
+            u_x = 0;     
+                
+            % distance between goal and robot in y-direction
+            u_y = 0;
+                
+            % angle from robot to goal. Hint: use ATAN2, u_x, u_y here.
+            theta_g = 0;
             
-            % PID for heading
-            w = obj.Kp*e_k + obj.Ki*(obj.E_k+e_k*dt) + obj.Kd*(e_k-obj.e_k_1)/dt;
+            % 2. Calculate the heading error.
             
-            % save errors
-            obj.E_k = obj.E_k+e_k*dt;
+            % error between the goal angle and robot's angle
+            % Hint: Use ATAN2 to make sure this stays in [-pi,pi].
+            e_k = 0;
+            
+                
+            % 3. Calculate PID for the steering angle 
+            
+            % error for the proportional term
+            e_P = 0;
+            
+            % error for the integral term. Hint: Approximate the integral using
+            % the accumulated error, obj.E_k, and the error for
+            % this time step, e_k.
+            e_I = 0;
+                     
+            % error for the derivative term. Hint: Approximate the derivative
+            % using the previous error, obj.e_k_1, and the
+            % error for this time step, e_k.
+            e_D = 0;    
+                  
+            w = obj.Kp*e_P + obj.Ki*e_I + obj.Kd*e_D;
+            
+            % 4. Save errors for next time step
+            obj.E_k = e_I;
             obj.e_k_1 = e_k;
             
-            % stop when sufficiently close
-            delta = sqrt(dx^2+dy^2);
-            
-            if (delta < 0.02)
-               v=0;
-               w=0;
-            end
+            %% END CODE BLOCK
             
             % plot
-            [obj.h,obj.g] = obj.p.plot_2d_ref(obj.h, obj.g, dt, theta, theta_d);
+            [obj.h,obj.g] = obj.p.plot_2d_ref(obj.h, obj.g, dt, theta, theta_g);
             
             outputs = obj.outputs;  % make a copy of the output struct
             outputs.v = v;
