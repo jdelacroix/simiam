@@ -89,14 +89,6 @@ classdef GoToGoal < simiam.controller.Controller
             obj.E_k = obj.E_k+e_k*dt;
             obj.e_k_1 = e_k;
             
-            % stop when sufficiently close
-            delta = sqrt(dx^2+dy^2);
-            
-            if (delta < 0.02)
-               v=0;
-               w=0;
-            end
-            
             % plot
             [obj.h,obj.g] = obj.p.plot_2d_ref(obj.h, obj.g, dt, theta, theta_d);
             

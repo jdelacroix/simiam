@@ -20,6 +20,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
         velocity
         gains
         theta_d
+        d_stop;
     end
     
     methods
@@ -35,13 +36,13 @@ classdef K3Supervisor < simiam.controller.Supervisor
             obj.controllers{3} = simiam.controller.GoToAngle();
             
             % set the initial controller
-            obj.current_controller = obj.controllers{3};
+            obj.current_controller = obj.controllers{2};
             
             obj.prev_ticks = struct('left', 0, 'right', 0);
             
             obj.goal = [1;0];
             obj.reached_goal = false;
-            obj.theta_d = 0;
+            obj.d_stop = 0.02;
         end
         
         function configure_from_file(obj, filename)
@@ -53,10 +54,14 @@ classdef K3Supervisor < simiam.controller.Supervisor
 %             obj.goal = [x_g;y_g];
 %             fprintf('goal: (%0.3f,%0.3f)\n', x_g, y_g);
 
-            angle_xml = parameters.getElementsByTagName('angle').item(0);
-            theta = str2double(angle_xml.getAttribute('theta'));
-            obj.theta_d = theta;
-            fprintf('theta_d: (%0.3f)\n', theta);
+            goal_xml = parameters.getElementsByTagName('goal').item(0);
+            x_g = str2double(goal_xml.getAttribute('x_g'));
+            y_g = str2double(goal_xml.getAttribute('y_g'));
+            stop = str2double(goal_xml.getAttribute('d_stop'));
+            obj.d_stop = stop;
+            obj.goal = [x_g,y_g];
+            fprintf('goal: (%0.3f, %0.3f)\n', x_g, y_g);
+            fprintf('d_stop: (%0.3f)\n', stop);
             
             v_xml = parameters.getElementsByTagName('velocity').item(0);
             v = str2double(v_xml.getAttribute('v'));
@@ -83,11 +88,11 @@ classdef K3Supervisor < simiam.controller.Supervisor
             [x_i, y_i, theta_i] = obj.state_estimate.unpack();       
             x_g = obj.goal(1); y_g = obj.goal(2);
                         
-            if sqrt((x_i-x_g)^2+(y_i-y_g)^2) > 0.02
-                
+            if sqrt((x_i-x_g)^2+(y_i-y_g)^2) > obj.d_stop 
                                 
                 inputs = obj.current_controller.inputs;
-                inputs.theta_d = obj.theta_d;
+                inputs.x_g = obj.goal(1);
+                inputs.y_g = obj.goal(2);
                 inputs.v = obj.velocity;
                 
                 outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
@@ -138,23 +143,24 @@ classdef K3Supervisor < simiam.controller.Supervisor
             [x, y, theta] = obj.state_estimate.unpack();
             
             % Compute odometry here
-            
-            m_per_tick = (2*pi*obj.robot.wheel_radius)/obj.robot.encoders(1).ticks_per_rev;
+            R = obj.robot.wheel-radius;
+            L = obj.robot.wheel_base_length;
+            m_per_tick = (2*pi*R)/obj.robot.encoders(1).ticks_per_rev;
             
             d_right = (right_ticks-prev_right_ticks)*m_per_tick;
             d_left = (left_ticks-prev_left_ticks)*m_per_tick;
             
             d_center = (d_right + d_left)/2;
-            phi = (d_right - d_left)/obj.robot.wheel_base_length;
+            phi = (d_right - d_left)/L;
             
-            theta_p = theta + phi;
-            x_p = x + d_center*cos(theta);
-            y_p = y + d_center*sin(theta);
+            theta_new = theta + phi;
+            x_new = x + d_center*cos(theta);
+            y_new = y + d_center*sin(theta);
                            
 %             fprintf('Estimated pose (x,y,theta): (%0.3g,%0.3g,%0.3g)\n', x_p, y_p, theta_p);
             
             % Update your estimate of (x,y,theta)
-            obj.state_estimate.set_pose([x_p, y_p, theta_p]);
+            obj.state_estimate.set_pose([x_new, y_new, theta_new]);
         end
     end
 end
