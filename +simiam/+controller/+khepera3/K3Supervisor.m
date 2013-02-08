@@ -143,7 +143,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
             [x, y, theta] = obj.state_estimate.unpack();
             
             % Compute odometry here
-            R = obj.robot.wheel-radius;
+            R = obj.robot.wheel_radius;
             L = obj.robot.wheel_base_length;
             m_per_tick = (2*pi*R)/obj.robot.encoders(1).ticks_per_rev;
             
