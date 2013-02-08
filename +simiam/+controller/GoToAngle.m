@@ -11,9 +11,13 @@ classdef GoToAngle < simiam.controller.Controller
         %% PROPERTIES
         
         % memory banks
+        E_k
+        e_k_1
         
         % gains
         Kp
+        Ki
+        Kd
         
         % plot support
         p
@@ -36,6 +40,12 @@ classdef GoToAngle < simiam.controller.Controller
             
             % initialize memory banks
             obj.Kp = 10;
+            obj.Ki = 0;
+            obj.Kd = 0;
+                        
+            % errors
+            obj.E_k = 0;
+            obj.e_k_1 = 0;
             
             % plot support
             obj.p = simiam.util.Plotter();
@@ -66,16 +76,22 @@ classdef GoToAngle < simiam.controller.Controller
             e_k = atan2(sin(e_k), cos(e_k));
             
             % PID for heading
-            w = obj.Kp*e_k;
+            w = obj.Kp*e_k + obj.Ki*(obj.E_k+e_k*dt) + obj.Kd*(e_k-obj.e_k_1)/dt;
+            
+            % save errors
+            obj.E_k = obj.E_k+e_k*dt;
+            obj.e_k_1 = e_k;
+            
+            % stop when sufficiently close
+%             delta = sqrt(dx^2+dy^2);
+%             
+%             if (delta < 0.02)
+%                v=0;
+%                w=0;
+%             end
             
             % plot
             [obj.h,obj.g] = obj.p.plot_2d_ref(obj.h, obj.g, dt, theta, theta_d);
-            
-            % print IR measured distances
-            ir_distances = robot.get_ir_distances();
-%             for i=1:9
-%                 fprintf('IR %d: %0.3fm\n', i, ir_distances(i));
-%             end
             
             outputs = obj.outputs;  % make a copy of the output struct
             outputs.v = v;

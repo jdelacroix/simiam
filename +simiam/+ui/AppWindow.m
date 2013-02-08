@@ -312,7 +312,7 @@ classdef AppWindow < handle
             
             obj.create_callbacks();
 %             obj.create_simulator(fullfile(pathname, filename));
-            obj.create_simulator(fullfile(obj.root_, 'settings.xml'));
+            obj.create_simulator(fullfile(obj.root_, 'simiam', 'settings.xml'));
             
             obj.ui_buttons_.play_state = true;
             obj.ui_set_button_icon(obj.ui_buttons_.play, 'ui_control_pause.png');
