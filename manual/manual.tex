@@ -240,7 +240,7 @@ To test your code, the simulator will is set to run a single P-regulator that wi
 
 \subsection{Week 3}
 
-Start by downloading the new robot simulator for this week from the ``Programming Exercises'' tab on the Coursera course page. This week you will be imlementing the different parts of a PID regulator that steers the robot successfully to some goal location. This is known as the go-to-goal behavior:
+Start by downloading the new robot simulator for this week from the ``Programming Exercises'' tab on the Coursera course page. This week you will be implementing the different parts of a PID regulator that steers the robot successfully to some goal location. This is known as the go-to-goal behavior:
 
 \begin{enumerate}
  \item Calculate the heading (angle), $\theta_g$, to the goal location $(x_g,y_g)$. Let $u$ be the vector from the robot located at $(x,y)$ to the goal located at $(x_g,y_g)$, then $\theta_g$ is the angle $u$ makes with the $x$-axis (positive $\theta_g$ is in the counterclockwise direction).
@@ -259,7 +259,7 @@ All parts of the PID regulator will be implemented in the file \texttt{+simiam/+
   \begin{enumerate}[(i)]
     \item The first part is the proportional term \texttt{e\_P}. It is simply the current error \texttt{e\_k}. \texttt{e\_P} is multiplied by the proportional gain \texttt{obj.Kp} when computing \texttt{w}.
     \item The second part is the integral term \texttt{e\_I}. The integral needs to be approximated in discrete time using the total accumulated error \texttt{obj.E\_k}, the current error \texttt{e\_k}, and the time step \texttt{dt}. \texttt{e\_I} is multiplied by the integral gain \texttt{obj.Ki} when computing \texttt{w}, and is also saved as \texttt{obj.E\_k} for the next time step.
-    \item The third part is the derivative tmer \texttt{e\_D}. The derivative needs to be approximated in discrete time using the current error \texttt{e\_k}, the previous error \texttt{obj.e\_k\_1}, and the the time step \texttt{dt}. \texttt{e\_D} is multiplied by the derivative gain \texttt{obj.Kd} when computing \texttt{w}, and the current error \texttt{e\_k} is saved as the previous error \texttt{obj.e\_k\_1} for the next time step.
+    \item The third part is the derivative term \texttt{e\_D}. The derivative needs to be approximated in discrete time using the current error \texttt{e\_k}, the previous error \texttt{obj.e\_k\_1}, and the the time step \texttt{dt}. \texttt{e\_D} is multiplied by the derivative gain \texttt{obj.Kd} when computing \texttt{w}, and the current error \texttt{e\_k} is saved as the previous error \texttt{obj.e\_k\_1} for the next time step.
   \end{enumerate}
 \end{enumerate}
 
