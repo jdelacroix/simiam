@@ -147,6 +147,11 @@ classdef Khepera3 < simiam.robot.Robot
             [vel_r, vel_l] = obj.dynamics.uni_to_diff(v,w);
         end
         
+        function ir_distances = get_ir_distances(obj)
+            ir_array_values = obj.ir_array.get_range();
+            ir_distances = zeros(size(ir_array_values));
+        end
+        
         % Hardware connectivty related functions
         function add_hardware_link(obj, hostname, port)
             obj.driver = simiam.robot.driver.K3Driver(hostname, port);

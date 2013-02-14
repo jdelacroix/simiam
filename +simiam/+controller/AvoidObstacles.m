@@ -30,12 +30,15 @@ classdef AvoidObstacles < simiam.controller.Controller
         function outputs = execute(obj, robot, state_estimate, inputs, dt)
             
             % Poll the current IR sensor values 1-9
-            ir_array_values = [robot.ir_array.get_range()];
+            ir_distances = robot.get_ir_distances();
             
             % Update the odometry
             [x, y, theta] = state_estimate.unpack();
             
             % Interpret the IR sensor measurements geometrically
+            
+            % HINT: You may want to use sensor_angles here, the robot's
+            % pose, and the transformations R or RT.
             
             % Compute the heading vector
             theta_d = 0;

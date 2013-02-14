@@ -198,4 +198,13 @@ The second project requires you to drive the robot to a series of given location
 
 The actual go-to-goal behavior needs to be implement in \texttt{GoToGoal.m}. It is recommended that you implement a PID regulator that steers the robot to the goal with a constant linear velocity. If you'd like, you may experiment with regulating the linear velocity too. The objective is for the robot to drive to all goal points and stop as close as possible to the final goal point.
 
+\subsection*{Project 3}
+The third project requires you to drive the robot away from obstacles in the environment. The robot should just drive straight when there are no obstacles, and once it detects an obstacle (in the simulator it will be a wall) it should avoid colliding with it. Compute $(v,\omega)$ that can achieve this obstacle avoiding behavior.
+
+Hint: You may want to think about obstacle avoidance in terms of computing a vector that points away from the obstacle, and using this vector in a similar way as the go-to-goal vector to control the robot.
+
+You may also want to think about filtering the IR measurements and/or adding a threshold for obstacle avoidance as you design this behavior.
+
+The obstacle avoidance behavior should be implemented in \texttt{+simiam/+controller/AvoidObstacles.m}. This requires you to also properly implement the IR raw values to meters conversion in \texttt{get\_ir\_distances} in \texttt{+simiam/+robot/Khepera3.m} (refer back to homework 0 for more details).
+
 \end{document}

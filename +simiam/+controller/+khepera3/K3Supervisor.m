@@ -32,7 +32,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
             obj.controllers{3} = simiam.controller.GoToAngle();
             
             % set the initial controller
-            obj.current_controller = obj.controllers{2};
+            obj.current_controller = obj.controllers{1};
             
             obj.prev_ticks = struct('left', 0, 'right', 0);
             
@@ -51,23 +51,11 @@ classdef K3Supervisor < simiam.controller.Supervisor
         inputs = obj.current_controller.inputs;
         inputs.v = 0.1;
         
-        [x, y, theta] = obj.state_estimate.unpack();
+        outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
         
-        % if(NEAR_CURRENT_GOAL)
-            % CHANGE CURRENT GOAL TO NEXT GOAL
-        % end
+        [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
         
-        % if(NOT_AT_LAST_GOAL)
-            inputs.x_g = 0; % SET TO CURRENT GOAL X
-            inputs.y_g = 0; % SET TO CURRENT GOAL Y
-            outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
-            
-            [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
-        
-            obj.robot.set_wheel_speeds(vel_r, vel_l);
-        % else
-            % STOP ROBOT
-        % end
+        obj.robot.set_wheel_speeds(vel_r, vel_l);
             
         obj.update_odometry();
 %             [x, y, theta] = obj.state_estimate.unpack();
