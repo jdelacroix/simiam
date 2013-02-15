@@ -11,6 +11,12 @@ classdef GoToAngle < simiam.controller.Controller
         %% PROPERTIES
         
         % memory banks
+        Kp
+        Ki
+        Kd
+        
+        e_k_1
+        E_k
     end
     
     properties (Constant)
@@ -27,6 +33,12 @@ classdef GoToAngle < simiam.controller.Controller
             obj = obj@simiam.controller.Controller('go_to_angle');
             
             % initialize memory banks
+            obj.Kp = 1;
+            obj.Ki = 0.1;
+            obj.Kd = 0.01;
+            
+            obj.e_k_1 = 0;
+            obj.E_k = 0;
         end
         
         function outputs = execute(obj, robot, state_estimate, inputs, dt)
@@ -45,8 +57,15 @@ classdef GoToAngle < simiam.controller.Controller
             [x, y, theta] = state_estimate.unpack();
             
             % Compute the v,w that will get you to the goal
-            v = inputs.v;          
-            w = 0;
+            v = inputs.v;
+            
+            e_k = theta_d-theta;
+            e_k = atan2(sin(e_k),cos(e_k));
+            
+            w = obj.Kp*e_k + obj.Ki*(obj.E_k+e_k*dt) + obj.Kd*(e_k-obj.e_k_1)/dt;
+            
+            obj.E_k = obj.E_k+e_k*dt;
+            obj.e_k_1 = e_k;
             
             outputs = obj.outputs;  % make a copy of the output struct
             outputs.v = v;

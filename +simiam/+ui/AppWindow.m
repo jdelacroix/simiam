@@ -65,7 +65,7 @@ classdef AppWindow < handle
         
         function create_simulator(obj, settings_file)
             world = simiam.simulator.World(obj.view_);
-            world.build_from_file(settings_file);
+            world.build_from_file(settings_file, obj.ui_buttons_.hardware_state);
             
             token_k = world.robots.head_;
             while(~isempty(token_k))
@@ -75,7 +75,7 @@ classdef AppWindow < handle
                 token_k = token_k.next_;
             end
             
-            obj.simulator_ = simiam.simulator.Simulator(obj, world, 0.01);
+            obj.simulator_ = simiam.simulator.Simulator(obj, world, 0.033, obj.ui_buttons_.hardware_state);
             obj.simulator_.step([],[]);
         end
         
@@ -132,6 +132,12 @@ classdef AppWindow < handle
             obj.ui_set_button_icon(play, 'ui_control_play.png');
             obj.ui_toggle_control(play, true);
             
+            ui_args = {'Style','togglebutton', 'ForegroundColor', 'w', 'FontWeight', 'bold', 'Callback', @obj.ui_button_hardware};
+            ui_parent = obj.layout_.Cell(4,7);
+            hardware = uicontrol(ui_parent, ui_args{:});
+            obj.ui_set_button_icon(hardware, 'ui_control_hardware.png');
+            obj.ui_toggle_control(hardware, true);
+            
             ui_args = {'Style','pushbutton', 'ForegroundColor', 'w', 'FontWeight', 'bold', 'Callback', @obj.ui_reset_simulation};
             ui_parent = obj.layout_.Cell(4,5);
             refresh = uicontrol(ui_parent, ui_args{:});
@@ -182,7 +188,8 @@ classdef AppWindow < handle
                          'status', status, ...
                          'time', time, ...
                          'zoom_in', zoom_in, ...
-                         'zoom_out', zoom_out); 
+                         'zoom_out', zoom_out, ...
+                         'hardware', hardware, 'hardware_state', false); 
             obj.ui_update_clock(0);
 
             % Set minimum size for figure
@@ -261,6 +268,11 @@ classdef AppWindow < handle
             obj.ui_button_start(src, event);
         end
         
+        function ui_button_hardware(obj, src, event)
+            toggle_value = get(src, 'Value');
+            obj.ui_buttons_.hardware_state = toggle_value;
+        end
+        
         function ui_button_start(obj, src, event)
 %             [filename, pathname] = uigetfile({'*.xml', 'XML file'}, 'Load a world for the simulator.');
 %             if (isequal(filename, 0) || isequal(pathname, 0))
@@ -322,6 +334,7 @@ classdef AppWindow < handle
             obj.ui_toggle_control(obj.ui_buttons_.load, true);
             obj.ui_toggle_control(obj.ui_buttons_.zoom_in, true);
             obj.ui_toggle_control(obj.ui_buttons_.zoom_out, true);
+            obj.ui_toggle_control(obj.ui_buttons_.hardware, false);
             obj.time_ = 0;
             obj.ui_update_clock(0);
             obj.simulator_.start();
@@ -378,6 +391,7 @@ classdef AppWindow < handle
             obj.ui_buttons_.play_state = false;
             set(obj.ui_buttons_.play, 'Callback', @obj.ui_button_start);
             obj.ui_toggle_control(obj.ui_buttons_.load, false);
+            obj.ui_toggle_control(obj.ui_buttons_.hardware, true);
         end
         
         function ui_focus_view(obj, src, event, robot)

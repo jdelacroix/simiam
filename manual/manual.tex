@@ -193,4 +193,9 @@ To test odometry and your transformation, you will likely want to edit \texttt{+
 \subsection*{Project 1}
 The first project requires you to steer the robot to some desired angle (\texttt{theta\_d}). You will need to implement a PID regulator that achieves this quickly and smoothly. Edit \texttt{+simiam/+controller/GoToAngle.m} and implement the PID controller there. Remember, \texttt{execute} is called once every timestep \texttt{dt}, so will probably want to create variable under \texttt{properties} to save a previous error or soemthing else you want to use during the next iteration. In \texttt{+simiam/+controller/+khepera3/K3Supervisor.m}, adjust the desired angle \texttt{inputs.theta\_d = pi/4;} to make sure it works more than just the default. Also, remember to implement homework 0 before you start with this project!
 
+\subsection*{Project 2}
+The second project requires you to drive the robot to a series of given locations \texttt{x\_g} and \texttt{y\_g}. These locations are specified in \texttt{K3Supervisor.m} as a matrix, where each row corresponds to a goal and the columns correspond to the x and y location, see: \texttt{obj.goal\_list}. \texttt{obj.goal\_index} should keep track of which goal is being driven to. Use both of these variable, plus the current location of the robot to implement some simple logic that will cause the robot to drive to all three goals and then stop. \texttt{K3Supervisor.m} already has some \textbf{pseudocode} to give you an idea how this could be achieved. Feel free to implement your own logic!
+
+The actual go-to-goal behavior needs to be implement in \texttt{GoToGoal.m}. It is recommended that you implement a PID regulator that steers the robot to the goal with a constant linear velocity. If you'd like, you may experiment with regulating the linear velocity too. The objective is for the robot to drive to all goal points and stop as close as possible to the final goal point.
+
 \end{document}
