@@ -6,6 +6,9 @@ classdef GoToGoal < simiam.controller.Controller
 %
 % Methods:
 %   execute - Computes the left and right wheel speeds for go-to-goal.
+
+% Copyright (C) 2012 Jean-Pierre de la Croix
+% see the LICENSE file included with this software
     
     properties
         %% PROPERTIES
@@ -39,12 +42,9 @@ classdef GoToGoal < simiam.controller.Controller
             obj = obj@simiam.controller.Controller('go_to_goal');
             
             % initialize memory banks
-            
-            %% START CODE BLOCK
-            obj.Kp = 10;
-            obj.Ki = 0;
-            obj.Kd = 0;
-            %% END CODE BLOCK
+            obj.Kp = 5;
+            obj.Ki = 0.01;
+            obj.Kd = 0.1;
                         
             % errors
             obj.E_k = 0;
@@ -75,48 +75,45 @@ classdef GoToGoal < simiam.controller.Controller
             % Compute the v,w that will get you to the goal
             v = inputs.v;
             
-            %% START CODE BLOCK %%
-            
             % 1. Calculate the heading (angle) to the goal.
             
             % distance between goal and robot in x-direction
-            u_x = 0;     
+            u_x = x_g-x;     
                 
             % distance between goal and robot in y-direction
-            u_y = 0;
+            u_y = y_g-y;
                 
             % angle from robot to goal. Hint: use ATAN2, u_x, u_y here.
-            theta_g = 0;
+            theta_g = atan2(u_y,u_x);
             
             % 2. Calculate the heading error.
             
             % error between the goal angle and robot's angle
             % Hint: Use ATAN2 to make sure this stays in [-pi,pi].
-            e_k = 0;
+            e_k = theta_g-theta;
+            e_k = atan2(sin(e_k),cos(e_k));
             
                 
             % 3. Calculate PID for the steering angle 
             
             % error for the proportional term
-            e_P = 0;
+            e_P = e_k;
             
             % error for the integral term. Hint: Approximate the integral using
             % the accumulated error, obj.E_k, and the error for
             % this time step, e_k.
-            e_I = 0;
+            e_I = obj.E_k + e_k*dt;
                      
             % error for the derivative term. Hint: Approximate the derivative
             % using the previous error, obj.e_k_1, and the
             % error for this time step, e_k.
-            e_D = 0;    
+            e_D = (e_k-obj.e_k_1)/dt;    
                   
             w = obj.Kp*e_P + obj.Ki*e_I + obj.Kd*e_D;
             
             % 4. Save errors for next time step
             obj.E_k = e_I;
             obj.e_k_1 = e_k;
-            
-            %% END CODE BLOCK
             
             % plot
             [obj.h,obj.g] = obj.p.plot_2d_ref(obj.h, obj.g, dt, theta, theta_g);

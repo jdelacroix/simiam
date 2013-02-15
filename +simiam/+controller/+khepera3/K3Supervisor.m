@@ -11,13 +11,14 @@ classdef K3Supervisor < simiam.controller.Supervisor
 % Methods:
 %   execute - Selects and executes the current controller.
 
+% Copyright (C) 2012 Jean-Pierre de la Croix
+% see the LICENSE file included with this software
+
     properties
     %% PROPERTIES
     
         prev_ticks          % Previous tick count on the left and right wheels
-        goal
         v
-        d_stop
     end
     
     methods
@@ -33,15 +34,11 @@ classdef K3Supervisor < simiam.controller.Supervisor
             obj.controllers{3} = simiam.controller.GoToAngle();
             
             % set the initial controller
-            obj.current_controller = obj.controllers{2};
+            obj.current_controller = obj.controllers{1};
             
             obj.prev_ticks = struct('left', 0, 'right', 0);
             
-            %% START CODE BLOCK %%
-            obj.goal = [-1,0.5];
             obj.v = 0.1;
-            obj.d_stop = 0.02;
-            %% END CODE BLOCK %%
         end
         
         function execute(obj, dt)
@@ -53,21 +50,11 @@ classdef K3Supervisor < simiam.controller.Supervisor
                                         
             inputs = obj.current_controller.inputs;
             inputs.v = obj.v;
-            inputs.x_g = obj.goal(1);
-            inputs.y_g = obj.goal(2);
             
-            [x,y,theta] = obj.state_estimate.unpack();
-            x_g = obj.goal(1);
-            y_g = obj.goal(2);
+            outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
             
-            if(sqrt((x_g-x)^2+(y_g-y)^2)>obj.d_stop)
-                outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
-
-                [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
-                obj.robot.set_wheel_speeds(vel_r, vel_l);
-            else
-                obj.robot.set_wheel_speeds(0,0);
-            end
+            [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
+            obj.robot.set_wheel_speeds(vel_r, vel_l);
             
             obj.update_odometry();
 %             [x, y, theta] = obj.state_estimate.unpack();
