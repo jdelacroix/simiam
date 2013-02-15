@@ -7,7 +7,7 @@ classdef GoToGoal < simiam.controller.Controller
 % Methods:
 %   execute - Computes the left and right wheel speeds for go-to-goal.
 
-% Copyright (C) 2012 Jean-Pierre de la Croix
+% Copyright (C) 2013, Georgia Tech Research Corporation
 % see the LICENSE file included with this software
     
     properties
