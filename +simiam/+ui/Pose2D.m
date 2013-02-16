@@ -1,6 +1,6 @@
 classdef Pose2D < handle
     
-% Copyright (C) 2012 Jean-Pierre de la Croix
+% Copyright (C) 2013, Georgia Tech Research Corporation
 % see the LICENSE file included with this software
     
     properties
