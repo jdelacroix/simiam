@@ -74,7 +74,6 @@ classdef AvoidObstacles < simiam.controller.Controller
             % 3. Compute the heading vector
             
             sensor_gains = inputs.sgains;
-            sensor_gains
             u_i = (ir_distances_rf-repmat([x;y],1,9))*diag(sensor_gains);
             u = sum(u_i,2);
             
