@@ -17,6 +17,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
         prev_ticks          % Previous tick count on the left and right wheels
         gains
         sgains
+        velocity
     end
     
     methods
@@ -35,10 +36,6 @@ classdef K3Supervisor < simiam.controller.Supervisor
             obj.current_controller = obj.controllers{1};
             
             obj.prev_ticks = struct('left', 0, 'right', 0);
-            
-            obj.goal = [1;0];
-            obj.reached_goal = false;
-            obj.d_stop = 0.02;
         end
         
         function configure_from_file(obj, filename)
@@ -74,8 +71,8 @@ classdef K3Supervisor < simiam.controller.Supervisor
             s_g_7 = str2double(sgains_xml.getAttribute('s7'));
             s_g_8 = str2double(sgains_xml.getAttribute('s8'));
             s_g_9 = str2double(sgains_xml.getAttribute('s9'));
-            obj.sgains = [s_g_1 s_g_2 s_g_3 s_g_3 s_g_4 s_g_5 s_g_6 s_g_7 s_g_8 s_g_9]; 
-            fprintf('sensor gains: (%0.3f, %0.3f, %0.3f, %0.3f, %0.3f, %0.3f, %0.3f, %0.3f, %0.3f\n', obj.sgains);
+            obj.sgains = [s_g_1 s_g_2 s_g_3 s_g_4 s_g_5 s_g_6 s_g_7 s_g_8 s_g_9]; 
+            fprintf('sensor gains: (%0.3f, %0.3f, %0.3f, %0.3f, %0.3f, %0.3f, %0.3f, %0.3f, %0.3f)\n', obj.sgains);
             
         end
         
