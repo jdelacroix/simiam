@@ -15,12 +15,8 @@ classdef K3Supervisor < simiam.controller.Supervisor
     %% PROPERTIES
     
         prev_ticks          % Previous tick count on the left and right wheels
-        goal
-        reached_goal
-        velocity
         gains
-        theta_d
-        d_stop;
+        sgains
     end
     
     methods
@@ -36,7 +32,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
             obj.controllers{3} = simiam.controller.GoToAngle();
             
             % set the initial controller
-            obj.current_controller = obj.controllers{2};
+            obj.current_controller = obj.controllers{1};
             
             obj.prev_ticks = struct('left', 0, 'right', 0);
             
@@ -53,15 +49,6 @@ classdef K3Supervisor < simiam.controller.Supervisor
 %             y_g = str2double(goal_xml.getAttribute('y'));
 %             obj.goal = [x_g;y_g];
 %             fprintf('goal: (%0.3f,%0.3f)\n', x_g, y_g);
-
-            goal_xml = parameters.getElementsByTagName('goal').item(0);
-            x_g = str2double(goal_xml.getAttribute('x_g'));
-            y_g = str2double(goal_xml.getAttribute('y_g'));
-            stop = str2double(goal_xml.getAttribute('d_stop'));
-            obj.d_stop = stop;
-            obj.goal = [x_g,y_g];
-            fprintf('goal: (%0.3f, %0.3f)\n', x_g, y_g);
-            fprintf('d_stop: (%0.3f)\n', stop);
             
             v_xml = parameters.getElementsByTagName('velocity').item(0);
             v = str2double(v_xml.getAttribute('v'));
@@ -73,9 +60,23 @@ classdef K3Supervisor < simiam.controller.Supervisor
             k_i = str2double(gains_xml.getAttribute('ki'));
             k_d = str2double(gains_xml.getAttribute('kd'));
             fprintf('gains: (%0.3f,%0.3f,%0.3f)\n', k_p, k_i, k_d);
-            obj.controllers{2}.Kp = k_p;
-            obj.controllers{2}.Ki = k_i;
-            obj.controllers{2}.Kd = k_d;
+            obj.controllers{1}.Kp = k_p;
+            obj.controllers{1}.Ki = k_i;
+            obj.controllers{1}.Kd = k_d;
+            
+            sgains_xml = parameters.getElementsByTagName('sensorgains').item(0);
+            s_g_1 = str2double(sgains_xml.getAttribute('s1'));
+            s_g_2 = str2double(sgains_xml.getAttribute('s2'));
+            s_g_3 = str2double(sgains_xml.getAttribute('s3'));
+            s_g_4 = str2double(sgains_xml.getAttribute('s4'));
+            s_g_5 = str2double(sgains_xml.getAttribute('s5'));
+            s_g_6 = str2double(sgains_xml.getAttribute('s6'));
+            s_g_7 = str2double(sgains_xml.getAttribute('s7'));
+            s_g_8 = str2double(sgains_xml.getAttribute('s8'));
+            s_g_9 = str2double(sgains_xml.getAttribute('s9'));
+            obj.sgains = [s_g_1 s_g_2 s_g_3 s_g_3 s_g_4 s_g_5 s_g_6 s_g_7 s_g_8 s_g_9]; 
+            fprintf('sensor gains: (%0.3f, %0.3f, %0.3f, %0.3f, %0.3f, %0.3f, %0.3f, %0.3f, %0.3f\n', obj.sgains);
+            
         end
         
         function execute(obj, dt)
@@ -84,28 +85,18 @@ classdef K3Supervisor < simiam.controller.Supervisor
         %   available controllers and execute it.
         %
         %   See also controller/execute
-        
-            [x_i, y_i, theta_i] = obj.state_estimate.unpack();       
-            x_g = obj.goal(1); y_g = obj.goal(2);
-                        
-            if sqrt((x_i-x_g)^2+(y_i-y_g)^2) > obj.d_stop 
                                 
-                inputs = obj.current_controller.inputs;
-                inputs.x_g = obj.goal(1);
-                inputs.y_g = obj.goal(2);
-                inputs.v = obj.velocity;
-                
-                outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
-                
-                [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
-                
-                obj.robot.set_wheel_speeds(vel_r, vel_l);
-            else
-                obj.reached_goal = true;
-                obj.robot.set_wheel_speeds(0,0);
-            end
+        inputs = obj.current_controller.inputs;
+        inputs.sgains = obj.sgains;
+        inputs.v = obj.velocity;
+        
+        outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
+        
+        [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
+        
+        obj.robot.set_wheel_speeds(vel_r, vel_l);
             
-            obj.update_odometry();
+        obj.update_odometry();
 %             [x, y, theta] = obj.state_estimate.unpack();
 %             fprintf('current_pose: (%0.3f,%0.3f,%0.3f)\n', x, y, theta);
         end
