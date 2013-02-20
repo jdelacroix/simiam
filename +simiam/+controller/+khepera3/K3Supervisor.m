@@ -11,7 +11,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
 % Methods:
 %   execute - Selects and executes the current controller.
 
-% Copyright (C) 2012 Jean-Pierre de la Croix
+% Copyright (C) 2013, Georgia Tech Research Corporation
 % see the LICENSE file included with this software
 
     properties
