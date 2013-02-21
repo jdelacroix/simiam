@@ -17,8 +17,6 @@ classdef GoToAngle < simiam.controller.Controller
         
         % plot support
         p
-        h
-        g
     end
     
     properties (Constant)
@@ -38,9 +36,7 @@ classdef GoToAngle < simiam.controller.Controller
             obj.Kp = 10;
             
             % plot support
-            obj.p = simiam.util.Plotter();
-            obj.h = -1;
-            obj.g = -1;
+%             obj.p = simiam.util.Plotter();
         end
         
         function outputs = execute(obj, robot, state_estimate, inputs, dt)
@@ -69,7 +65,7 @@ classdef GoToAngle < simiam.controller.Controller
             w = obj.Kp*e_k;
             
             % plot
-            [obj.h,obj.g] = obj.p.plot_2d_ref(obj.h, obj.g, dt, theta, theta_d);
+            [obj.h,obj.g] = obj.p.plot_2d_ref(dt, theta, theta_d, 'r');
             
             % print IR measured distances
             ir_distances = robot.get_ir_distances();

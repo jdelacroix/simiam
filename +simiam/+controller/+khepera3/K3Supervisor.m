@@ -19,6 +19,10 @@ classdef K3Supervisor < simiam.controller.Supervisor
     
         prev_ticks          % Previous tick count on the left and right wheels
         v
+        goal
+        is_blending
+        d_stop
+        p
     end
     
     methods
@@ -32,13 +36,22 @@ classdef K3Supervisor < simiam.controller.Supervisor
             obj.controllers{1} = simiam.controller.AvoidObstacles();
             obj.controllers{2} = simiam.controller.GoToGoal();
             obj.controllers{3} = simiam.controller.GoToAngle();
+            obj.controllers{4} = simiam.controller.AOandGTG();
             
             % set the initial controller
-            obj.current_controller = obj.controllers{1};
+            obj.current_controller = obj.controllers{4};
             
             obj.prev_ticks = struct('left', 0, 'right', 0);
             
+            %% START CODE BLOCK %%
             obj.v = 0.1;
+            obj.goal = [1;1];
+            obj.is_blending = true;
+            obj.d_stop = 0.02;
+            %% END CODE BLOCK %%
+            
+            obj.p = simiam.util.Plotter();
+            obj.current_controller.p = obj.p;
         end
         
         function execute(obj, dt)
@@ -47,14 +60,39 @@ classdef K3Supervisor < simiam.controller.Supervisor
         %   available controllers and execute it.
         %
         %   See also controller/execute
-                                        
-            inputs = obj.current_controller.inputs;
+        
+            inputs = obj.controllers{4}.inputs; 
             inputs.v = obj.v;
+            inputs.x_g = obj.goal(1);
+            inputs.y_g = obj.goal(2);
+        
+            [x,y,theta] = obj.state_estimate.unpack();
+
+            if(sqrt((inputs.x_g-x)^2+(inputs.y_g-y)^2)>obj.d_stop)
+                    
+                if(obj.is_blending)                 
+                    outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
+                    fprintf('v: %0.3f\n', outputs.v);
+                    [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
+                    obj.robot.set_wheel_speeds(vel_r, vel_l);
+                else
+                    %% START CODE BLOCK %%
+                    if(any(obj.robot.get_ir_distances()<0.12))
+                        obj.set_current_controller(1);
+                    else
+                        obj.set_current_controller(2);
+                    end
+                    
+                    %% END CODE BLOCK %%
+                    
+                    outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
             
-            outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
-            
-            [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
-            obj.robot.set_wheel_speeds(vel_r, vel_l);
+                    [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
+                    obj.robot.set_wheel_speeds(vel_r, vel_l);
+                end
+            else
+                obj.robot.set_wheel_speeds(0,0);
+            end
             
             obj.update_odometry();
 %             [x, y, theta] = obj.state_estimate.unpack();
@@ -62,7 +100,10 @@ classdef K3Supervisor < simiam.controller.Supervisor
         end
         
         function set_current_controller(obj, k)
+            % save plots
             obj.current_controller = obj.controllers{k};
+            obj.p.switch_2d_ref();
+            obj.current_controller.p = obj.p;
         end
         
         function update_odometry(obj)

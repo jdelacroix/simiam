@@ -24,8 +24,6 @@ classdef GoToGoal < simiam.controller.Controller
         
         % plot support
         p
-        h
-        g
     end
     
     properties (Constant)
@@ -51,9 +49,7 @@ classdef GoToGoal < simiam.controller.Controller
             obj.e_k_1 = 0;
             
             % plot support
-            obj.p = simiam.util.Plotter();
-            obj.h = -1;
-            obj.g = -1;
+%             obj.p = simiam.util.Plotter();
         end
         
         function outputs = execute(obj, robot, state_estimate, inputs, dt)
@@ -116,7 +112,10 @@ classdef GoToGoal < simiam.controller.Controller
             obj.e_k_1 = e_k;
             
             % plot
-            [obj.h,obj.g] = obj.p.plot_2d_ref(obj.h, obj.g, dt, theta, theta_g);
+            obj.p.plot_2d_ref(dt, theta, theta_g, 'r');
+            
+            % velocity control            
+            v = 0.25/(log(abs(w)+2)+1);
             
             outputs = obj.outputs;  % make a copy of the output struct
             outputs.v = v;
