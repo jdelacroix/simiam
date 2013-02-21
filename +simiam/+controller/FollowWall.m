@@ -26,8 +26,8 @@ classdef FollowWall < simiam.controller.Controller
     
     methods
         
-        function obj = AvoidObstacles()
-            obj = obj@simiam.controller.Controller('avoid_obstacles');            
+        function obj = FollowWall()
+            obj = obj@simiam.controller.Controller('follow_wall');            
             obj.calibrated = false;
             
             obj.Kp = 5;

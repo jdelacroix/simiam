@@ -4,7 +4,7 @@
     <robot type="Khepera3">
         <supervisor type="khepera3.K3Supervisor" />
         <pose x="0" y="0" theta="0" />
-        <driver ip='192.168.1.211' port='4555' />
+        <driver ip='192.168.1.204' port='4555' />
     </robot>
     
     <!--
