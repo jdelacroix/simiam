@@ -207,4 +207,13 @@ You may also want to think about filtering the IR measurements and/or adding a t
 
 The obstacle avoidance behavior should be implemented in \texttt{+simiam/+controller/AvoidObstacles.m}. This requires you to also properly implement the IR raw values to meters conversion in \texttt{get\_ir\_distances} in \texttt{+simiam/+robot/Khepera3.m} (refer back to homework 0 for more details).
 
+\subsection*{Project 4}
+The fourth project requires you to drive the robot to a series of goal locations without colliding with any of the obstacles in the environment. You will test two strategies:
+\begin{enumerate}
+  \item In \texttt{+simiam/+controller/AOandGTG.m}, implement a blend of the go-to-goal and avoid-obstacles behaviors by combining the two controllers in a meaningful way.
+  \item In \texttt{+simiam/+controller/+khepera3/K3Supervisor.m}, implement switching logic that \textbf{only} switches the robot between the go-to-goal controller defined in \texttt{GoToGoal.m} and the avoid-obstacles controller defined in \texttt{AvoidObstacles.m}. Use the \texttt{switch\_controller} function to switch between two controllers.
+\end{enumerate}
+
+Think about the advantage and disadvantages of both strategies and come up with a switching logic that takes advantage of all three controllers.
+
 \end{document}

@@ -58,13 +58,12 @@ classdef AvoidObstacles < simiam.controller.Controller
             % 3. Compute the heading vector
             
             sensor_gains = [1 1 1 1 1 1 1 1 1];
-            u_i = zeros(2,9);
-            u = sum(u_i,2);
+            u_i = (ir_distances_rf-repmat([x;y],1,9))*diag(sensor_gains);
+            u_ao = sum(u_i,2);
             
             % Compute the heading and error for the PID controller
-            theta_o = 0;
-            e_k = 0;
-                        
+            theta_o = atan2(u_ao(2),u_ao(1));
+            e_k = theta_o - theta;               
             e_k = atan2(sin(e_k),cos(e_k));
             
             e_P = e_k;
@@ -97,16 +96,16 @@ classdef AvoidObstacles < simiam.controller.Controller
                 y_s = obj.sensor_placement(2,i);
                 theta_s = obj.sensor_placement(3,i);
                 
-                R = obj.get_transformation_matrix(0,0,0);
-                ir_distances_sf(:,i) = zeros(3,1);
+                R = obj.get_transformation_matrix(x_s,y_s,theta_s);
+                ir_distances_sf(:,i) = R*[ir_distances(i); 0; 1];
             end
             
             % 2. Apply the transformation to world frame.
             
             [x,y,theta] = state_estimate.unpack();
             
-            R = obj.get_transformation_matrix(0,0,0);
-            ir_distances_rf = zeros(3,9);
+            R = obj.get_transformation_matrix(x,y,theta);
+            ir_distances_rf = R*ir_distances_sf;
             
             ir_distances_rf = ir_distances_rf(1:2,:);
         end
@@ -121,7 +120,7 @@ classdef AvoidObstacles < simiam.controller.Controller
         end
         
         function R = get_transformation_matrix(obj, x, y, theta)
-            R = zeros(3,3);
+            R = [cos(theta) -sin(theta) x; sin(theta) cos(theta) y; 0 0 1];
         end
         
     end

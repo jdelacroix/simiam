@@ -55,14 +55,17 @@ classdef AOandGTG < simiam.controller.Controller
             ir_distances_rf = obj.apply_sensor_geometry(ir_distances, state_estimate);
                         
             
-            % 3. Compute the heading vector
+            % Compute the heading vector for obstacle avoid
             
             sensor_gains = [1 1 1 1 1 1 1 1 1];
             u_i = zeros(2,9);
-            u = sum(u_i,2);
+            u_ao = sum(u_i,2);
+            
+            % Compute the heading for go to goal
+            u_gtg = 0;
             
             % Compute the heading and error for the PID controller
-            theta_o = 0;
+            theta_ao_gtg = 0;
             e_k = 0;
                         
             e_k = atan2(sin(e_k),cos(e_k));
