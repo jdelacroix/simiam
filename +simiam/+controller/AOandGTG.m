@@ -1,4 +1,4 @@
-classdef AvoidObstacles < simiam.controller.Controller
+classdef AOandGTG < simiam.controller.Controller
 
 % Copyright (C) 2013, Georgia Tech Research Corporation
 % see the LICENSE file included with this software
@@ -20,14 +20,14 @@ classdef AvoidObstacles < simiam.controller.Controller
     end
     
     properties (Constant)
-        inputs = struct('v', 0);
+        inputs = struct('v', 0, 'x_g', 0, 'y_g', 0);
         outputs = struct('v', 0, 'w', 0)
     end
     
     methods
         
-        function obj = AvoidObstacles()
-            obj = obj@simiam.controller.Controller('avoid_obstacles');            
+        function obj = AOandGTG()
+            obj = obj@simiam.controller.Controller('ao_and_gtg');            
             obj.calibrated = false;
             
             obj.Kp = 5;
@@ -127,3 +127,4 @@ classdef AvoidObstacles < simiam.controller.Controller
     end
     
 end
+

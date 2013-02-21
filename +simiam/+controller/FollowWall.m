@@ -1,4 +1,4 @@
-classdef AvoidObstacles < simiam.controller.Controller
+classdef FollowWall < simiam.controller.Controller
 
 % Copyright (C) 2013, Georgia Tech Research Corporation
 % see the LICENSE file included with this software
@@ -20,7 +20,7 @@ classdef AvoidObstacles < simiam.controller.Controller
     end
     
     properties (Constant)
-        inputs = struct('v', 0);
+        inputs = struct('v', 0, 'direction', 0);
         outputs = struct('v', 0, 'w', 0)
     end
     
@@ -127,3 +127,4 @@ classdef AvoidObstacles < simiam.controller.Controller
     end
     
 end
+

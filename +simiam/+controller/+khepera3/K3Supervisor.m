@@ -30,6 +30,9 @@ classdef K3Supervisor < simiam.controller.Supervisor
             obj.controllers{1} = simiam.controller.AvoidObstacles();
             obj.controllers{2} = simiam.controller.GoToGoal();
             obj.controllers{3} = simiam.controller.GoToAngle();
+            obj.controllers{4} = simiam.controller.FollowWall();
+            obj.controllers{5} = simiam.controller.AOandGTG();
+            
             
             % set the initial controller
             obj.current_controller = obj.controllers{1};
@@ -50,6 +53,13 @@ classdef K3Supervisor < simiam.controller.Supervisor
                 
         inputs = obj.current_controller.inputs;
         inputs.v = 0.1;
+        
+        if(false)
+            obj.set_current_controller(3); % sets the current controller to
+                                           % #3 in the obj.controllers
+                                           % list.
+        end
+        
         
         outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
         
