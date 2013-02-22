@@ -15,9 +15,6 @@ classdef AvoidObstacles < simiam.controller.Controller
         Kd
         
         % plot support
-%         u_arrow
-%         u_arrow_r
-%         s_net
         p
         
         % sensor geometry
@@ -51,13 +48,6 @@ classdef AvoidObstacles < simiam.controller.Controller
             % Compute the placement of the sensors
             if(~obj.calibrated)
                 obj.set_sensor_geometry(robot);
-%                 hold(robot.parent, 'on');
-%                 obj.u_arrow_r = plot(robot.parent, [0 0], [0 0], 'b-x', 'LineWidth', 2);
-%                 obj.u_arrow = plot(robot.parent, [0 0], [0 0], 'r--x', 'LineWidth', 2);
-%                 obj.s_net = plot(robot.parent, zeros(1,9), zeros(1,9), 'kx', 'MarkerSize', 8);
-%                 set(obj.u_arrow_r, 'ZData', ones(1,2));
-%                 set(obj.u_arrow, 'ZData', ones(1,2));
-%                 set(obj.s_net, 'ZData', ones(1,9));
             end
             
             % Unpack state estimate
@@ -97,7 +87,11 @@ classdef AvoidObstacles < simiam.controller.Controller
             
 %             fprintf('(v,w) = (%0.4g,%0.4g)\n', v,w);
             
-            v = 0.25/(log(abs(w)+2)+1);
+            % velocity control
+
+            %% START CODE BLOCK %%
+            v = inputs.v;
+            %% END CODE BLOCK %%
 
             outputs.v = v;
             outputs.w = w;

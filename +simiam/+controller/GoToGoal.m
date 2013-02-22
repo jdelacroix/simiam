@@ -115,7 +115,10 @@ classdef GoToGoal < simiam.controller.Controller
             obj.p.plot_2d_ref(dt, theta, theta_g, 'r');
             
             % velocity control            
-            v = 0.25/(log(abs(w)+2)+1);
+            
+            %% START CODE BLOCK %%
+            v = inputs.v;
+            %% END CODE BLOCK %%
             
             outputs = obj.outputs;  % make a copy of the output struct
             outputs.v = v;

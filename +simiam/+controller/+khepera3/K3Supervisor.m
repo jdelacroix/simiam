@@ -17,11 +17,19 @@ classdef K3Supervisor < simiam.controller.Supervisor
     properties
     %% PROPERTIES
     
+        states
+        eventsd
+        
+        current_state
+    
+    
         prev_ticks          % Previous tick count on the left and right wheels
         v
         goal
         is_blending
         d_stop
+        d_at_obs
+        d_unsafe
         p
     end
     
@@ -37,17 +45,40 @@ classdef K3Supervisor < simiam.controller.Supervisor
             obj.controllers{2} = simiam.controller.GoToGoal();
             obj.controllers{3} = simiam.controller.GoToAngle();
             obj.controllers{4} = simiam.controller.AOandGTG();
+            obj.controllers{5} = simiam.controller.Stop();
             
             % set the initial controller
-            obj.current_controller = obj.controllers{4};
+            obj.current_controller = obj.controllers{5};
+            obj.current_state = 5;
             
+            % generate the set of states
+            for i = 1:length(obj.controllers)
+                obj.states{i} = struct('state', obj.controllers{i}.type, ...
+                                       'controller', obj.controllers{i});
+            end
+            
+            % define the set of eventsd
+            obj.eventsd{1} = struct('event', 'at_obstacle', ...
+                                   'callback', @at_obstacle);
+            
+            obj.eventsd{2} = struct('event', 'at_goal', ...
+                                   'callback', @at_goal);
+            
+            obj.eventsd{3} = struct('event', 'obstacle_cleared', ...
+                                    'callback', @obstacle_cleared);
+                                
+            obj.eventsd{4} = struct('event', 'unsafe', ...
+                                    'callback', @unsafe);
+                               
             obj.prev_ticks = struct('left', 0, 'right', 0);
             
             %% START CODE BLOCK %%
-            obj.v = 0.1;
-            obj.goal = [1;1];
-            obj.is_blending = true;
-            obj.d_stop = 0.02;
+            obj.v               = 0.1;
+            obj.goal            = [1;1];
+            obj.is_blending     = true;
+            obj.d_stop          = 0.05; 
+            obj.d_at_obs        = 0.13;                
+            obj.d_unsafe        = 0.1;
             %% END CODE BLOCK %%
             
             obj.p = simiam.util.Plotter();
@@ -64,34 +95,34 @@ classdef K3Supervisor < simiam.controller.Supervisor
             inputs = obj.controllers{4}.inputs; 
             inputs.v = obj.v;
             inputs.x_g = obj.goal(1);
-            inputs.y_g = obj.goal(2);
-        
-            [x,y,theta] = obj.state_estimate.unpack();
-
-            if(sqrt((inputs.x_g-x)^2+(inputs.y_g-y)^2)>obj.d_stop)
+            inputs.y_g = obj.goal(2);    
                     
-                if(obj.is_blending)                 
-                    outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
-                    fprintf('v: %0.3f\n', outputs.v);
-                    [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
-                    obj.robot.set_wheel_speeds(vel_r, vel_l);
+            if(obj.is_blending)
+                % The following (finite state machine) logic sets the
+                % blending controller as the current controller until the
+                % robot arrives at the goal.
+                
+                if(obj.check_event('at_goal'))
+                    obj.switch_to_state('stop');
                 else
-                    %% START CODE BLOCK %%
-                    if(any(obj.robot.get_ir_distances()<0.12))
-                        obj.set_current_controller(1);
-                    else
-                        obj.set_current_controller(2);
-                    end
-                    
-                    %% END CODE BLOCK %%
-                    
-                    outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
-            
-                    [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
-                    obj.robot.set_wheel_speeds(vel_r, vel_l);
+                    obj.switch_to_state('ao_and_gtg');
                 end
+                
+                outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
+%                 fprintf('(v,w) = (%0.3f,%0.3f)\n', outputs.v, outputs.w);
+                [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
+                obj.robot.set_wheel_speeds(vel_r, vel_l);
             else
-                obj.robot.set_wheel_speeds(0,0);
+                %% START CODE BLOCK %%
+                
+                obj.switch_to_state('stop');
+                
+                %% END CODE BLOCK %%
+                
+                outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
+                
+                [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
+                obj.robot.set_wheel_speeds(vel_r, vel_l);
             end
             
             obj.update_odometry();
@@ -99,12 +130,94 @@ classdef K3Supervisor < simiam.controller.Supervisor
 %             fprintf('current_pose: (%0.3f,%0.3f,%0.3f)\n', x, y, theta);
         end
         
-        function set_current_controller(obj, k)
+        %% Events %%
+        
+        function rc = at_obstacle(obj, state, robot)
+            ir_distances = obj.robot.get_ir_distances();
+            rc = false;                                     % Assume initially that the robot is clear of obstacle
+            
+            % Loop through and test the sensors (only the front set)
+            if any(ir_distances(2:7) < obj.d_at_obs)
+                rc = true;
+            end
+        end
+        
+        function rc = unsafe(obj, state, robot)
+            ir_distances = obj.robot.get_ir_distances();              
+            rc = false;             % Assume initially that the robot is clear of obstacle
+            
+            % Loop through and test the sensors (only the front set)
+            if any(ir_distances(2:7) < obj.d_unsafe)
+                    rc = true;
+            end
+        end
+
+        function rc = at_goal(obj, state, robot)
+            [x,y,theta] = obj.state_estimate.unpack();
+            rc = false;
+            
+            % Test distance from goal
+            if norm([x - obj.goal(1); y - obj.goal(2)]) < obj.d_stop
+                rc = true;
+            end
+        end
+
+        function rc = obstacle_cleared(obj, state, robot)
+            ir_distances = obj.robot.get_ir_distances();
+            rc = false;              % Assume initially that the robot is clear of obstacle
+            
+            % Loop through and test the sensors (only front set)
+            if all(ir_distances(2:7) > obj.d_at_obs)
+                rc = true;
+            end
+        end
+        
+        %% State machine support functions
+        
+        function set_current_controller(obj, ctrl)
             % save plots
-            obj.current_controller = obj.controllers{k};
+            obj.current_controller = ctrl;
             obj.p.switch_2d_ref();
             obj.current_controller.p = obj.p;
         end
+        
+        function rc = is_in_state(obj, name)
+            rc = strcmp(name, obj.states{obj.current_state}.state);
+        end
+        
+        function switch_to_state(obj, name)
+            
+            if(~obj.is_in_state(name))
+                for i=1:numel(obj.states)
+                    if(strcmp(obj.states{i}.state, name))
+                        obj.set_current_controller(obj.states{i}.controller);
+                        obj.current_state = i;
+                        fprintf('switching to state %s\n', name);
+                        return;
+                    end
+                end
+            else
+%                 fprintf('already in state %s\n', name);
+                return
+            end
+            
+            fprintf('no state exists with name %s\n', name);
+        end
+        
+        function rc = check_event(obj, name)
+           for i=1:numel(obj.eventsd)
+               if(strcmp(obj.eventsd{i}.event, name))
+                   rc = obj.eventsd{i}.callback(obj, obj.states{obj.current_state}, obj.robot);
+                   return;
+               end
+           end
+           
+           % return code (rc)
+           fprintf('no event exists with name %s\n', name);
+           rc = false;
+        end
+        
+        %% Odometry
         
         function update_odometry(obj)
         %% UPDATE_ODOMETRY Approximates the location of the robot.
