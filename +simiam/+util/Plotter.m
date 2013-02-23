@@ -15,6 +15,10 @@ classdef Plotter < handle
         t   % Time
         y   % Output signal
         r   % Reference signal
+        
+        h
+        g
+        a
     end
     
     methods
@@ -22,36 +26,47 @@ classdef Plotter < handle
         % PLOTTER Constructor
         
             obj.t = 0;
-            obj.y = [];
+            obj.y = 0;
             obj.r = 0;
+            obj.h = -1;
+            obj.g = -1;
+            
+            figure;
+            obj.a = axes;
+            set(obj.a, 'NextPlot', 'add');
+            hold(obj.a, 'all');
+            obj.t = 0;
         end
         
-        function [h,g] = plot_2d_ref(obj, h, g, dt, y, r)
+        function plot_2d_ref(obj, dt, y, r, color)
         %% PLOT_2D_REF Plots an output and reference signal over time
         %   [h,g] = plot_2d_ref(obj, h, g, x, y, r) plots the output signal
         %   (y) and reference signal (r) versus time (t).
         
-            if ~ishandle(h)
-                figure;
-                a = axes;
-                set(a,'NextPlot','add');
-                h = plot(a, dt, y, 'b');
-                g = plot(a, dt, r, 'r--');
-                obj.t = dt;
-                obj.y = y;
-                obj.r = r;
+            if ~ishandle(obj.h)
+                obj.h = plot(obj.a, dt, y, 'b');
+                obj.g = plot(obj.a, dt, r, '--');
+                set(obj.g, 'Color', color);
+                obj.t = obj.t(end);
+                obj.y = obj.y(end);
+                obj.r = obj.r(end);
             end
             
             obj.t = [obj.t obj.t(end)+dt];
             obj.y = [obj.y y];
             obj.r = [obj.r r];
             
-            set(h, 'XData', obj.t);
-            set(h, 'YData', obj.y);   
-            set(g, 'XData', obj.t);
-            set(g, 'YData', obj.r);
+            set(obj.h, 'XData', obj.t);
+            set(obj.h, 'YData', obj.y);   
+            set(obj.g, 'XData', obj.t);
+            set(obj.g, 'YData', obj.r);
             
         end
+        
+        function switch_2d_ref(obj)
+            obj.h = -1;
+        end
+        
     end
     
 end
