@@ -27,12 +27,15 @@ classdef K3Supervisor < simiam.controller.Supervisor
         v
         goal
         is_blending
+        is_switching
         d_stop
         d_at_obs
         d_unsafe
         p
         
         velocity
+        
+        direction
     end
     
     methods
@@ -48,10 +51,11 @@ classdef K3Supervisor < simiam.controller.Supervisor
             obj.controllers{3} = simiam.controller.GoToAngle();
             obj.controllers{4} = simiam.controller.AOandGTG();
             obj.controllers{5} = simiam.controller.Stop();
+            obj.controllers{6} = simiam.controller.FollowWall();
             
             % set the initial controller
-            obj.current_controller = obj.controllers{5};
-            obj.current_state = 5;
+            obj.current_controller = obj.controllers{6};
+            obj.current_state = 6;
             
             % generate the set of states
             for i = 1:length(obj.controllers)
@@ -77,7 +81,8 @@ classdef K3Supervisor < simiam.controller.Supervisor
             %% START CODE BLOCK %%
             obj.v               = 0.1;
             obj.goal            = [1;1];
-            obj.is_blending     = true;
+            obj.is_blending     = false;
+            obj.is_switching    = false;
             obj.d_stop          = 0.05; 
             obj.d_at_obs        = 0.13;                
             obj.d_unsafe        = 0.1;
@@ -85,51 +90,57 @@ classdef K3Supervisor < simiam.controller.Supervisor
             
             obj.p = simiam.util.Plotter();
             obj.current_controller.p = obj.p;
+            
+            obj.direction = 'right';
         end
         
         function configure_from_file(obj, filename)
             parameters = xmlread(filename);
             
-            goal_xml = parameters.getElementsByTagName('goal').item(0);
-            x_g = str2double(goal_xml.getAttribute('x'));
-            y_g = str2double(goal_xml.getAttribute('y'));
-            obj.goal = [x_g;y_g];
-            fprintf('goal: (%0.3f,%0.3f)\n', x_g, y_g);
+%             goal_xml = parameters.getElementsByTagName('goal').item(0);
+%             x_g = str2double(goal_xml.getAttribute('x'));
+%             y_g = str2double(goal_xml.getAttribute('y'));
+%             obj.goal = [x_g;y_g];
+%             fprintf('goal: (%0.3f,%0.3f)\n', x_g, y_g);
             
-            v_xml = parameters.getElementsByTagName('velocity').item(0);
-            v = str2double(v_xml.getAttribute('v'));
-            obj.velocity = v;
-            fprintf('velocity: (%0.3f)\n', v);
+%             v_xml = parameters.getElementsByTagName('velocity').item(0);
+%             v = str2double(v_xml.getAttribute('v'));
+%             obj.velocity = v;
+%             fprintf('velocity: (%0.3f)\n', v);
             
             gains_xml = parameters.getElementsByTagName('gains').item(0);
             k_p = str2double(gains_xml.getAttribute('kp'));
             k_i = str2double(gains_xml.getAttribute('ki'));
             k_d = str2double(gains_xml.getAttribute('kd'));
             fprintf('gains: (%0.3f,%0.3f,%0.3f)\n', k_p, k_i, k_d);
-            obj.controllers{1}.Kp = k_p;
-            obj.controllers{1}.Ki = k_i;
-            obj.controllers{1}.Kd = k_d;
-            obj.controllers{2}.Kp = k_p;
-            obj.controllers{2}.Ki = k_i;
-            obj.controllers{2}.Kd = k_d;
-            obj.controllers{4}.Kp = k_p;
-            obj.controllers{4}.Ki = k_i;
-            obj.controllers{4}.Kd = k_d;
+            obj.controllers{6}.Kp = k_p;
+            obj.controllers{6}.Ki = k_i;
+            obj.controllers{6}.Kd = k_d;
+%             obj.controllers{2}.Kp = k_p;
+%             obj.controllers{2}.Ki = k_i;
+%             obj.controllers{2}.Kd = k_d;
+%             obj.controllers{4}.Kp = k_p;
+%             obj.controllers{4}.Ki = k_i;
+%             obj.controllers{4}.Kd = k_d;
             
-            alpha_xml = parameters.getElementsByTagName('alpha').item(0);
-            obj.controllers{4}.alpha = str2double(alpha_xml.getAttribute('value'));
-            fprintf('alpha: (%0.3f)\n', obj.controllers{4}.alpha);
+%             alpha_xml = parameters.getElementsByTagName('alpha').item(0);
+%             obj.controllers{4}.alpha = str2double(alpha_xml.getAttribute('value'));
+%             fprintf('alpha: (%0.3f)\n', obj.controllers{4}.alpha);
+%             
+%             arbitration_xml = parameters.getElementsByTagName('arbitration').item(0);
+%             type = char(arbitration_xml.getAttribute('type'));
+%             obj.is_blending = strcmp(type, 'blending');
+%             fprintf('arbitration: (%s)\n', type);
             
-            arbitration_xml = parameters.getElementsByTagName('arbitration').item(0);
-            type = char(arbitration_xml.getAttribute('type'));
-            obj.is_blending = strcmp(type, 'blending');
-            fprintf('arbitration: (%s)\n', type);
+            thresholds_xml = parameters.getElementsByTagName('threshold').item(0);
+            obj.current_controller.d_fw = str2double(thresholds_xml.getAttribute('d_fw'));
+%             obj.d_at_obs = str2double(thresholds_xml.getAttribute('d_at_obs'));
+%             obj.d_unsafe = str2double(thresholds_xml.getAttribute('d_unsafe'));
+            fprintf('(d_fw): (%0.3f)\n', obj.current_controller.d_fw); 
             
-            thresholds_xml = parameters.getElementsByTagName('thresholds').item(0);
-            obj.d_stop = str2double(thresholds_xml.getAttribute('d_stop'));
-            obj.d_at_obs = str2double(thresholds_xml.getAttribute('d_at_obs'));
-            obj.d_unsafe = str2double(thresholds_xml.getAttribute('d_unsafe'));
-            fprintf('(d_stop, d_at_obs, d_unsafe): (%0.3f, %0.3f, %0.3f)\n', obj.d_stop, obj.d_at_obs, obj.d_unsafe);
+            direction_xml = parameters.getElementsByTagName('direction').item(0);
+            obj.direction = char(direction_xml.getAttribute('dir'));
+
         end
         
         function execute(obj, dt)
@@ -159,7 +170,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
 %                 fprintf('(v,w) = (%0.3f,%0.3f)\n', outputs.v, outputs.w);
                 [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
                 obj.robot.set_wheel_speeds(vel_r, vel_l);
-            else
+            elseif(obj.is_switching)
                 %% START CODE BLOCK %%
                 
                 if(obj.check_event('at_goal'))
@@ -174,6 +185,11 @@ classdef K3Supervisor < simiam.controller.Supervisor
                 
                 outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
                 
+                [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
+                obj.robot.set_wheel_speeds(vel_r, vel_l);
+            else
+                inputs.direction = obj.direction;
+                outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
                 [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
                 obj.robot.set_wheel_speeds(vel_r, vel_l);
             end
