@@ -27,6 +27,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
         v
         goal
         is_blending
+        is_switching
         d_stop
         d_at_obs
         d_unsafe
@@ -46,6 +47,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
             obj.controllers{3} = simiam.controller.GoToAngle();
             obj.controllers{4} = simiam.controller.AOandGTG();
             obj.controllers{5} = simiam.controller.Stop();
+            obj.controllers{6} = simiam.controller.FollowWall();
             
             % set the initial controller
             obj.current_controller = obj.controllers{5};
@@ -72,14 +74,13 @@ classdef K3Supervisor < simiam.controller.Supervisor
                                
             obj.prev_ticks = struct('left', 0, 'right', 0);
             
-            %% START CODE BLOCK %%
             obj.v               = 0.1;
             obj.goal            = [1;1];
-            obj.is_blending     = true;
+            obj.is_blending     = false;
+            obj.is_switching    = false;
             obj.d_stop          = 0.05; 
             obj.d_at_obs        = 0.13;                
             obj.d_unsafe        = 0.1;
-            %% END CODE BLOCK %%
             
             obj.p = simiam.util.Plotter();
             obj.current_controller.p = obj.p;
@@ -107,23 +108,27 @@ classdef K3Supervisor < simiam.controller.Supervisor
                 else
                     obj.switch_to_state('ao_and_gtg');
                 end
-                
-                outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
-%                 fprintf('(v,w) = (%0.3f,%0.3f)\n', outputs.v, outputs.w);
-                [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
-                obj.robot.set_wheel_speeds(vel_r, vel_l);
+            elseif(obj.is_switching)                
+                if(obj.check_event('at_goal'))
+                    obj.switch_to_state('stop');
+                elseif(obj.check_event('at_obstacle'))
+                    obj.switch_to_state('avoid_obstacles');
+                elseif(obj.check_event('obstacle_cleared'))
+                    obj.switch_to_state('go_to_goal');
+                end
             else
+                inputs = obj.current_controller.inputs;
                 %% START CODE BLOCK %%
-                
-                obj.switch_to_state('stop');
-                
+                inputs.direction = 'right';
                 %% END CODE BLOCK %%
-                
-                outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
-                
-                [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
-                obj.robot.set_wheel_speeds(vel_r, vel_l);
+                inputs.v = 0.1;
+                obj.set_current_controller(obj.controllers{6});
             end
+            
+            outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
+                
+            [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
+            obj.robot.set_wheel_speeds(vel_r, vel_l);
             
             obj.update_odometry();
 %             [x, y, theta] = obj.state_estimate.unpack();

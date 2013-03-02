@@ -1,4 +1,4 @@
-classdef AvoidObstacles < simiam.controller.Controller
+classdef FollowWall < simiam.controller.Controller
 
 % Copyright (C) 2013, Georgia Tech Research Corporation
 % see the LICENSE file included with this software
@@ -20,16 +20,22 @@ classdef AvoidObstacles < simiam.controller.Controller
         % sensor geometry
         calibrated
         sensor_placement
+        
+        v_t
+        v_p
+        v_pt
+        
+        d_fw
     end
     
     properties (Constant)
-        inputs = struct('v', 0);
+        inputs = struct('v', 0, 'direction', 'right');
         outputs = struct('v', 0, 'w', 0)
     end
     
     methods
         
-        function obj = AvoidObstacles()
+        function obj = FollowWall()
             obj = obj@simiam.controller.Controller('avoid_obstacles');            
             obj.calibrated = false;
             
@@ -40,6 +46,10 @@ classdef AvoidObstacles < simiam.controller.Controller
             obj.E_k = 0;
             obj.e_k_1 = 0;
             
+            %% START CODE BLOCK %%
+            obj.d_fw = 0.1;
+            %% END CODE BLOCK %%
+            
 %             obj.p = simiam.util.Plotter();
         end
         
@@ -48,6 +58,11 @@ classdef AvoidObstacles < simiam.controller.Controller
             % Compute the placement of the sensors
             if(~obj.calibrated)
                 obj.set_sensor_geometry(robot);
+                hold(robot.parent, 'on');
+                obj.v_t = plot(robot.parent, [0;0],[0;0],'r-', 'LineWidth', 2);
+                obj.v_p = plot(robot.parent, [0;0],[0;0],'b-', 'LineWidth', 2);
+                set(obj.v_t, 'ZData', [1;1]);
+                set(obj.v_p, 'ZData', [1;1]);
             end
             
             % Unpack state estimate
@@ -61,13 +76,41 @@ classdef AvoidObstacles < simiam.controller.Controller
             
             % Compute the heading vector
             
-            sensor_gains = [1 1 1 1 1 1 1 1 1];
-            u_i = (ir_distances_rf-repmat([x;y],1,9))*diag(sensor_gains);
-            u_ao = sum(u_i,2);
+%             sensor_gains = [1 1 1 1 1 1 1 1 1];
+%             u_i = (ir_distances_rf-repmat([x;y],1,9))*diag(sensor_gains);
+
+            %% START CODE BLOCK
+            
+            % 1. Select p_2 and p_1, then compute u_fw_t
+            if(strcmp(inputs.direction,'right'))
+                % Pick two of the right sensors based on ir_distances
+                p_1 = ir_distances_rf(:,7);
+                p_2 = ir_distances_rf(:,7);
+            else
+                % Pick two of the left sensors based on ir_distances
+                p_1 = ir_distances_rf(:,2);
+                p_2 = ir_distances_rf(:,2);
+            end
+            
+            u_fw_t = [0;0];
+
+            % 2. Compute u_a, u_p, and u_fw_tp to compute u_fw_p
+            
+            u_fw_tp = [0;0];
+            u_a = [0;0];
+            u_p = [0;0];
+            
+            u_fw_p = [0;0];
+            
+            % 3. Combine u_fw_tp and u_fw_pp into u_fw;
+            u_fw_pp = [0;0];
+            u_fw = u_fw_tp;
+            
+            %% END CODE BLOCK %%
             
             % Compute the heading and error for the PID controller
-            theta_o = atan2(u_ao(2),u_ao(1));
-            e_k = theta_o-theta;
+            theta_fw = atan2(u_fw(2),u_fw(1));
+            e_k = theta_fw-theta;
             e_k = atan2(sin(e_k),cos(e_k));
                                     
             e_P = e_k;
@@ -83,14 +126,18 @@ classdef AvoidObstacles < simiam.controller.Controller
             obj.e_k_1 = e_k;
                         
             % plot
-            obj.p.plot_2d_ref(dt, theta, theta_o, 'g');
+            obj.p.plot_2d_ref(dt, atan2(sin(theta),cos(theta)), theta_fw, 'c');
+            
+            set(obj.v_t, 'XData', [0.25*u_fw_t(1)+p_1(1);p_1(1)]);
+            set(obj.v_t, 'YData', [0.25*u_fw_t(2)+p_1(2);p_1(2)]);
+            set(obj.v_p, 'XData', [u_fw_p(1)+x;x]);
+            set(obj.v_p, 'YData', [u_fw_p(2)+y;y]);
+
             
 %             fprintf('(v,w) = (%0.4g,%0.4g)\n', v,w);
             
             % velocity control
-
-            v =  0.25/(log(abs(w)+2)+1); % = inputs.v;
-
+            v = 0.25/(log(abs(w)+2)+1);
             outputs.v = v;
             outputs.w = w;
         end

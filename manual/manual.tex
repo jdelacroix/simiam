@@ -484,4 +484,58 @@ Here are a few pointers to help you migrate your own solutions from last week to
  \item The simulator has seen a significant amount of changes from last week to support this week's programming exercises. It is \textbf{recommended} that you do not overwrite any of the files this week with your solutions from last week.
  \item However, you can selectively replace the sections delimited last week (by \texttt{START/END CODE BLOCK}) in \texttt{GoToGoal.m} and \texttt{AvoidObstacles.m}, as well as the sections that were copied from each into \texttt{AOandGTG.m}.
 \end{enumerate}
+
+\subsection{Week 6}
+
+Start by downloading the new robot simulator for this week from the ``Programming Exercises'' tab on the Coursera course page. This week you will be implementing a wall following behaviour that will aid the robot in navigating around obstacles.
+
+\begin{enumerate}
+	\item Compute a vector, $u_{fw,t}$, that estimates a section of the obstacle (``wall'') next to the robot using the robot's right (or left) IR sensors.
+	
+	We will use the IR sensors to detect an obstacle and construct a vector that approximates a section of the obstacle (``wall''). In the figure, this vector, $u_{fw,t}$ (\texttt{u\_fw\_t}), is illustrated in red.
+	
+	\begin{figure}[h]
+		\centering
+		\includegraphics[scale=0.5]{week-6-part-1.png}
+		%  \caption{IR range to point transformation.}
+		\label{fig:week6part1}
+	\end{figure}
+	
+	Suppose we want to follow an obstacle to the left of the robot, then we would could use the left set of IR sensors (1-4). If we are following the wall, then at all times there should be at least one sensor that can detect the obstacle. So, we need to pick a second sensor and use the points corresponding to the measurements from these two sensors (see avoid-obstacles in Week 4) to form a line that estimates a section of the obstacle. In the figure above, sensors 2 and 3 are used to roughly approximate the edge of the obstacle. But what about corners?
+	
+	\begin{figure}[h]
+		\centering
+		\includegraphics[scale=0.5]{week-6-part-1b.png}
+		%  \caption{IR range to point transformation.}
+		\label{fig:week6part1b}
+	\end{figure}
+	
+	Corners are trickier (see figure below), because typically only a single sensor will be able to detect the wall. The estimate is off as one can see in the figure, but as long as the robot isn't following the wall too closely, it will be ok.
+	
+	An example strategy for estimating a section of the wall is to pick the two sensors (from IR sensors 1-4) with the smallest reported measurement in \texttt{ir\_distances}. Suppose sensor 2 and 3 returned the smallest values, then let $p_1$ \texttt{= ir\_distances\_rf(:,2)} and $p_2$ \texttt{= ir\_distances\_rf(:,3)}. A vector that estimates a section of the obstacle is $u_{fw,t}=p_2-p_1$. 
+	
+	\textbf{Note}: It is important that the sensor with smaller ID (in the example, sensor 2) is assigned to $p_1$ (\texttt{p\_1}) and the sensor with the larger ID (in the example, sensor 3) is assigned to $p_2$ (\texttt{p\_2}), because we want that the vector points in the direction that robot should travel.
+	
+	The figures correspond to the above example strategy, but you may want to experiment with different strategies for computing $u_{fw,t}$. A better estimate would make wall following safer and smoother when the robot navigates around the corners of obstacles. 
+	
+	\item Compute a vector, $u_{fw,p}$, that points from the robot to the closest point on $u_{fw,t}$.
+	
+	Now that we have the vector $u_{fw,t}$ (represented by the red line in the figures), we need to compute a vector $u_{fw,p}$ that points from the robot to the closest point on $u_{fw,t}$. This vector is visualized as blue line in the figures and can be computed using a little bit of linear algebra:
+	\begin{equation*}
+		\begin{split}
+			u'_{fw,t} &= \frac{u_{fw,t}}{\|u_{fw,t}\|}, \quad u_p = \begin{bmatrix} x \\ y \end{bmatrix}, \quad u_a = p_1 \\
+			u_{fw,p} &= (u_a-u_p)-((u_a-u_p)\cdot u'_{fw,t})u'_{fw,t}
+		\end{split}
+	\end{equation*}
+	$u_{fw,p}$ corresponds to \texttt{u\_fw\_p} in the code. 
+	
+	\textbf{Note}: A small technicality is that we are computing $u_{fw,p}$ as the the vector pointing from the robot to the closest point on $u_{fw,t}$, as if $u_{fw,t}$ were infinitely long.
+	
+	\item Combine the two vectors, such that it can be used as a heading vector for a PID controller that will follow the wall to the right (or left) at some distance $d_{fw}$.
+\end{enumerate}
+
+\subsubsection*{How to test it all}
+
+\subsubsection*{How to migrate your solutions from last week}
+
 \end{document}

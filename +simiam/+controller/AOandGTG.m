@@ -30,7 +30,7 @@ classdef AOandGTG < simiam.controller.Controller
     methods
         
         function obj = AOandGTG()
-            obj = obj@simiam.controller.Controller('ao_and_gtg');            
+            obj = obj@simiam.controller.Controller('follow_wall');            
             obj.calibrated = false;
             
             obj.Kp = 5;
@@ -76,7 +76,8 @@ classdef AOandGTG < simiam.controller.Controller
             u_gtg = u_gtg/norm(u_gtg);
             u_ao = u_ao/norm(u_ao);
             
-            u_ao_gtg = [0;0];
+            alpha = 0.6;
+            u_ao_gtg = alpha*u_gtg+(1-alpha)*u_ao;
             
             %% END CODE BLOCK %%
             
