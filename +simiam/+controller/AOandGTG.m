@@ -14,13 +14,15 @@ classdef AOandGTG < simiam.controller.Controller
         Ki
         Kd
         
+        alpha
+        
         % sensor geometry
         calibrated
         sensor_placement
     end
     
     properties (Constant)
-        inputs = struct('v', 0, 'x_g', 0, 'y_g', 0);
+        inputs = struct('x_g', 0, 'y_g', 0, 'v', 0);
         outputs = struct('v', 0, 'w', 0)
     end
     
@@ -36,6 +38,8 @@ classdef AOandGTG < simiam.controller.Controller
             
             obj.E_k = 0;
             obj.e_k_1 = 0;
+            
+            obj.alpha = 0.5;
         end
         
         function outputs = execute(obj, robot, state_estimate, inputs, dt)
@@ -52,21 +56,32 @@ classdef AOandGTG < simiam.controller.Controller
             ir_distances = robot.get_ir_distances();
                         
             % Interpret the IR sensor measurements geometrically
-            ir_distances_rf = obj.apply_sensor_geometry(ir_distances, state_estimate);
-                        
+            ir_distances_rf = obj.apply_sensor_geometry(ir_distances, state_estimate);            
             
-            % Compute the heading vector for obstacle avoid
+            % 1. Compute the heading vector for obstacle avoidance
             
             sensor_gains = [1 1 1 1 1 1 1 1 1];
-            u_i = zeros(2,9);
+            u_i = (ir_distances_rf-repmat([x;y],1,9))*diag(sensor_gains);
             u_ao = sum(u_i,2);
             
-            % Compute the heading for go to goal
-            u_gtg = 0;
+            % 2. Compute the heading vector for go-to-goal
+            x_g = inputs.x_g;
+            y_g = inputs.y_g;
+            u_gtg = [x_g-x; y_g-y];
             
-            % Compute the heading and error for the PID controller
-            theta_ao_gtg = 0;
-            e_k = 0;
+            %% START CODE BLOCK %%
+            
+            % 3. Blend the two vectors
+            u_gtg = u_gtg/norm(u_gtg);
+            u_ao = u_ao/norm(u_ao);
+            u_ao_gtg = obj.alpha*u_gtg+(1-obj.alpha)*u_ao;
+            
+            %% END CODE BLOCK %%
+            
+            % 4. Compute the heading and error for the PID controller
+            theta_ao_gtg = atan2(u_ao_gtg(2),u_ao_gtg(1));
+            e_k = theta_ao_gtg-theta;
+            e_k = atan2(sin(e_k),cos(e_k));
                         
             e_k = atan2(sin(e_k),cos(e_k));
             
@@ -81,9 +96,10 @@ classdef AOandGTG < simiam.controller.Controller
             % Save errors for next time step
             obj.E_k = e_I;
             obj.e_k_1 = e_k;
-            
+                                    
 %             fprintf('(v,w) = (%0.4g,%0.4g)\n', v,w);
-            
+            v = 0.25/(log(abs(w)+2)+1);
+
             outputs.v = v;
             outputs.w = w;
         end
@@ -100,16 +116,16 @@ classdef AOandGTG < simiam.controller.Controller
                 y_s = obj.sensor_placement(2,i);
                 theta_s = obj.sensor_placement(3,i);
                 
-                R = obj.get_transformation_matrix(0,0,0);
-                ir_distances_sf(:,i) = zeros(3,1);
+                R = obj.get_transformation_matrix(x_s,y_s,theta_s);
+                ir_distances_sf(:,i) = R*[ir_distances(i); 0; 1];
             end
             
             % 2. Apply the transformation to world frame.
             
             [x,y,theta] = state_estimate.unpack();
             
-            R = obj.get_transformation_matrix(0,0,0);
-            ir_distances_rf = zeros(3,9);
+            R = obj.get_transformation_matrix(x,y,theta);
+            ir_distances_rf = R*ir_distances_sf;
             
             ir_distances_rf = ir_distances_rf(1:2,:);
         end
@@ -124,7 +140,7 @@ classdef AOandGTG < simiam.controller.Controller
         end
         
         function R = get_transformation_matrix(obj, x, y, theta)
-            R = zeros(3,3);
+            R = [cos(theta) -sin(theta) x; sin(theta) cos(theta) y; 0 0 1];
         end
         
     end

@@ -221,4 +221,9 @@ The fifth project requires you to implement a wall following behavior that can b
 
 \texttt{+simiam/+controller/FollowWall.m} should contain your implementation. Edit \texttt{settings.xml} to add interesting obstacles into the environment for testing. I suggest that you place (initialize) the robot near an obstacle, since you can assume that a go-to-goal obstacle has already ``navigated'' the robot to an obstacle.
 
+\subsection*{Project 6}
+The sixth project requires to combine all of the controllers that you have implemented in the previous projects into a full navigation system. The navigation system should transition between the different behaviors (go-to-goal, obstacle avoidance, ao-and-gtg, wall-following) in order to navigate a complex obstacle course. Up until now obstacles have been convex, but concave obstacles (for example, a $U$ shaped obstacle) pose new problems. The supervisor needs to be able to reason about whether the robot is stuck inside a concave obstacle, and if so initiate a strategy that allows it to navigate out of such obstacles.
+
+The skeleton code for \texttt{K3Supervisor.m} includes new code to create states and events, which can be used to construct a finite state machine (FSM) that represents the logic that is used by the navigation system. You may want to extend the set of states and events, such as, creating an event that detects whether the robot is making any forward progress towards the goal. If not, it may be stuck inside of a concave obstacle and the FSM can trigger on that event to switch to another controller (e.g. follow-wall).
+
 \end{document}
