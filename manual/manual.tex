@@ -581,4 +581,61 @@ Here are a few pointers to help you migrate your own solutions from last week to
  \item The only new addition to the simulator is \texttt{+simiam/+controller/FollowWall.m}. Everything else may be overwrite with the exception of \texttt{K3Supervisor.m}.
 \end{enumerate}
 
+\subsection{Week 7}
+Start by downloading the new robot simulator for this week from the ``Programming Exercises'' tab on the Coursera course page. This week you will be combining the go-to-goal, avoid-obstacles, and follow-wall controllers into a full navigation system for the robot. The robot will be able to navigate around a cluttered, complex environment without colliding with any obstacles and reaching the goal location successfully. Implement your solution in \texttt{+simiam/+controller/+khepera3/K3Supervisor.m}.
+
+\begin{enumerate}
+  \item Implement the \texttt{progress\_made} event that will determine whether the robot is making any progress towards the goal.
+  
+  By default, the robot is set up to switch between \texttt{avoid\_obstacles} and \texttt{go\_to\_goal} to navigate the environment. However, if you launch the simulator with this default behavior, you will notice that the robot cannot escape the larger obstacle as it tries to reach the goal located at $(x,g)=(1,1)$. The robot needs a better strategy for navigation. This strategy needs to realize that the robot is not making any forward progress and switch to \texttt{follow\_wall} to navigate out of the obstacle.
+  
+  Implement the function \texttt{progress\_made} such that it returns \texttt{true} if
+  \begin{equation*}
+    \left\|\begin{bmatrix} x-x_g \\ y-y_g \end{bmatrix}\right\| < d_{\text{progress}}-\epsilon,
+  \end{equation*}
+  where $\epsilon=0.1$ (\texttt{epsilon}) gives a little bit of slack, and $d_{\text{progress}}$ (\texttt{d\_prog}) is the closest (in terms of distance) the robot has progressed towards the goal. This distance should be set using the function \texttt{set\_progress\_point} before switching to the \texttt{follow\_wall} behavior in the third part.
+
+  \item Implement the \texttt{sliding\_left} and \texttt{sliding\_right} events that will serve as a criterion for whether the robot should continue to follow the wall (left or right) or switch back to the go-to-goal behavior.
+  
+  While the lack of \texttt{progress\_made} will trigger the navigation system into a \texttt{follow\_wall} behavior, we need to check whether the robot should stay in the wall following behavior, or switch back to \texttt{go\_to\_goal}. We can check whether we need to be in the sliding mode (wall following) by testing if $\sigma_1>0$ and $\sigma_2>0$, where
+  \begin{equation*}
+    \begin{bmatrix}u_{gtg} & u_{ao}\end{bmatrix}\begin{bmatrix}\sigma_1 \\ \sigma_2\end{bmatrix} = u_{fw}.
+  \end{equation*}
+  
+  Implement this test in the function \texttt{sliding\_left} and \texttt{sliding\_right}. The test will be the same for both functions. The difference is in how $u_{fw}$ is computed.
+  \item Implement the finite state machine that will navigate the robot to the goal located at $(x_g,y_g)=(1,1)$ without colliding with any of the obstacles in the environment.
+  
+  Now, we are ready to implement a finite state machine (FSM) that solves the full navigation problem. A finite state machine is nothing but a set of \texttt{if/elseif/else} statements that first check which state (or behavior) the robot is in, then based on whether an event (condition) is satisfied, the FSM switches to another state or stays in the same state. Some of the logic that should be part of the FSM is:
+  
+  \begin{enumerate}[(i)]
+    \item If \texttt{at\_goal}, then switch to \texttt{stop}.
+    \item If \texttt{unsafe}, then switch to state \texttt{avoid\_obstacles}.
+    \item If in state \texttt{go\_to\_goal} and \texttt{at\_obstacle}, then check whether the robot needs to \texttt{slide\_left} or \texttt{slide\_right}. If so \texttt{set\_progress\_point}, and switch to state \texttt{follow\_wall} (with \texttt{inputs.direction} equal to right or left depending on the results of the sliding test).
+    \item If in state \texttt{follow\_wall}, check whether \texttt{progress\_made} and the robot does not need to slide \texttt{slide\_left} (or \texttt{slide\_right} depending on \texttt{inputs.direction}). If so, switch to state \texttt{go\_to\_goal}, otherwise keep following wall.
+  \end{enumerate}
+  
+  You can check an event using \texttt{obj.check\_event(`name-of-event')} and switch to a different state using \texttt{obj.switch\_to\_state(`name-of-state')}.
+\end{enumerate}
+
+\subsection*{How to test it all}
+To test your code, the simulator is set up to run a simple FSM that is unable to exit the large obstacle and advance towards the goal.
+
+\begin{enumerate}
+  \item Test the first part with the third part.
+  \item Test the second part with the third part.
+  \item Testing the full navigation systems is mostly a binary test: does the robot successfully reach the goal located at $(x_g,y_g)=(1,1)$ or not? However, let us consider a few key situations that will likely be problematic.
+  \begin{enumerate}[(i)]
+    \item First, the default code has the problem that the robot is stuck inside the large obstacle. The reason for this situation is that avoid obstacle is not enough to push the robot far enough way from the obstacle, such that when go-to-goal kicks back in, the robot is clear of the obstacle and has a free path towards the goal. So, you need to make sure that the robot realizes that no progress towards the goal is being made and that wall following needs to be activated for the robot to navigate out of the interior of the large obstacle.
+    \item Second, assuming that the robot has escaped the interior of the large obstacle and is in wall following mode, there is a point at which progress is again being made towards the goal and sliding is no longer necessary. The robot should then stop wall following and resume its go-to-goal behavior. A common problem is that the robot either continues to follow the edge of the large obstacle and never makes the switch to go-to-goal. Another common problem is that the FSM switches to the go-to-goal behavior before the robot has the chance to escape the interior of the large obstacle. Troubleshoot either problem by revisiting the logic that uses the \texttt{progress\_made} and \texttt{sliding\_left} (\texttt{sliding\_right}) events to transition from \texttt{follow\_wall} to \texttt{go\_to\_goal}.
+  \end{enumerate}
+  Remember that adding \texttt{fprintf} calls to different parts of your code can help you debug your problems. By default, the supervisor prints out the state that it switches to.
+\end{enumerate}
+
+\subsubsection*{How to migrate your solutions from last week}
+Here are a few pointers to help you migrate your own solutions from last week to this week's simulator code. You only need to pay attention to this section if you want to use your own solutions, otherwise you can use what is provided for this week and skip this section.
+
+\begin{enumerate}
+ \item Everything may be overwrite with the exception of \texttt{K3Supervisor.m}.
+\end{enumerate}
+
 \end{document}

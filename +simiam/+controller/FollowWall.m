@@ -36,7 +36,7 @@ classdef FollowWall < simiam.controller.Controller
     methods
         
         function obj = FollowWall()
-            obj = obj@simiam.controller.Controller('avoid_obstacles');            
+            obj = obj@simiam.controller.Controller('follow_wall');            
             obj.calibrated = false;
             
             obj.Kp = 5;
@@ -47,7 +47,7 @@ classdef FollowWall < simiam.controller.Controller
             obj.e_k_1 = 0;
             
             %% START CODE BLOCK %%
-            obj.d_fw = 0.1;
+            obj.d_fw = 0.15;
             %% END CODE BLOCK %%
             
 %             obj.p = simiam.util.Plotter();
@@ -58,11 +58,6 @@ classdef FollowWall < simiam.controller.Controller
             % Compute the placement of the sensors
             if(~obj.calibrated)
                 obj.set_sensor_geometry(robot);
-                hold(robot.parent, 'on');
-                obj.v_t = plot(robot.parent, [0;0],[0;0],'r-', 'LineWidth', 2);
-                obj.v_p = plot(robot.parent, [0;0],[0;0],'b-', 'LineWidth', 2);
-                set(obj.v_t, 'ZData', [1;1]);
-                set(obj.v_p, 'ZData', [1;1]);
             end
             
             % Unpack state estimate
@@ -84,27 +79,51 @@ classdef FollowWall < simiam.controller.Controller
             % 1. Select p_2 and p_1, then compute u_fw_t
             if(strcmp(inputs.direction,'right'))
                 % Pick two of the right sensors based on ir_distances
-                p_1 = ir_distances_rf(:,7);
-                p_2 = ir_distances_rf(:,7);
+                S = [1:4 ; ir_distances(8:-1:5)];
+                [Y,i] = sort(S(2,:));
+                S = S(1,i);
+                
+                Sp = 8:-1:5;
+                
+                S1 = Sp(S(1));
+                S2 = Sp(S(2));
+                
+                if(S1 < S2)
+                    p_1 = ir_distances_rf(:,S2);
+                    p_2 = ir_distances_rf(:,S1);
+                else
+                    p_1 = ir_distances_rf(:,S1);
+                    p_2 = ir_distances_rf(:,S2);
+                end
+                
             else
                 % Pick two of the left sensors based on ir_distances
-                p_1 = ir_distances_rf(:,2);
-                p_2 = ir_distances_rf(:,2);
+                S = [1:4 ; ir_distances(1:4)];
+                [Y,i] = sort(S(2,:));
+                S = S(1,i);
+                
+                if(S(1) > S(2))
+                    p_1 = ir_distances_rf(:,S(2));
+                    p_2 = ir_distances_rf(:,S(1));
+                else
+                    p_1 = ir_distances_rf(:,S(1));
+                    p_2 = ir_distances_rf(:,S(2));
+                end
             end
             
-            u_fw_t = [0;0];
+            u_fw_t = p_2-p_1;
 
             % 2. Compute u_a, u_p, and u_fw_tp to compute u_fw_p
             
-            u_fw_tp = [0;0];
-            u_a = [0;0];
-            u_p = [0;0];
+            u_fw_tp = u_fw_t/norm(u_fw_t);
+            u_a = p_1;
+            u_p = [x;y];
             
-            u_fw_p = [0;0];
+            u_fw_p = ((u_a-u_p)-((u_a-u_p)'*u_fw_tp)*u_fw_tp);
             
             % 3. Combine u_fw_tp and u_fw_pp into u_fw;
-            u_fw_pp = [0;0];
-            u_fw = u_fw_tp;
+            u_fw_pp = u_fw_p/norm(u_fw_p);
+            u_fw = obj.d_fw*u_fw_tp+(u_fw_p-obj.d_fw*u_fw_pp);
             
             %% END CODE BLOCK %%
             
@@ -128,14 +147,7 @@ classdef FollowWall < simiam.controller.Controller
             % plot
             obj.p.plot_2d_ref(dt, atan2(sin(theta),cos(theta)), theta_fw, 'c');
             
-            set(obj.v_t, 'XData', [0.25*u_fw_t(1)+p_1(1);p_1(1)]);
-            set(obj.v_t, 'YData', [0.25*u_fw_t(2)+p_1(2);p_1(2)]);
-            set(obj.v_p, 'XData', [u_fw_p(1)+x;x]);
-            set(obj.v_p, 'YData', [u_fw_p(2)+y;y]);
-
-            
-%             fprintf('(v,w) = (%0.4g,%0.4g)\n', v,w);
-            
+%             fprintf('(v,w) = (%0.4g,%0.4g)\n', v,w);            
             % velocity control
             v = 0.25/(log(abs(w)+2)+1);
             outputs.v = v;
