@@ -231,11 +231,12 @@ classdef K3Supervisor < simiam.controller.Supervisor
             [x, y, theta] = obj.state_estimate.unpack();
             epsilon = 0.1;
             
+            %% START CODE BLOCK %%
             rc = false;
-            % Test distance from goal
             if 0 < 1
                 rc = true;          % progress has been made
             end
+            %% END CODE BLOCK %%
             
         end
         
