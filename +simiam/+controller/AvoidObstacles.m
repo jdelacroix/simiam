@@ -83,15 +83,13 @@ classdef AvoidObstacles < simiam.controller.Controller
             obj.e_k_1 = e_k;
                         
             % plot
-            obj.p.plot_2d_ref(dt, theta, theta_o, 'g');
+            obj.p.plot_2d_ref(dt, atan2(sin(theta),cos(theta)), theta_o, 'g');
             
 %             fprintf('(v,w) = (%0.4g,%0.4g)\n', v,w);
             
             % velocity control
 
-            %% START CODE BLOCK %%
-            v = inputs.v;
-            %% END CODE BLOCK %%
+            v =  0.25/(log(abs(w)+2)+1); % = inputs.v;
 
             outputs.v = v;
             outputs.w = w;
