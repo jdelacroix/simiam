@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deployment-project plugin="plugin.apptool" plugin-version="1.0">
+  <configuration target="target.mlapps" target-name="Package App" name="simiam" location="/home/jdelacroix/Workspace/github/simiam" file="/home/jdelacroix/Workspace/github/simiam/simiam.prj" build-checksum="130624665">
+    <param.appname>simiam</param.appname>
+    <param.authnamewatermark>Jean-Pierre de la Croix</param.authnamewatermark>
+    <param.email>ajpl.delacroix@gmail.com</param.email>
+    <param.company>Georgia Institute of Technology</param.company>
+    <param.icon />
+    <param.summary>A MATLAB-based Educational Bridge Between Theory and Practice in Robotics.</param.summary>
+    <param.description>This simulator is an educational tool used to apply control theory concepts to simulated robots. This app is a working demo of a full navigation system for a mobile robot implemented in the simulator. 
+
+Make sure to read the included PDF manual to learn how to use the simulator (programming exercises included). Visit http://gritslab.gatech.edu/projects/robot-simulator for access to the GitHub repository and more.</param.description>
+    <param.screenshot />
+    <param.version>2013.03</param.version>
+    <param.products.name>
+      <item>MATLAB</item>
+    </param.products.name>
+    <param.products.id>
+      <item>1</item>
+    </param.products.id>
+    <param.products.version>
+      <item>8.0</item>
+    </param.products.version>
+    <param.platforms />
+    <param.output>${PROJECT_ROOT}/simiam.mlappinstall</param.output>
+    <param.guid>0d96ac1d-3430-4c77-9760-9f9d896ade43</param.guid>
+    <unset>
+      <param.icon />
+      <param.screenshot />
+      <param.platforms />
+    </unset>
+    <fileset.main>
+      <file>${PROJECT_ROOT}/launch.m</file>
+    </fileset.main>
+    <fileset.depfun>
+      <file>${PROJECT_ROOT}/+simiam/+app/ControlApp.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+controller/+khepera3/K3Supervisor.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+controller/AOandGTG.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+controller/AvoidObstacles.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+controller/Controller.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+controller/FollowWall.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+controller/GoToAngle.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+controller/GoToGoal.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+controller/SlidingMode.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+controller/Stop.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+controller/Supervisor.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+robot/+dynamics/DifferentialDrive.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+robot/+dynamics/Dynamics.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+robot/+sensor/ProximitySensor.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+robot/+sensor/WheelEncoder.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+robot/Khepera3.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+robot/Robot.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+simulator/Obstacle.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+simulator/Physics.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+simulator/Simulator.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+simulator/World.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+ui/AppWindow.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+ui/Drawable.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+ui/Pose2D.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+ui/Surface2D.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+util/Plotter.m</file>
+      <file>${PROJECT_ROOT}/bundled/GridLayout/CellProps.m</file>
+      <file>${PROJECT_ROOT}/bundled/GridLayout/GetArg.m</file>
+      <file>${PROJECT_ROOT}/bundled/GridLayout/GridLayout.m</file>
+      <file>${PROJECT_ROOT}/bundled/GridLayout/ParseArgs.m</file>
+      <file>${PROJECT_ROOT}/bundled/GridLayout/license.txt</file>
+      <file>${PROJECT_ROOT}/bundled/findjobj/findjobj.m</file>
+      <file>${PROJECT_ROOT}/bundled/findjobj/license.txt</file>
+      <file>${PROJECT_ROOT}/bundled/matlab_code_kit/+mcodekit/+list/dl_list.m</file>
+      <file>${PROJECT_ROOT}/bundled/matlab_code_kit/+mcodekit/+list/dl_list_iterator.m</file>
+      <file>${PROJECT_ROOT}/bundled/matlab_code_kit/+mcodekit/+list/dl_list_node.m</file>
+      <file>${PROJECT_ROOT}/bundled/matlab_code_kit/LICENSE</file>
+      <file>${PROJECT_ROOT}/bundled/matlab_code_kit/README.md</file>
+      <file>${PROJECT_ROOT}/manual/ir_actual.eps</file>
+      <file>${PROJECT_ROOT}/manual/k3sensors.png</file>
+      <file>${PROJECT_ROOT}/manual/manual.pdf</file>
+      <file>${PROJECT_ROOT}/manual/manual.tex</file>
+      <file>${PROJECT_ROOT}/manual/simiam.png</file>
+      <file>${PROJECT_ROOT}/manual/week-4-ir-points.png</file>
+      <file>${PROJECT_ROOT}/manual/week-5-part-2.png</file>
+      <file>${PROJECT_ROOT}/manual/week-5-part-3.png</file>
+      <file>${PROJECT_ROOT}/manual/week-5-part-4.png</file>
+      <file>${PROJECT_ROOT}/manual/week-6-part-1.png</file>
+      <file>${PROJECT_ROOT}/manual/week-6-part-1b.png</file>
+      <file>${PROJECT_ROOT}/manual/week-6-part-2.png</file>
+      <file>${PROJECT_ROOT}/resources/icons/COPYING</file>
+      <file>${PROJECT_ROOT}/resources/icons/LICENSE</file>
+      <file>${PROJECT_ROOT}/resources/icons/ui_control_home.png</file>
+      <file>${PROJECT_ROOT}/resources/icons/ui_control_pause.png</file>
+      <file>${PROJECT_ROOT}/resources/icons/ui_control_play.png</file>
+      <file>${PROJECT_ROOT}/resources/icons/ui_control_reset.png</file>
+      <file>${PROJECT_ROOT}/resources/icons/ui_control_zoom_in.png</file>
+      <file>${PROJECT_ROOT}/resources/icons/ui_control_zoom_out.png</file>
+      <file>${PROJECT_ROOT}/resources/icons/ui_status_clock.png</file>
+      <file>${PROJECT_ROOT}/resources/icons/ui_status_error.png</file>
+      <file>${PROJECT_ROOT}/resources/icons/ui_status_ok.png</file>
+      <file>${PROJECT_ROOT}/resources/splash/COPYING</file>
+      <file>${PROJECT_ROOT}/resources/splash/LICENSE</file>
+      <file>${PROJECT_ROOT}/resources/splash/simiam_splash.png</file>
+    </fileset.depfun>
+    <fileset.resources>
+      <file>${PROJECT_ROOT}/+simiam</file>
+      <file>${PROJECT_ROOT}/AUTHORS</file>
+      <file>${PROJECT_ROOT}/LICENSE</file>
+      <file>${PROJECT_ROOT}/README.md</file>
+      <file>${PROJECT_ROOT}/bundled</file>
+      <file>${PROJECT_ROOT}/launch.m</file>
+      <file>${PROJECT_ROOT}/manual</file>
+      <file>${PROJECT_ROOT}/resources</file>
+      <file>${PROJECT_ROOT}/settings.xml</file>
+    </fileset.resources>
+    <fileset.package />
+    <build-deliverables>
+      <file name="simiam.mlappinstall" location="/home/jdelacroix/Workspace/github/simiam" optional="false">/home/jdelacroix/Workspace/github/simiam/simiam.mlappinstall</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>/home/jdelacroix/Applications/Mathworks/MATLAB/R2012b</root>
+    </matlab>
+    <platform>
+      <unix>true</unix>
+      <mac>false</mac>
+      <windows>false</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>true</linux>
+      <solaris>false</solaris>
+      <osver>3.8.0-gentoo-wolverine</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>glnxa64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>
+
