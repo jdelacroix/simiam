@@ -87,11 +87,11 @@ classdef World < handle
            
            supervisor.attach_robot(robot, pose);
            
-           parameter_file = fullfile(obj.root_path, 'simiam', 'parameters.xml');
-           [file, path, ~] = uigetfile(parameter_file, 'Pick a XML file with the parameters for the PID regulator.');
-           
-           parameter_file = fullfile(path, file);
-           supervisor.configure_from_file(parameter_file);
+%            parameter_file = fullfile(obj.root_path, 'simiam', 'parameters.xml');
+%            [file, path, ~] = uigetfile(parameter_file, 'Pick a XML file with the parameters for the PID regulator.');
+%            
+%            parameter_file = fullfile(path, file);
+%            supervisor.configure_from_file(parameter_file);
            
            s = struct('robot', robot, 'supervisor', supervisor, 'pose', pose);
            obj.robots.append_key(s);
