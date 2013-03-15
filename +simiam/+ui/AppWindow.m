@@ -117,7 +117,7 @@ classdef AppWindow < handle
             end
             button_string = ['<html><div style="text-align: center"><img src="' icon_url '"/>' ...
                    '<br>Welcome to <b>Sim.I.am</b>, a robot simulator.' ...
-                   '<br>This is <em>Sim the First</em>, your companion for robotics in this Coursera course.' ...
+                   '<br>This is <em>Sim the Second</em>, your companion for control theory and robotics.' ...
                    '</html>'];
             ui_args = {'Style','pushbutton', 'String', button_string, 'ForegroundColor', 'w', 'FontWeight', 'bold', 'BackgroundColor', obj.ui_colors_.gray, 'Callback', @obj.ui_button_start};
             ui_parent = obj.layout_.Cell(2,1);
@@ -355,7 +355,7 @@ classdef AppWindow < handle
             end
             button_string = ['<html><div style="text-align: center"><img src="' icon_url '"/>' ...
                              '<br>Welcome to <b>Sim.I.am</b>, a robot simulator.' ...
-                             '<br>This is <em>Sim the First</em>, your companion for robotics in this Coursera course.' ...
+                             '<br>This is <em>Sim the Second</em>, your companion for control theory and robotics.' ...
                              '</html>'];
             ui_args = {'Style','pushbutton', 'String', button_string, 'ForegroundColor', 'w', 'FontWeight', 'bold', 'BackgroundColor', obj.ui_colors_.gray, 'Callback', @obj.ui_button_start};
             ui_parent = obj.layout_.Cell(2,1);
@@ -482,9 +482,9 @@ classdef AppWindow < handle
                     setptr(obj.parent_, 'closedhand');
                     set(obj.parent_, 'WindowButtonMotionFcn', @obj.ui_pan_view);
                 case 'open'
-%                     set(obj.target_marker_, 'XData', obj.click_src_(1));
-%                     set(obj.target_marker_, 'YData', obj.click_src_(2));
-%                     obj.simulator_.world.apps.head_.key_.ui_press_mouse(obj.click_src_);
+                    set(obj.target_marker_, 'XData', obj.click_src_(1));
+                    set(obj.target_marker_, 'YData', obj.click_src_(2));
+                    obj.simulator_.world.apps.head_.key_.ui_press_mouse(obj.click_src_);
                 otherwise
                     % noop
             end

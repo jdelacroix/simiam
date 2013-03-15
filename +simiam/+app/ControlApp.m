@@ -22,7 +22,10 @@ classdef ControlApp < handle
         function run(obj, dt)
             
         end
+        
+        function ui_press_mouse(obj, click_src)
+            obj.supervisors.head_.key_.goal = click_src;
+        end
     end
     
 end
-

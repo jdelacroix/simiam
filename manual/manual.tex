@@ -20,8 +20,7 @@
 
 \begin{document}
 
-\title{{\huge{\bf{Sim.I.am: A Robot Simulator }}}\\
-{{Coursera: Control of Mobile Robots}}}
+\title{{\huge{\bf{Sim.I.am: A Robot Simulator }}}}
 \author{Jean-Pierre de la Croix}
 \date{Last Updated: \today}
 
@@ -29,11 +28,11 @@
 \tableofcontents
 \newpage
 \section{Introduction}
-This manual is going to be your resource for using the simulator in the programming exercises for this course. It will be updated throughout the course, so make sure to check it on a regular basis. You can access it anytime from the course page on Coursera under \texttt{Programming Exercises}.
+This manual is going to be your resource for using the simulator in the programming exercises included in this manual. It will be updated from time to time whenever new features are added to the simulator.
 
 \subsection{Installation}
 
-Download \texttt{simiam-coursera-week-X.zip} (where X is the corresponding week for the exercise) from the course page on Coursera under \texttt{Programming Exercises}. Make sure to download a new copy of the simulator \textbf{before} you start a new week's programming exercises, or whenever an announcement is made that a new version is available. It is important to stay up-to-date, since new versions may contain important bug fixes or features required for the programming exercises.
+Download \texttt{simiam-coursera-week-X.zip} (where X is the corresponding week for the exercise) from \href{https://github.com/jdelacroix/simiam/tags}{https://github.com/jdelacroix/simiam/tags}. Make sure to download a new copy of the simulator \textbf{before} you start a new week's programming exercises, or whenever an announcement is made that a new version is available. It is important to stay up-to-date, since new versions may contain important bug fixes or features required for the programming exercises.
 
 Unzip the \texttt{.zip} file to any directory.
 
@@ -42,7 +41,9 @@ Unzip the \texttt{.zip} file to any directory.
 You will need a reasonably modern computer to run the robot simulator. While the simulator will run on hardware older than a Pentium 4, it will probably be a very slow experience. You will also need a copy of MATLAB. The simulator has been tested with MATLAB R2009a, so it is recommended that you use that version or higher. No additional toolboxes are needed to run the simulator.
 
 \subsection{Bug Reporting}
-If you run into a bug (issue) with the simulator, please leave a message in the discussion forums with a detailed description. The bug will get fixed and a new version of the simulator will be uploaded to the course page on Coursera.
+If you run into a bug (issue) with the simulator, please create a issue on GitHub at 
+
+\noindent\href{https://github.com/jdelacroix/simiam/issues}{https://github.com/jdelacroix/simiam/issues}. Make sure to leave a detailed description of the bug, including any relevant information, such as the version of MATLAB.
 
 \section{Mobile Robot}
 
@@ -59,7 +60,7 @@ The mobile robot platform you will be using in the programming exercises is the 
 
 
 \subsection{IR Range Sensors}\label{irprox}
-For the purpose of the programming exercises in the course, you will have access to the array of nine IR sensors that encompass the K3. IR range sensors are effective in the range $0.02$ m to $0.2$ m only. However, the IR sensors return raw values in the range of $[18,3960]$ instead of the measured distances. Figure \ref{fig:irvalues} demonstrates the function that maps these sensors values to distances.
+For the purpose of the programming exercises, you will have access to the array of nine IR sensors that encompass the K3. IR range sensors are effective in the range $0.02$ m to $0.2$ m only. However, the IR sensors return raw values in the range of $[18,3960]$ instead of the measured distances. Figure \ref{fig:irvalues} demonstrates the function that maps these sensors values to distances.
 
 \begin{figure}[h]
  \centering
@@ -165,11 +166,11 @@ This week's exercises will help you learn about MATLAB and robot simulator:
 \begin{enumerate}
 \item Since the programming exercises involve programming in MATLAB, you should familiarize yourself with MATLAB and its language. Point your browser to \url{http://www.mathworks.com/academia/student_center/tutorials}, and watch the interactive MATLAB tutorial.
 
-\item Familiarize yourself with the simulator by reading this manual and downloading the robot simulator posted on the ``Programming Exercises'' section on the Coursera page.
+\item Familiarize yourself with the simulator by reading this manual and downloading the robot simulator. % posted on the ``Programming Exercises'' section on the Coursera page.
 \end{enumerate}
 
 \subsection{Week 2}
-Start by downloading the robot simulator for this week from the ``Programming Exercises'' tab on Coursera course page. Before you can design and test controllers in the simulator, you will need to implement three components of the simulator:
+Start by downloading the robot simulator for this week from \href{https://github.com/jdelacroix/simiam/tags}{https://github.com/jdelacroix/simiam/tags}. Before you can design and test controllers in the simulator, you will need to implement three components of the simulator:
 
 \begin{enumerate}
  \item Implement the transformation from unicycle dynamics to differential drive dynamics, i.e. convert from $(v,\omega)$ to the right and left \textbf{angular} wheel speeds $(v_r,v_l)$.
@@ -178,7 +179,7 @@ Start by downloading the robot simulator for this week from the ``Programming Ex
  
  \item Implement odometry for the robot, such that as the robot moves around, its pose $(x,y,\theta)$ is estimated based on how far each of the wheels have turned. Assume that the robot starts at (0,0,0).
  
- The video lectures and, for example the tutorial located at \url{www.orcboard.org/wiki/images/1/1c/OdometryTutorial.pdf}, cover how odometry is computed. The general idea behind odometry is to use wheel encoders to measure the distance the wheels have turned over a small period of time, and use this information to approximate the change in pose of the robot.
+ The tutorial located at \url{www.orcboard.org/wiki/images/1/1c/OdometryTutorial.pdf} covers how odometry is computed. The general idea behind odometry is to use wheel encoders to measure the distance the wheels have turned over a small period of time, and use this information to approximate the change in pose of the robot.
 
  The pose of the robot is composed of its position $(x,y)$ and its orientation $\theta$ on a 2 dimensional plane (\textbf{note}: the video lecture may refer to robot's orientation as $\phi$). The currently estimated pose is stored in the variable \texttt{state\_estimate}, which bundles \texttt{x} ($x$), \texttt{y} ($y$), and \texttt{theta} ($\theta$). The robot updates the estimate of its pose by calling the \texttt{update\_odometry} function, which is located in \texttt{+simiam/+controller/+khepera3/K3Supervisor.m}. This function is called every \texttt{dt} seconds, where \texttt{dt} is $0.01$s (or a little more if the simulation is running slower).
  \begin{verbatim}  
@@ -240,7 +241,7 @@ To test your code, the simulator will is set to run a single P-regulator that wi
 
 \subsection{Week 3}
 
-Start by downloading the new robot simulator for this week from the ``Programming Exercises'' tab on the Coursera course page. This week you will be implementing the different parts of a PID regulator that steers the robot successfully to some goal location. This is known as the go-to-goal behavior:
+Start by downloading the new robot simulator for this week from \href{https://github.com/jdelacroix/simiam/tags}{https://github.com/jdelacroix/simiam/tags}. This week you will be implementing the different parts of a PID regulator that steers the robot successfully to some goal location. This is known as the go-to-goal behavior:
 
 \begin{enumerate}
  \item Calculate the heading (angle), $\theta_g$, to the goal location $(x_g,y_g)$. Let $u$ be the vector from the robot located at $(x,y)$ to the goal located at $(x_g,y_g)$, then $\theta_g$ is the angle $u$ makes with the $x$-axis (positive $\theta_g$ is in the counterclockwise direction).
@@ -290,7 +291,7 @@ Here are a few pointers to help you migrate your own solutions from last week to
 
 \subsection{Week 4}
 
-Start by downloading the new robot simulator for this week from the ``Programming Exercises'' tab on the Coursera course page. This week you will be implementing the different parts of a controller that steers the robot successfully away from obstacles to avoid a collision. This is known as the avoid-obstacles behavior. The IR sensors allow us to measure the distance to obstacles in the environment, but we need to compute the points in the world to which these distances correspond.
+Start by downloading the new robot simulator for this week from \href{https://github.com/jdelacroix/simiam/tags}{https://github.com/jdelacroix/simiam/tags}. This week you will be implementing the different parts of a controller that steers the robot successfully away from obstacles to avoid a collision. This is known as the avoid-obstacles behavior. The IR sensors allow us to measure the distance to obstacles in the environment, but we need to compute the points in the world to which these distances correspond.
 \begin{figure}[h]
  \centering
  \includegraphics[scale=0.5]{week-4-ir-points.png}
@@ -376,7 +377,7 @@ Here are a few pointers to help you migrate your own solutions from last week to
 \end{enumerate}
 
 \subsection{Week 5}
-Start by downloading the new robot simulator for this week from the ``Programming Exercises'' tab on the Coursera course page. This week you will be making a small improvement to the go-to-goal and avoid-obstacle controllers and testing two arbitration mechanisms: blending and hard switches. Arbitration between the two controllers will allow the robot to drive to a goal, while not colliding with any obstacles on the way.
+Start by downloading the new robot simulator for this week from \href{https://github.com/jdelacroix/simiam/tags}{https://github.com/jdelacroix/simiam/tags}. This week you will be making a small improvement to the go-to-goal and avoid-obstacle controllers and testing two arbitration mechanisms: blending and hard switches. Arbitration between the two controllers will allow the robot to drive to a goal, while not colliding with any obstacles on the way.
 
 \begin{enumerate}
   \item Implement a simple control for the linear velocity, $v$, as a function of the angular velocity, $\omega$. Add it to both \texttt{+simiam/+controller/GoToGoal.m} and \texttt{+simiam/+controller/AvoidObstacles.m}.
@@ -487,7 +488,7 @@ Here are a few pointers to help you migrate your own solutions from last week to
 
 \subsection{Week 6}
 
-Start by downloading the new robot simulator for this week from the ``Programming Exercises'' tab on the Coursera course page. This week you will be implementing a wall following behavior that will aid the robot in navigating around obstacles. Implement these parts in \texttt{+simiam/+controller/+FollowWall.m}.
+Start by downloading the new robot simulator for this week from \href{https://github.com/jdelacroix/simiam/tags}{https://github.com/jdelacroix/simiam/tags}. This week you will be implementing a wall following behavior that will aid the robot in navigating around obstacles. Implement these parts in \texttt{+simiam/+controller/+FollowWall.m}.
 
 \begin{enumerate}
 	\item Compute a vector, $u_{fw,t}$, that estimates a section of the obstacle (``wall'') next to the robot using the robot's right (or left) IR sensors.
@@ -582,7 +583,7 @@ Here are a few pointers to help you migrate your own solutions from last week to
 \end{enumerate}
 
 \subsection{Week 7}
-Start by downloading the new robot simulator for this week from the ``Programming Exercises'' tab on the Coursera course page. This week you will be combining the go-to-goal, avoid-obstacles, and follow-wall controllers into a full navigation system for the robot. The robot will be able to navigate around a cluttered, complex environment without colliding with any obstacles and reaching the goal location successfully. Implement your solution in \texttt{+simiam/+controller/+khepera3/K3Supervisor.m}.
+Start by downloading the new robot simulator for this week from \href{https://github.com/jdelacroix/simiam/tags}{https://github.com/jdelacroix/simiam/tags}. This week you will be combining the go-to-goal, avoid-obstacles, and follow-wall controllers into a full navigation system for the robot. The robot will be able to navigate around a cluttered, complex environment without colliding with any obstacles and reaching the goal location successfully. Implement your solution in \texttt{+simiam/+controller/+khepera3/K3Supervisor.m}.
 
 \begin{enumerate}
   \item Implement the \texttt{progress\_made} event that will determine whether the robot is making any progress towards the goal.
