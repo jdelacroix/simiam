@@ -31,6 +31,8 @@ classdef K3Supervisor < simiam.controller.Supervisor
         d_unsafe
         d_prog
         p
+        
+        direction
     end
     
     methods
@@ -96,6 +98,8 @@ classdef K3Supervisor < simiam.controller.Supervisor
             
             obj.p = simiam.util.Plotter();
             obj.current_controller.p = obj.p;
+            
+            obj.direction = obj.controllers{7}.inputs;
         end
         
         function execute(obj, dt)
@@ -122,6 +126,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
             
             %% END CODE BLOCK %%
                         
+            inputs.direction = obj.direction;
             outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
                 
             [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
