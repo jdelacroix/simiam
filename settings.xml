@@ -3,7 +3,7 @@
     
     <robot type="Khepera3">
         <supervisor type="khepera3.K3Supervisor" />
-        <pose x="0" y="0" theta="0" />
+        <pose x="0" y="0" theta="0.1963" />
     </robot>
     
     <!--

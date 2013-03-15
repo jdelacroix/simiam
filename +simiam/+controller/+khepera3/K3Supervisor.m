@@ -32,6 +32,8 @@ classdef K3Supervisor < simiam.controller.Supervisor
         d_unsafe
         d_prog
         p
+        
+        direction
     end
     
     methods
@@ -86,8 +88,8 @@ classdef K3Supervisor < simiam.controller.Supervisor
             
             obj.v               = 0.1;
             
-            obj.goal            = [1;1];
-            obj.goal_prev       = [1;1];
+            obj.goal            = [1;-0.2];
+            obj.goal_prev       = obj.goal;
             obj.d_stop          = 0.05; 
             obj.d_at_obs        = 0.13;                
             obj.d_unsafe        = 0.03;
@@ -96,6 +98,8 @@ classdef K3Supervisor < simiam.controller.Supervisor
             
             obj.p = simiam.util.Plotter();
             obj.current_controller.p = obj.p;
+            
+            obj.direction = 'right';
         end
         
         function execute(obj, dt)
@@ -108,13 +112,15 @@ classdef K3Supervisor < simiam.controller.Supervisor
             inputs = obj.controllers{7}.inputs; 
             inputs.x_g = obj.goal(1);
             inputs.y_g = obj.goal(2);
+
             
             if(~all(obj.goal==obj.goal_prev))
                obj.set_progress_point();
                obj.goal_prev = obj.goal;
-               if(obj.is_in_state('stop'))
+               'new goal'
+%                if(obj.is_in_state('stop'))
                    obj.switch_to_state('go_to_goal');
-               end
+%                end
             end
             
             if (obj.check_event('at_goal'))
@@ -126,31 +132,31 @@ classdef K3Supervisor < simiam.controller.Supervisor
             else
                 if (obj.is_in_state('go_to_goal'))
                     if(obj.check_event('at_obstacle') && obj.check_event('sliding_left'))
-                        inputs.direction = 'left';
+                        obj.direction = 'left';
 %                         fprintf('now following to the left\n');
                         obj.switch_to_state('follow_wall');
                         obj.set_progress_point();
                     elseif(obj.check_event('at_obstacle') && obj.check_event('sliding_right'))
-                        inputs.direction = 'right';
+                        obj.direction = 'right';
 %                         fprintf('now following to the right\n');
                         obj.switch_to_state('follow_wall');
                         obj.set_progress_point();
                     end
-                elseif (obj.is_in_state('follow_wall') && strcmp(inputs.direction,'left'))
+                elseif (obj.is_in_state('follow_wall') && strcmp(obj.direction,'left'))
                     if(obj.check_event('progress_made') && ~obj.check_event('sliding_left'))
                         obj.switch_to_state('go_to_goal');
                     end
-                elseif (obj.is_in_state('follow_wall') && strcmp(inputs.direction, 'right'))
+                elseif (obj.is_in_state('follow_wall') && strcmp(obj.direction, 'right'))
                     if(obj.check_event('progress_made') && ~obj.check_event('sliding_right'))
                         obj.switch_to_state('go_to_goal');
                     end
                 elseif (obj.is_in_state('avoid_obstacles'))
                     if(obj.check_event('obstacle_cleared'))
                         if(obj.check_event('sliding_left'))
-                            inputs.direction = 'left';
+                            obj.direction = 'left';
                             obj.switch_to_state('follow_wall');
                         elseif(obj.check_event('sliding_right'))
-                            inputs.direction = 'right';
+                            obj.direction = 'right';
                             obj.switch_to_state('follow_wall');
                         else
                             obj.switch_to_state('go_to_goal');
@@ -159,6 +165,8 @@ classdef K3Supervisor < simiam.controller.Supervisor
                 end
  
             end
+            
+            inputs.direction = obj.direction;
                                     
             outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
                 
@@ -190,7 +198,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
             u_fw = obj.controllers{7}.u_fw;
             
             sigma = [u_gtg u_ao]\u_fw;
-            
+%             fprintf('sliding left check: (%0.3f,%0.3f)\n', sigma(1), sigma(2));
             rc = false;
             if sigma(1) > 0 && sigma(2) > 0
 %                 fprintf('now sliding left\n');
@@ -211,6 +219,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
             u_fw = obj.controllers{7}.u_fw;
             
             sigma = [u_gtg u_ao]\u_fw;
+%             fprintf('sliding right check: (%0.3f,%0.3f)\n', sigma(1), sigma(2)); 
             
             rc = false;
             if sigma(1) > 0 && sigma(2) > 0

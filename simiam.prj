@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration target="target.mlapps" target-name="Package App" name="simiam" location="/home/jdelacroix/Workspace/github/simiam" file="/home/jdelacroix/Workspace/github/simiam/simiam.prj" build-checksum="1093264918">
+  <configuration target="target.mlapps" target-name="Package App" name="simiam" location="/home/jdelacroix/Workspace/github/simiam" file="/home/jdelacroix/Workspace/github/simiam/simiam.prj" build-checksum="4092655430">
     <param.appname>simiam</param.appname>
     <param.authnamewatermark>Jean-Pierre de la Croix</param.authnamewatermark>
-    <param.email />
-    <param.company />
+    <param.email>ajpl.delacroix@gmail.com</param.email>
+    <param.company>Georgia Institute of Technology</param.company>
     <param.icon />
-    <param.summary>A MATLAB-based educational bridge between theory and practice in robotics.</param.summary>
+    <param.summary>A MATLAB-based educational bridge between theory and pratice in robotics.</param.summary>
     <param.description>Sim.I.am is a robotics simulator that can be used to learn how to apply controls to mobile robots.
 
 This app is a working demo of a full navigation system for a mobile robot implemented in the simulator. On-screen instructions are included.</param.description>
@@ -23,10 +23,8 @@ This app is a working demo of a full navigation system for a mobile robot implem
     </param.products.version>
     <param.platforms />
     <param.output>${PROJECT_ROOT}/simiam.mlappinstall</param.output>
-    <param.guid>def6813e-fa59-48de-b1c3-3ce5d2057bc0</param.guid>
+    <param.guid>0fabb02a-7b35-4a4b-b469-0a3764540580</param.guid>
     <unset>
-      <param.email />
-      <param.company />
       <param.icon />
       <param.screenshot />
       <param.platforms />
@@ -35,6 +33,23 @@ This app is a working demo of a full navigation system for a mobile robot implem
       <file>${PROJECT_ROOT}/launch.m</file>
     </fileset.main>
     <fileset.depfun>
+      <file>${PROJECT_ROOT}/+simiam/+app/ControlApp.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+controller/+khepera3/K3Supervisor.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+controller/AOandGTG.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+controller/AvoidObstacles.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+controller/Controller.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+controller/FollowWall.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+controller/GoToAngle.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+controller/GoToGoal.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+controller/SlidingMode.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+controller/Stop.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+controller/Supervisor.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+robot/+dynamics/DifferentialDrive.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+robot/+dynamics/Dynamics.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+robot/+sensor/ProximitySensor.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+robot/+sensor/WheelEncoder.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+robot/Khepera3.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+robot/Robot.m</file>
       <file>${PROJECT_ROOT}/+simiam/+simulator/Obstacle.m</file>
       <file>${PROJECT_ROOT}/+simiam/+simulator/Physics.m</file>
       <file>${PROJECT_ROOT}/+simiam/+simulator/Simulator.m</file>
@@ -43,6 +58,7 @@ This app is a working demo of a full navigation system for a mobile robot implem
       <file>${PROJECT_ROOT}/+simiam/+ui/Drawable.m</file>
       <file>${PROJECT_ROOT}/+simiam/+ui/Pose2D.m</file>
       <file>${PROJECT_ROOT}/+simiam/+ui/Surface2D.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+util/Plotter.m</file>
       <file>${PROJECT_ROOT}/bundled/GridLayout/CellProps.m</file>
       <file>${PROJECT_ROOT}/bundled/GridLayout/GetArg.m</file>
       <file>${PROJECT_ROOT}/bundled/GridLayout/GridLayout.m</file>
@@ -71,7 +87,10 @@ This app is a working demo of a full navigation system for a mobile robot implem
       <file>${PROJECT_ROOT}/resources/splash/simiam_splash.png</file>
     </fileset.depfun>
     <fileset.resources>
+      <file>${PROJECT_ROOT}/+simiam</file>
+      <file>${PROJECT_ROOT}/AUTHORS</file>
       <file>${PROJECT_ROOT}/LICENSE</file>
+      <file>${PROJECT_ROOT}/README.md</file>
       <file>${PROJECT_ROOT}/bundled</file>
       <file>${PROJECT_ROOT}/launch.m</file>
       <file>${PROJECT_ROOT}/resources</file>
