@@ -56,7 +56,7 @@ classdef SlidingMode < simiam.controller.Controller
 
             % 0. Compute u_ao and u_gtg
 
-            sensor_gains = [0 0.5 1 1 1 1 0.5 0 0];
+            sensor_gains = [1 1 1 1 1 1 1 1 1];
             u_i = (ir_distances_rf-repmat([x;y],1,9))*diag(sensor_gains);
             obj.u_ao = sum(u_i,2);
             
