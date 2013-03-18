@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration target="target.mlapps" target-name="Package App" name="simiam" location="/home/jdelacroix/Workspace/github/simiam" file="/home/jdelacroix/Workspace/github/simiam/simiam.prj" build-checksum="4092655430">
+  <configuration target="target.mlapps" target-name="Package App" name="simiam" location="/home/jdelacroix/Workspace/github/simiam" file="/home/jdelacroix/Workspace/github/simiam/simiam.prj" build-checksum="1033465818">
     <param.appname>simiam</param.appname>
     <param.authnamewatermark>Jean-Pierre de la Croix</param.authnamewatermark>
     <param.email>ajpl.delacroix@gmail.com</param.email>
@@ -71,8 +71,18 @@ This app is a working demo of a full navigation system for a mobile robot implem
       <file>${PROJECT_ROOT}/bundled/matlab_code_kit/+mcodekit/+list/dl_list_node.m</file>
       <file>${PROJECT_ROOT}/bundled/matlab_code_kit/LICENSE</file>
       <file>${PROJECT_ROOT}/bundled/matlab_code_kit/README.md</file>
-      <file>${PROJECT_ROOT}/resources/icons/COPYING</file>
-      <file>${PROJECT_ROOT}/resources/icons/LICENSE</file>
+      <file>${PROJECT_ROOT}/manual/ir_actual.eps</file>
+      <file>${PROJECT_ROOT}/manual/k3sensors.png</file>
+      <file>${PROJECT_ROOT}/manual/manual.pdf</file>
+      <file>${PROJECT_ROOT}/manual/manual.tex</file>
+      <file>${PROJECT_ROOT}/manual/simiam.png</file>
+      <file>${PROJECT_ROOT}/manual/week-4-ir-points.png</file>
+      <file>${PROJECT_ROOT}/manual/week-5-part-2.png</file>
+      <file>${PROJECT_ROOT}/manual/week-5-part-3.png</file>
+      <file>${PROJECT_ROOT}/manual/week-5-part-4.png</file>
+      <file>${PROJECT_ROOT}/manual/week-6-part-1.png</file>
+      <file>${PROJECT_ROOT}/manual/week-6-part-1b.png</file>
+      <file>${PROJECT_ROOT}/manual/week-6-part-2.png</file>
       <file>${PROJECT_ROOT}/resources/icons/ui_control_home.png</file>
       <file>${PROJECT_ROOT}/resources/icons/ui_control_pause.png</file>
       <file>${PROJECT_ROOT}/resources/icons/ui_control_play.png</file>
@@ -82,8 +92,7 @@ This app is a working demo of a full navigation system for a mobile robot implem
       <file>${PROJECT_ROOT}/resources/icons/ui_status_clock.png</file>
       <file>${PROJECT_ROOT}/resources/icons/ui_status_error.png</file>
       <file>${PROJECT_ROOT}/resources/icons/ui_status_ok.png</file>
-      <file>${PROJECT_ROOT}/resources/splash/COPYING</file>
-      <file>${PROJECT_ROOT}/resources/splash/LICENSE</file>
+      <file>${PROJECT_ROOT}/resources/simiam_screenshot.jpg</file>
       <file>${PROJECT_ROOT}/resources/splash/simiam_splash.png</file>
     </fileset.depfun>
     <fileset.resources>
@@ -93,6 +102,7 @@ This app is a working demo of a full navigation system for a mobile robot implem
       <file>${PROJECT_ROOT}/README.md</file>
       <file>${PROJECT_ROOT}/bundled</file>
       <file>${PROJECT_ROOT}/launch.m</file>
+      <file>${PROJECT_ROOT}/manual</file>
       <file>${PROJECT_ROOT}/resources</file>
       <file>${PROJECT_ROOT}/settings.xml</file>
     </fileset.resources>
