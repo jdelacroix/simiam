@@ -34,6 +34,12 @@ classdef K3Supervisor < simiam.controller.Supervisor
         p
         
         direction
+        
+        v_gtg
+        v_ao
+        v_fw
+        
+%         is_init
     end
     
     methods
@@ -88,7 +94,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
             
             obj.v               = 0.1;
             
-            obj.goal            = [1;-0.2];
+            obj.goal            = [1;1];
             obj.goal_prev       = obj.goal;
             obj.d_stop          = 0.05; 
             obj.d_at_obs        = 0.13;                
@@ -100,6 +106,8 @@ classdef K3Supervisor < simiam.controller.Supervisor
             obj.current_controller.p = obj.p;
             
             obj.direction = 'right';
+            
+%             obj.is_init = false;
         end
         
         function execute(obj, dt)
@@ -108,6 +116,15 @@ classdef K3Supervisor < simiam.controller.Supervisor
         %   available controllers and execute it.
         %
         %   See also controller/execute
+            
+%             if(~obj.is_init)
+%                 hold(obj.robot.parent, 'on');
+%                 obj.v_gtg = plot(obj.robot.parent, [0 0], [0 0], 'r-');
+%                 obj.v_ao = plot(obj.robot.parent, [0 0], [0 0], 'b-');
+%                 obj.v_fw = plot(obj.robot.parent, [0 0], [0 0], 'k-');
+%                 obj.is_init = true;
+%             end
+%             plot(obj.robot.parent, obj.goal(1), obj.goal(2), 'ro', 'MarkerFaceColor', 'r');
         
             inputs = obj.controllers{7}.inputs; 
             inputs.x_g = obj.goal(1);
@@ -117,7 +134,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
             if(~all(obj.goal==obj.goal_prev))
                obj.set_progress_point();
                obj.goal_prev = obj.goal;
-               'new goal'
+%                'new goal'
 %                if(obj.is_in_state('stop'))
                    obj.switch_to_state('go_to_goal');
 %                end
@@ -196,6 +213,13 @@ classdef K3Supervisor < simiam.controller.Supervisor
             u_gtg = obj.controllers{7}.u_gtg;
             u_ao = obj.controllers{7}.u_ao;
             u_fw = obj.controllers{7}.u_fw;
+            
+%             set(obj.v_gtg, 'XData', [0 u_gtg(1)]);
+%             set(obj.v_gtg, 'YData', [0 u_gtg(2)]);
+%             set(obj.v_ao,  'XData', [0 u_ao(1)]);
+%             set(obj.v_ao,  'YData', [0 u_ao(2)]);
+%             set(obj.v_fw,  'XData', [0 u_fw(1)]);
+%             set(obj.v_fw,  'YData', [0 u_fw(2)]);
             
             sigma = [u_gtg u_ao]\u_fw;
 %             fprintf('sliding left check: (%0.3f,%0.3f)\n', sigma(1), sigma(2));
