@@ -60,7 +60,7 @@ classdef SlidingMode < simiam.controller.Controller
             u_i = (ir_distances_rf-repmat([x;y],1,9))*diag(sensor_gains);
             obj.u_ao = sum(u_i,2);
             
-            obj.u_gtg = [x-inputs.x_g; y-inputs.y_g];
+            obj.u_gtg = [inputs.x_g-x; inputs.y_g-y];
 
             % 1. Select p_2 and p_1, then compute u_fw_t
             if(strcmp(inputs.direction,'right'))
