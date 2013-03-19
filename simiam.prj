@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration target="target.mlapps" target-name="Package App" name="simiam" location="/home/jdelacroix/Workspace/github/simiam" file="/home/jdelacroix/Workspace/github/simiam/simiam.prj" build-checksum="1033465818">
+  <configuration target="target.mlapps" target-name="Package App" name="simiam" location="/home/jdelacroix/Workspace/github/simiam" file="/home/jdelacroix/Workspace/github/simiam/simiam.prj" build-checksum="3656735647">
     <param.appname>simiam</param.appname>
     <param.authnamewatermark>Jean-Pierre de la Croix</param.authnamewatermark>
     <param.email>ajpl.delacroix@gmail.com</param.email>
@@ -83,6 +83,7 @@ This app is a working demo of a full navigation system for a mobile robot implem
       <file>${PROJECT_ROOT}/manual/week-6-part-1.png</file>
       <file>${PROJECT_ROOT}/manual/week-6-part-1b.png</file>
       <file>${PROJECT_ROOT}/manual/week-6-part-2.png</file>
+      <file>${PROJECT_ROOT}/resources/icons/AUTHORS</file>
       <file>${PROJECT_ROOT}/resources/icons/ui_control_home.png</file>
       <file>${PROJECT_ROOT}/resources/icons/ui_control_pause.png</file>
       <file>${PROJECT_ROOT}/resources/icons/ui_control_play.png</file>
@@ -93,7 +94,7 @@ This app is a working demo of a full navigation system for a mobile robot implem
       <file>${PROJECT_ROOT}/resources/icons/ui_status_error.png</file>
       <file>${PROJECT_ROOT}/resources/icons/ui_status_ok.png</file>
       <file>${PROJECT_ROOT}/resources/simiam_screenshot.jpg</file>
-      <file>${PROJECT_ROOT}/resources/splash/simiam_splash.png</file>
+      <file>${PROJECT_ROOT}/resources/simiam_splash.png</file>
     </fileset.depfun>
     <fileset.resources>
       <file>${PROJECT_ROOT}/+simiam</file>
