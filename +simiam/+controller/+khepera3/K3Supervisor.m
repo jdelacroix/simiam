@@ -115,13 +115,39 @@ classdef K3Supervisor < simiam.controller.Supervisor
             
             %% START CODE BLOCK %%
             
-            
-            if(obj.check_event('at_goal'))
+            if (obj.check_event('at_goal'))
                 obj.switch_to_state('stop');
-            elseif(obj.check_event('at_obstacle'))
-                obj.switch_to_state('avoid_obstacles');
-            elseif(obj.check_event('obstacle_cleared'))
-                obj.switch_to_state('go_to_goal');
+%                 [x,y,theta] = obj.state_estimate.unpack();
+%                 fprintf('stopped at (%0.3f,%0.3f)\n', x, y);
+            elseif(obj.check_event('unsafe'))
+                obj.switch_to_state('avoid_obstacles');                
+            else
+                if (obj.is_in_state('go_to_goal'))
+                    if(obj.check_event('at_obstacle') && obj.check_event('sliding_left'))
+                        obj.direction = 'left';
+%                         fprintf('now following to the left\n');
+                        obj.switch_to_state('follow_wall');
+                        obj.set_progress_point();
+                    elseif(obj.check_event('at_obstacle') && obj.check_event('sliding_right'))
+                        obj.direction = 'right';
+%                         fprintf('now following to the right\n');
+                        obj.switch_to_state('follow_wall');
+                        obj.set_progress_point();
+                    end
+                elseif (obj.is_in_state('follow_wall') && strcmp(obj.direction,'left'))
+                    if(obj.check_event('progress_made') && ~obj.check_event('sliding_left'))
+                        obj.switch_to_state('go_to_goal');
+                    end
+                elseif (obj.is_in_state('follow_wall') && strcmp(obj.direction, 'right'))
+                    if(obj.check_event('progress_made') && ~obj.check_event('sliding_right'))
+                        obj.switch_to_state('go_to_goal');
+                    end
+                elseif (obj.is_in_state('avoid_obstacles'))
+                    if(obj.check_event('obstacle_cleared'))
+                        obj.switch_to_state('go_to_goal');
+                    end
+                end
+ 
             end
             
             %% END CODE BLOCK %%
@@ -157,7 +183,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
             u_fw = obj.controllers{7}.u_fw;
             
             %% START CODE BLOCK %%
-            sigma = [0;0];
+            sigma = [u_gtg u_ao]\u_fw;
             %% END CODE BLOCK %%
             
             rc = false;
@@ -238,7 +264,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
             
             %% START CODE BLOCK %%
             rc = false;
-            if 0 < 1
+            if norm([obj.goal(1)-x; obj.goal(2)-y]) < obj.d_prog - epsilon;
                 rc = true;          % progress has been made
             end
             %% END CODE BLOCK %%
