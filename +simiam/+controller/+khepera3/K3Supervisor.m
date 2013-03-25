@@ -206,7 +206,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
             u_fw = obj.controllers{7}.u_fw;
             
             %% START CODE BLOCK
-            sigma = [0;0];
+            sigma = [u_gtg u_ao]\u_fw;
             %% END CODE BLOCK
             
             rc = false;
