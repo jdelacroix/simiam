@@ -16,6 +16,7 @@ function msfun_simiam_ui(block)
 %% S-function such as ports, parameters, etc. Do not add any other
 %% calls to the main body of the function.
 %%
+simulator = [];
 setup(block);
 
 %endfunction
@@ -39,7 +40,7 @@ block.NumOutputPorts = 0;
 
 % Set up the states
 block.NumContStates = 0;
-block.NumDworks = 0;
+% block.NumDworks = 0;
 
 % Register parameters
 block.NumDialogPrms     = 0;
@@ -50,7 +51,7 @@ block.NumDialogPrms     = 0;
 %
 %  [-1, 0]               : Inherited sample time
 %  [-2, 0]               : Variable sample time
-block.SampleTimes = [0 1];
+block.SampleTimes = [0.033 0];
 
 % Specify the block simStateCompliance. The allowed values are:
 %    'UnknownSimState', < The default setting; warn and assume DefaultSimState
@@ -69,7 +70,6 @@ block.SimStateCompliance = 'DefaultSimState';
 %% provided for each function for more information.
 %% -----------------------------------------------------------------
 
-block.RegBlockMethod('PostPropagationSetup',    @DoPostPropSetup);
 block.RegBlockMethod('InitializeConditions', @InitializeConditions);
 block.RegBlockMethod('Start', @Start);
 block.RegBlockMethod('Outputs', @Outputs);     % Required
@@ -78,22 +78,6 @@ block.RegBlockMethod('Derivatives', @Derivatives);
 block.RegBlockMethod('Terminate', @Terminate); % Required
 
 %end setup
-
-%%
-%% PostPropagationSetup:
-%%   Functionality    : Setup work areas and state variables. Can
-%%                      also register run-time methods here
-%%   Required         : No
-%%   C-Mex counterpart: mdlSetWorkWidths
-%%
-function DoPostPropSetup(block)
-block.NumDworks = 1;
-  
-  block.Dwork(1).Name            = 'x1';
-  block.Dwork(1).Dimensions      = 1;
-  block.Dwork(1).DatatypeID      = 0;      % double
-  block.Dwork(1).Complexity      = 'Real'; % real
-  block.Dwork(1).UsedAsDiscState = true;
 
 
 %%
@@ -120,8 +104,6 @@ function InitializeConditions(block)
 %%
 function Start(block)
 
-block.Dwork(1).Data = 0;
-
 root_path = fullfile(fileparts(mfilename('fullpath')), '../');
 addpath(genpath(root_path));
 root_path
@@ -131,7 +113,8 @@ app.load_ui();
 
 % store info in custom data;
 customData = containers.Map('UniformValues', false);
-customData('simulatorHandle') = app.simulator_;
+simulator = app.simulator_;
+customData('simulatorHandle') = simulator;
 set(block.BlockHandle, 'UserData', customData, 'UserDataPersistent', 'off');
 
 
@@ -146,8 +129,6 @@ set(block.BlockHandle, 'UserData', customData, 'UserDataPersistent', 'off');
 %%
 function Outputs(block)
 
-block.OutputPort(1).Data = block.Dwork(1).Data + block.InputPort(1).Data;
-
 %end Outputs
 
 %%
@@ -159,7 +140,10 @@ block.OutputPort(1).Data = block.Dwork(1).Data + block.InputPort(1).Data;
 %%
 function Update(block)
 
-block.Dwork(1).Data = block.InputPort(1).Data;
+customData = get(block.BlockHandle, 'UserData');
+simulator = customData('simulatorHandle');
+
+simulator.step([],[]);
 
 %end Update
 

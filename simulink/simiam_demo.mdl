@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.3"
+    ComputedModelVersion    "1.9"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -30,7 +30,7 @@ Model {
       $ObjectID		      2
       $ClassName	      "Simulink.WindowInfo"
       IsActive		      [1]
-      Location		      [703.0, 234.0, 814.0, 495.0]
+      Location		      [131.0, 112.0, 1301.0, 751.0]
       Object {
 	$PropName		"ModelBrowserInfo"
 	$ObjectID		3
@@ -54,9 +54,9 @@ Model {
 	IsActive		[1]
 	ViewObjType		"SimulinkTopLevel"
 	LoadSaveID		"0"
-	Extents			[758.0, 315.0]
-	ZoomFactor		[1.0]
-	Offset			[-56.5, -37.5]
+	Extents			[1245.0, 571.0]
+	ZoomFactor		[1.25]
+	Offset			[8.8000000000000114, -65.3391498565674]
       }
     }
   }
@@ -66,9 +66,9 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "jdelacroix"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Wed Apr 10 11:47:36 2013"
+  LastModifiedDate	  "Wed Apr 10 18:22:42 2013"
   RTWModifiedTimeStamp	  287494054
-  ModelVersionFormat	  "1.%<AutoIncrement:3>"
+  ModelVersionFormat	  "1.%<AutoIncrement:9>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -174,7 +174,7 @@ Model {
 	  StartTime		  "0.0"
 	  StopTime		  "10.0"
 	  AbsTol		  "auto"
-	  FixedStep		  "auto"
+	  FixedStep		  "0.033"
 	  InitialStep		  "auto"
 	  MaxNumMinSteps	  "-1"
 	  MaxOrder		  5
@@ -190,8 +190,8 @@ Model {
 	  SolverMode		  "Auto"
 	  EnableConcurrentExecution off
 	  ConcurrentTasks	  off
-	  Solver		  "ode45"
-	  SolverName		  "ode45"
+	  Solver		  "FixedStepDiscrete"
+	  SolverName		  "FixedStepDiscrete"
 	  SolverJacobianMethodControl "auto"
 	  ShapePreserveControl	  "DisableAll"
 	  ZeroCrossControl	  "UseLocalSettings"
@@ -663,7 +663,7 @@ Model {
       }
       Name		      "Configuration"
       CurrentDlgPage	      "Solver"
-      ConfigPrmDlgPosition     [ 360, 135, 1240, 765 ] 
+      ConfigPrmDlgPosition     [ 350, 75, 1250, 749 ] 
     }
     PropName		    "ConfigurationSets"
   }
@@ -753,10 +753,41 @@ Model {
       Floating		      off
       SampleTime	      "-1"
     }
+    Block {
+      BlockType		      Gain
+      Gain		      "1"
+      Multiplication	      "Element-wise(K.*u)"
+      ParamMin		      "[]"
+      ParamMax		      "[]"
+      ParamDataTypeStr	      "Inherit: Same as input"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeStr	      "Inherit: Same as input"
+      LockScale		      off
+      RndMeth		      "Floor"
+      SaturateOnIntegerOverflow	on
+      SampleTime	      "-1"
+    }
+    Block {
+      BlockType		      Sum
+      IconShape		      "rectangular"
+      Inputs		      "++"
+      CollapseMode	      "All dimensions"
+      CollapseDim	      "1"
+      InputSameDT	      on
+      AccumDataTypeStr	      "Inherit: Inherit via internal rule"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeStr	      "Inherit: Same as first input"
+      LockScale		      off
+      RndMeth		      "Floor"
+      SaturateOnIntegerOverflow	on
+      SampleTime	      "-1"
+    }
   }
   System {
     Name		    "simiam_demo"
-    Location		    [703, 234, 1517, 729]
+    Location		    [131, 112, 1432, 863]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -768,53 +799,143 @@ Model {
     TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
     TiledPageScale	    1
     ShowPageBoundaries	    off
-    ZoomFactor		    "100"
+    ZoomFactor		    "125"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "8"
+    SIDHighWatermark	    "28"
     Block {
       BlockType		      Constant
       Name		      "Constant"
-      SID		      "5"
-      Position		      [135, 85, 165, 115]
-      ZOrder		      3
+      SID		      "14"
+      Position		      [180, 80, 210, 110]
+      ZOrder		      12
+      Value		      "0.1"
     }
     Block {
       BlockType		      Constant
-      Name		      "Constant1"
-      SID		      "6"
-      Position		      [135, 125, 165, 155]
-      ZOrder		      4
+      Name		      "Constant2"
+      SID		      "23"
+      Position		      [180, 230, 210, 260]
+      ZOrder		      20
+      Value		      "0.785"
     }
     Block {
       BlockType		      Display
       Name		      "Display"
-      SID		      "7"
+      SID		      "20"
       Ports		      [1]
-      Position		      [470, 85, 560, 115]
-      ZOrder		      5
+      Position		      [920, 170, 1010, 200]
+      ZOrder		      17
       Decimation	      "1"
       Lockdown		      off
     }
     Block {
       BlockType		      Display
       Name		      "Display1"
-      SID		      "8"
+      SID		      "21"
       Ports		      [1]
-      Position		      [470, 125, 560, 155]
-      ZOrder		      6
+      Position		      [920, 220, 1010, 250]
+      ZOrder		      18
       Decimation	      "1"
       Lockdown		      off
     }
     Block {
+      BlockType		      Display
+      Name		      "Display2"
+      SID		      "22"
+      Ports		      [1]
+      Position		      [920, 270, 1010, 300]
+      ZOrder		      19
+      Decimation	      "1"
+      Lockdown		      off
+    }
+    Block {
+      BlockType		      Gain
+      Name		      "Gain"
+      SID		      "28"
+      Position		      [360, 230, 390, 260]
+      ZOrder		      25
+      Gain		      "5"
+      ParamDataTypeStr	      "Inherit: Inherit via internal rule"
+      OutDataTypeStr	      "Inherit: Inherit via internal rule"
+      SaturateOnIntegerOverflow	off
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Khepera III"
+      SID		      "17"
+      Ports		      [2, 2]
+      Position		      [395, 76, 530, 154]
+      ZOrder		      14
+      LibraryVersion	      "1.7"
+      SourceBlock	      "simiam/Khepera III"
+      SourceType	      ""
+      x_0		      "0"
+      y_0		      "0"
+      theta_0		      "0"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Pose2D"
+      SID		      "18"
+      Ports		      [3, 3]
+      Position		      [740, 79, 825, 151]
+      ZOrder		      15
+      LibraryVersion	      "1.7"
+      SourceBlock	      "simiam/Pose2D"
+      SourceType	      ""
+      ShowPortLabels	      "FromPortIcon"
+      SystemSampleTime	      "-1"
+      FunctionWithSeparateData off
+      GeneratePreprocessorConditionals off
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Simulator"
+      SID		      "9"
+      Ports		      []
+      Position		      [20, 62, 135, 173]
+      ZOrder		      7
+      Priority		      "1"
+      LibraryVersion	      "1.7"
+      SourceBlock	      "simiam/Simulator"
+      SourceType	      "Simulator"
+    }
+    Block {
+      BlockType		      Sum
+      Name		      "Sum"
+      SID		      "27"
+      Ports		      [2, 1]
+      Position		      [275, 235, 295, 255]
+      ZOrder		      24
+      ShowName		      off
+      IconShape		      "round"
+      Inputs		      "|+-"
+      InputSameDT	      off
+      OutDataTypeStr	      "Inherit: Inherit via internal rule"
+      SaturateOnIntegerOverflow	off
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "odometry"
+      SID		      "19"
+      Ports		      [4, 3]
+      Position		      [595, 78, 695, 147]
+      ZOrder		      16
+      LibraryVersion	      "1.7"
+      SourceBlock	      "simiam/odometry"
+      SourceType	      ""
+      wheel_radius	      "0.021"
+      wheel_base_length	      "0.0885"
+      ticks_per_rev	      "2675"
+    }
+    Block {
       BlockType		      Reference
       Name		      "uni_to_diff"
-      SID		      "4"
+      SID		      "13"
       Ports		      [2, 2]
-      Position		      [250, 79, 395, 161]
-      ZOrder		      2
-      ForegroundColor	      "red"
-      BackgroundColor	      "yellow"
-      LibraryVersion	      "1.5"
+      Position		      [265, 76, 340, 154]
+      ZOrder		      11
+      LibraryVersion	      "1.7"
       SourceBlock	      "simiam/uni_to_diff"
       SourceType	      ""
       wheel_radius	      "0.021"
@@ -822,15 +943,15 @@ Model {
     }
     Line {
       SrcBlock		      "uni_to_diff"
-      SrcPort		      2
-      DstBlock		      "Display1"
+      SrcPort		      1
+      DstBlock		      "Khepera III"
       DstPort		      1
     }
     Line {
       SrcBlock		      "uni_to_diff"
-      SrcPort		      1
-      DstBlock		      "Display"
-      DstPort		      1
+      SrcPort		      2
+      DstBlock		      "Khepera III"
+      DstPort		      2
     }
     Line {
       SrcBlock		      "Constant"
@@ -839,8 +960,98 @@ Model {
       DstPort		      1
     }
     Line {
-      SrcBlock		      "Constant1"
+      SrcBlock		      "odometry"
+      SrcPort		      3
+      DstBlock		      "Pose2D"
+      DstPort		      3
+    }
+    Line {
+      SrcBlock		      "odometry"
+      SrcPort		      2
+      DstBlock		      "Pose2D"
+      DstPort		      2
+    }
+    Line {
+      SrcBlock		      "odometry"
       SrcPort		      1
+      DstBlock		      "Pose2D"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Khepera III"
+      SrcPort		      2
+      DstBlock		      "odometry"
+      DstPort		      4
+    }
+    Line {
+      SrcBlock		      "Pose2D"
+      SrcPort		      1
+      Points		      [45, 0]
+      Branch {
+	Points			[0, 95]
+	DstBlock		"Display"
+	DstPort			1
+      }
+      Branch {
+	Points			[0, -27; -295, 0]
+	DstBlock		"odometry"
+	DstPort			1
+      }
+    }
+    Line {
+      SrcBlock		      "Pose2D"
+      SrcPort		      2
+      Points		      [55, 0]
+      Branch {
+	Points			[0, 120]
+	DstBlock		"Display1"
+	DstPort			1
+      }
+      Branch {
+	Points			[0, -65; -319, 0; 0, 55]
+	DstBlock		"odometry"
+	DstPort			2
+      }
+    }
+    Line {
+      SrcBlock		      "Constant2"
+      SrcPort		      1
+      DstBlock		      "Sum"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Sum"
+      SrcPort		      1
+      DstBlock		      "Gain"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Pose2D"
+      SrcPort		      3
+      Points		      [18, 0]
+      Branch {
+	Points			[0, 192; -563, 0]
+	DstBlock		"Sum"
+	DstPort			2
+      }
+      Branch {
+	Points			[48, 0]
+	Branch {
+	  Points		  [0, 145]
+	  DstBlock		  "Display2"
+	  DstPort		  1
+	}
+	Branch {
+	  Points		  [0, -106; -341, 0; 0, 86]
+	  DstBlock		  "odometry"
+	  DstPort		  3
+	}
+      }
+    }
+    Line {
+      SrcBlock		      "Gain"
+      SrcPort		      1
+      Points		      [62, 0; 0, -56; -226, 0; 0, -54]
       DstBlock		      "uni_to_diff"
       DstPort		      2
     }

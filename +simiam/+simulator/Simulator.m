@@ -56,7 +56,12 @@ classdef Simulator < handle
         %   step(obj, src, event) is the timer callback which is executed
         %   once every time_step seconds.
             
-            split = max(obj.time_step,get(obj.clock, 'InstantPeriod'));
+            if(obj.from_simulink)
+                split = obj.time_step;
+            else
+                split = max(obj.time_step,get(obj.clock, 'InstantPeriod'));
+            end
+%             split = obj.time_step;
 %             fprintf('***TIMING***\nsimulator split: %0.3fs, %0.3fHz\n', split, 1/split);
             
 %             tstart = tic;

@@ -79,7 +79,7 @@ classdef AppWindow < handle
                 token_k = token_k.next_;
             end
             
-            obj.simulator_ = simiam.simulator.Simulator(obj, world, 0.01, obj.from_simulink_);
+            obj.simulator_ = simiam.simulator.Simulator(obj, world, 0.033, obj.from_simulink_);
             obj.simulator_.step([],[]);
         end
         
@@ -113,7 +113,7 @@ classdef AppWindow < handle
 
             
             % Create UI buttons
-            icon_file = fullfile(obj.root_, 'resources/splash/simiam_splash.png');
+            icon_file = fullfile(obj.root_, 'resources/simiam_splash.png');
             if(isunix)
                 icon_url = ['file://' icon_file];
             else
@@ -121,7 +121,10 @@ classdef AppWindow < handle
             end
             button_string = ['<html><div style="text-align: center"><img src="' icon_url '"/>' ...
                    '<br>Welcome to <b>Sim.I.am</b>, a robot simulator.' ...
-                   '<br>This is <em>Sim the First</em>, your companion for robotics in this Coursera course.' ...
+                   '<br>This is <em>Sim the Second</em>, your companion for control theory and robotics.' ...
+                   '<br>The simulator is maintained by the GRITSLab at' ...
+                   '<br><a href="http://gritslab.gatech.edu/projects/robot-simulator">http://gritslab.gatech.edu/projects/robot-simulator</a>' ...
+                   '</div><br><ol><li>Start the demo by clicking the play button.</li><li>Use the mouse to pan and zoom.</li><li>Double click anywhere on the grid to send the robot to that location.</li><li>Select the robot to follow it</li><li>If your robot crashes, press the rewind button.</li></ol>' ...
                    '</html>'];
             ui_args = {'Style','pushbutton', 'String', button_string, 'ForegroundColor', 'w', 'FontWeight', 'bold', 'BackgroundColor', obj.ui_colors_.gray, 'Callback', @obj.ui_button_start};
             ui_parent = obj.layout_.Cell(2,1);
@@ -197,6 +200,13 @@ classdef AppWindow < handle
             jWindow.setMinimumSize(java.awt.Dimension(800, 600));
                               
             Update(obj.layout_);
+            
+            if(obj.from_simulink_)
+                obj.ui_toggle_control(play, false);
+                obj.ui_toggle_control(refresh, false);
+                obj.ui_toggle_control(load, false);
+                obj.ui_button_start([],[]);
+            end
             
         end
         
@@ -323,7 +333,12 @@ classdef AppWindow < handle
             set(obj.ui_buttons_.play, 'Callback', @obj.ui_button_play);
             
             obj.is_ready_ = true;
-            obj.ui_toggle_control(obj.ui_buttons_.load, true);
+            if(~obj.from_simulink_)
+                obj.ui_toggle_control(obj.ui_buttons_.load, true);
+            else
+                obj.ui_toggle_control(obj.ui_buttons_.play, false);
+            end
+
             obj.ui_toggle_control(obj.ui_buttons_.zoom_in, true);
             obj.ui_toggle_control(obj.ui_buttons_.zoom_out, true);
             obj.time_ = 0;
@@ -351,7 +366,7 @@ classdef AppWindow < handle
             view_parent = obj.layout_.Cell(2,1);
             set(view_parent, 'Children', []);
             Update(obj.layout_);
-            icon_file = fullfile(obj.root_, 'resources/splash/simiam_splash.png');
+            icon_file = fullfile(obj.root_, 'resources/simiam_splash.png');
             if(isunix)
                 icon_url = ['file://' icon_file];
             else
@@ -359,7 +374,10 @@ classdef AppWindow < handle
             end
             button_string = ['<html><div style="text-align: center"><img src="' icon_url '"/>' ...
                              '<br>Welcome to <b>Sim.I.am</b>, a robot simulator.' ...
-                             '<br>This is <em>Sim the First</em>, your companion for robotics in this Coursera course.' ...
+                             '<br>This is <em>Sim the Second</em>, your companion for control theory and robotics.' ...
+                             '<br>The simulator is maintained by the GRITSLab at' ...
+                             '<br><a href="http://gritslab.gatech.edu/projects/robot-simulator">http://gritslab.gatech.edu/projects/robot-simulator</a>' ...
+                             '</div><br><ol><li>Start the demo by clicking the play button.</li><li>Use the mouse to pan and zoom.</li><li>Double click anywhere on the grid to send the robot to that location.</li><li>Select the robot to follow it</li><li>If your robot crashes, press the rewind button.</li></ol>' ...
                              '</html>'];
             ui_args = {'Style','pushbutton', 'String', button_string, 'ForegroundColor', 'w', 'FontWeight', 'bold', 'BackgroundColor', obj.ui_colors_.gray, 'Callback', @obj.ui_button_start};
             ui_parent = obj.layout_.Cell(2,1);
@@ -486,9 +504,9 @@ classdef AppWindow < handle
                     setptr(obj.parent_, 'closedhand');
                     set(obj.parent_, 'WindowButtonMotionFcn', @obj.ui_pan_view);
                 case 'open'
-%                     set(obj.target_marker_, 'XData', obj.click_src_(1));
-%                     set(obj.target_marker_, 'YData', obj.click_src_(2));
-%                     obj.simulator_.world.apps.head_.key_.ui_press_mouse(obj.click_src_);
+                    set(obj.target_marker_, 'XData', obj.click_src_(1));
+                    set(obj.target_marker_, 'YData', obj.click_src_(2));
+                    obj.simulator_.world.apps.head_.key_.ui_press_mouse(obj.click_src_);
                 otherwise
                     % noop
             end

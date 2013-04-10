@@ -55,9 +55,9 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "jdelacroix"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Wed Apr 10 12:38:57 2013"
+  LastModifiedDate	  "Wed Apr 10 13:18:52 2013"
   RTWModifiedTimeStamp	  287493850
-  ModelVersionFormat	  "1.%<AutoIncrement:6>"
+  ModelVersionFormat	  "1.%<AutoIncrement:7>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -752,12 +752,19 @@ Library {
     }
     Block {
       BlockType		      M-S-Function
-      Name		      "Level-2 MATLAB\nS-Function"
+      Name		      "Simulator"
       SID		      "1"
-      Ports		      [1, 1]
-      Position		      [75, 52, 250, 148]
+      Ports		      []
+      Position		      [35, 42, 165, 168]
       ZOrder		      -3
       FunctionName	      "msfun_simiam_ui"
+      Object {
+	$PropName		"MaskObject"
+	$ObjectID		21
+	$ClassName		"Simulink.Mask"
+	Type			"Simulator"
+	Display			"image(imread('simulink/simiam-round-logo.png'))"
+      }
     }
     Block {
       BlockType		      M-S-Function
@@ -770,7 +777,7 @@ Library {
       Parameters	      "wheel_radius,wheel_base_length"
       Object {
 	$PropName		"MaskObject"
-	$ObjectID		21
+	$ObjectID		22
 	$ClassName		"Simulink.Mask"
 	Display			"port_label('output', 1, 'vel_r')\nport_label('output', 2, 'vel_l')\nport_label('input', 1, 'v')\nport_labe"
 	"l('input', 2, 'w')"
@@ -778,7 +785,7 @@ Library {
 	  Type			  "Simulink.MaskParameter"
 	  Dimension		  2
 	  Object {
-	    $ObjectID		    22
+	    $ObjectID		    23
 	    Type		    "edit"
 	    Name		    "wheel_radius"
 	    Prompt		    "wheel_radius"
@@ -786,7 +793,7 @@ Library {
 	    Tunable		    "off"
 	  }
 	  Object {
-	    $ObjectID		    23
+	    $ObjectID		    24
 	    Type		    "edit"
 	    Name		    "wheel_base_length"
 	    Prompt		    "wheel_base_length"

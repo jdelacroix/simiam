@@ -56,11 +56,19 @@ classdef SlidingMode < simiam.controller.Controller
 
             % 0. Compute u_ao and u_gtg
 
+<<<<<<< HEAD
             sensor_gains = [0 0.5 1 1 1 1 0.5 0 0];
             u_i = (ir_distances_rf-repmat([x;y],1,9))*diag(sensor_gains);
             obj.u_ao = sum(u_i,2);
             
             obj.u_gtg = [x-inputs.x_g; y-inputs.y_g];
+=======
+            sensor_gains = [1 1 1 1 1 1 1 1 1];
+            u_i = (ir_distances_rf-repmat([x;y],1,9))*diag(sensor_gains);
+            obj.u_ao = sum(u_i,2);
+            
+            obj.u_gtg = [inputs.x_g-x; inputs.y_g-y];
+>>>>>>> c1cd3c77e424639d56cc1efadf6ce86c546f7367
 
             % 1. Select p_2 and p_1, then compute u_fw_t
             if(strcmp(inputs.direction,'right'))
@@ -81,13 +89,19 @@ classdef SlidingMode < simiam.controller.Controller
                     p_1 = ir_distances_rf(:,S1);
                     p_2 = ir_distances_rf(:,S2);
                 end
+<<<<<<< HEAD
                 
+=======
+>>>>>>> c1cd3c77e424639d56cc1efadf6ce86c546f7367
             else
                 % Pick two of the left sensors based on ir_distances
                 S = [1:4 ; ir_distances(1:4)];
                 [Y,i] = sort(S(2,:));
                 S = S(1,i);
+<<<<<<< HEAD
                 
+=======
+>>>>>>> c1cd3c77e424639d56cc1efadf6ce86c546f7367
                 if(S(1) > S(2))
                     p_1 = ir_distances_rf(:,S(2));
                     p_2 = ir_distances_rf(:,S(1));

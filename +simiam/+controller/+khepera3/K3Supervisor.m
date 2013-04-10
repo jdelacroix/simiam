@@ -26,11 +26,26 @@ classdef K3Supervisor < simiam.controller.Supervisor
         prev_ticks          % Previous tick count on the left and right wheels
         v
         goal
+<<<<<<< HEAD
+=======
+        goal_prev
+>>>>>>> c1cd3c77e424639d56cc1efadf6ce86c546f7367
         d_stop
         d_at_obs
         d_unsafe
         d_prog
         p
+<<<<<<< HEAD
+=======
+        
+        direction
+        
+        v_gtg
+        v_ao
+        v_fw
+        
+%         is_init
+>>>>>>> c1cd3c77e424639d56cc1efadf6ce86c546f7367
     end
     
     methods
@@ -52,6 +67,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
             % set the initial controller
             obj.current_controller = obj.controllers{2};
             obj.current_state = 2;
+<<<<<<< HEAD
             
             % generate the set of states
             for i = 1:length(obj.controllers)
@@ -59,6 +75,15 @@ classdef K3Supervisor < simiam.controller.Supervisor
                                        'controller', obj.controllers{i});
             end
             
+=======
+            
+            % generate the set of states
+            for i = 1:length(obj.controllers)
+                obj.states{i} = struct('state', obj.controllers{i}.type, ...
+                                       'controller', obj.controllers{i});
+            end
+            
+>>>>>>> c1cd3c77e424639d56cc1efadf6ce86c546f7367
             % define the set of eventsd
             obj.eventsd{1} = struct('event', 'at_obstacle', ...
                                    'callback', @at_obstacle);
@@ -85,17 +110,26 @@ classdef K3Supervisor < simiam.controller.Supervisor
             
             obj.v               = 0.1;
             
+<<<<<<< HEAD
             %% START CODE BLOCK %%
             obj.goal            = [1;1];
             obj.d_stop          = 0.05; 
             obj.d_at_obs        = 0.13;                
             obj.d_unsafe        = 0.03;
             %% END CODE BLOCK %%
+=======
+            obj.goal            = [1;1];
+            obj.goal_prev       = obj.goal;
+            obj.d_stop          = 0.05; 
+            obj.d_at_obs        = 0.10;                
+            obj.d_unsafe        = 0.03;
+>>>>>>> c1cd3c77e424639d56cc1efadf6ce86c546f7367
             
             obj.d_prog = 10;
             
             obj.p = simiam.util.Plotter();
             obj.current_controller.p = obj.p;
+<<<<<<< HEAD
         end
         
         function configure_from_file(obj, filename)
@@ -146,6 +180,12 @@ classdef K3Supervisor < simiam.controller.Supervisor
 %             direction_xml = parameters.getElementsByTagName('direction').item(0);
 %             obj.direction = char(direction_xml.getAttribute('dir'));
 
+=======
+            
+            obj.direction = 'right';
+            
+%             obj.is_init = false;
+>>>>>>> c1cd3c77e424639d56cc1efadf6ce86c546f7367
         end
         
         function execute(obj, dt)
@@ -154,6 +194,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
         %   available controllers and execute it.
         %
         %   See also controller/execute
+<<<<<<< HEAD
         
             inputs = obj.controllers{7}.inputs; 
             inputs.x_g = obj.goal(1);
@@ -165,11 +206,41 @@ classdef K3Supervisor < simiam.controller.Supervisor
                 obj.switch_to_state('stop');
                 [x,y,theta] = obj.state_estimate.unpack();
                 fprintf('stopped at (%0.3f,%0.3f)\n', x, y);
+=======
+            
+%             if(~obj.is_init)
+%                 hold(obj.robot.parent, 'on');
+%                 obj.v_gtg = plot(obj.robot.parent, [0 0], [0 0], 'b-');
+%                 obj.v_ao = plot(obj.robot.parent, [0 0], [0 0], 'r-');
+%                 obj.v_fw = plot(obj.robot.parent, [0 0], [0 0], 'g-');
+%                 obj.is_init = true;
+%             end
+        
+            inputs = obj.controllers{7}.inputs; 
+            inputs.x_g = obj.goal(1);
+            inputs.y_g = obj.goal(2);
+
+            
+            if(~all(obj.goal==obj.goal_prev))
+%                 [x,y,theta] = obj.state_estimate.unpack();
+%                 if(norm(obj.goal-[x;y])<norm(obj.goal_prev-[x;y]))
+                    obj.set_progress_point();
+%                 end
+                obj.goal_prev = obj.goal;
+                obj.switch_to_state('go_to_goal');
+            end
+            
+            if (obj.check_event('at_goal'))
+                obj.switch_to_state('stop');
+%                 [x,y,theta] = obj.state_estimate.unpack();
+%                 fprintf('stopped at (%0.3f,%0.3f)\n', x, y);
+>>>>>>> c1cd3c77e424639d56cc1efadf6ce86c546f7367
             elseif(obj.check_event('unsafe'))
                 obj.switch_to_state('avoid_obstacles');                
             else
                 if (obj.is_in_state('go_to_goal'))
                     if(obj.check_event('at_obstacle') && obj.check_event('sliding_left'))
+<<<<<<< HEAD
                         inputs.direction = 'left';
                         fprintf('now following to the left\n');
                         obj.switch_to_state('follow_wall');
@@ -185,11 +256,29 @@ classdef K3Supervisor < simiam.controller.Supervisor
                         obj.switch_to_state('go_to_goal');
                     end
                 elseif (obj.is_in_state('follow_wall') && strcmp(inputs.direction, 'right'))
+=======
+                        obj.direction = 'left';
+%                         fprintf('now following to the left\n');
+                        obj.switch_to_state('follow_wall');
+                        obj.set_progress_point();
+                    elseif(obj.check_event('at_obstacle') && obj.check_event('sliding_right'))
+                        obj.direction = 'right';
+%                         fprintf('now following to the right\n');
+                        obj.switch_to_state('follow_wall');
+                        obj.set_progress_point();
+                    end
+                elseif (obj.is_in_state('follow_wall') && strcmp(obj.direction,'left'))
+                    if(obj.check_event('progress_made') && ~obj.check_event('sliding_left'))
+                        obj.switch_to_state('go_to_goal');
+                    end
+                elseif (obj.is_in_state('follow_wall') && strcmp(obj.direction, 'right'))
+>>>>>>> c1cd3c77e424639d56cc1efadf6ce86c546f7367
                     if(obj.check_event('progress_made') && ~obj.check_event('sliding_right'))
                         obj.switch_to_state('go_to_goal');
                     end
                 elseif (obj.is_in_state('avoid_obstacles'))
                     if(obj.check_event('obstacle_cleared'))
+<<<<<<< HEAD
                         if(obj.check_event('sliding_left'))
                             inputs.direction = 'left';
                             obj.switch_to_state('follow_wall');
@@ -199,14 +288,30 @@ classdef K3Supervisor < simiam.controller.Supervisor
                         else
                             obj.switch_to_state('go_to_goal');
                         end
+=======
+%                         if(obj.check_event('sliding_left'))
+%                             obj.direction = 'left';
+%                             obj.switch_to_state('follow_wall');
+%                         elseif(obj.check_event('sliding_right'))
+%                             obj.direction = 'right';
+%                             obj.switch_to_state('follow_wall');
+%                         else
+                            obj.switch_to_state('go_to_goal');
+%                         end
+>>>>>>> c1cd3c77e424639d56cc1efadf6ce86c546f7367
                     end
                 end
  
             end
             
+<<<<<<< HEAD
             
             %% END CODE BLOCK %%
                         
+=======
+            inputs.direction = obj.direction;
+                                    
+>>>>>>> c1cd3c77e424639d56cc1efadf6ce86c546f7367
             outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
                 
             [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
@@ -220,7 +325,163 @@ classdef K3Supervisor < simiam.controller.Supervisor
         function set_progress_point(obj)
             [x, y, theta] = obj.state_estimate.unpack();
             obj.d_prog = norm([x-obj.goal(1);y-obj.goal(2)]);
+<<<<<<< HEAD
+=======
         end
+        
+        %% Events %%
+        
+        function rc = sliding_left(obj, state, robot)
+            inputs = obj.controllers{7}.inputs;
+            inputs.x_g = obj.goal(1);
+            inputs.y_g = obj.goal(2);
+            inputs.direction = 'left';
+            
+            obj.controllers{7}.execute(obj.robot, obj.state_estimate, inputs, 0);
+            
+            u_gtg = obj.controllers{7}.u_gtg;
+            u_ao = obj.controllers{7}.u_ao;
+            u_fw = obj.controllers{7}.u_fw;
+            
+%             set(obj.v_gtg, 'XData', [0 u_gtg(1)]);
+%             set(obj.v_gtg, 'YData', [0 u_gtg(2)]);
+%             set(obj.v_ao,  'XData', [0 u_ao(1)]);
+%             set(obj.v_ao,  'YData', [0 u_ao(2)]);
+%             set(obj.v_fw,  'XData', [0 u_fw(1)]);
+%             set(obj.v_fw,  'YData', [0 u_fw(2)]);
+            
+            sigma = [u_gtg u_ao]\u_fw;
+%             fprintf('sliding left check: (%0.3f,%0.3f)\n', sigma(1), sigma(2));
+            rc = false;
+            if sigma(1) > 0 && sigma(2) > 0
+%                 fprintf('now sliding left\n');
+                rc = true;
+            end
+        end
+        
+        function rc = sliding_right(obj, state, robot)
+            inputs = obj.controllers{7}.inputs;
+            inputs.x_g = obj.goal(1);
+            inputs.y_g = obj.goal(2);
+            inputs.direction = 'right';
+            
+            obj.controllers{7}.execute(obj.robot, obj.state_estimate, inputs, 0);
+            
+            u_gtg = obj.controllers{7}.u_gtg;
+            u_ao = obj.controllers{7}.u_ao;
+            u_fw = obj.controllers{7}.u_fw;
+            
+            sigma = [u_gtg u_ao]\u_fw;
+%             fprintf('sliding right check: (%0.3f,%0.3f)\n', sigma(1), sigma(2)); 
+            
+            rc = false;
+            if sigma(1) > 0 && sigma(2) > 0
+%                 fprintf('now sliding right\n');
+                rc = true;
+            end
+        end   
+        
+        function rc = at_obstacle(obj, state, robot)
+            ir_distances = obj.robot.get_ir_distances();
+            rc = false;                                     % Assume initially that the robot is clear of obstacle
+            
+            % Loop through and test the sensors (only the front set)
+            if any(ir_distances(2:7) < obj.d_at_obs)
+                rc = true;
+            end
+        end
+        
+        function rc = unsafe(obj, state, robot)
+            ir_distances = obj.robot.get_ir_distances();              
+            rc = false;             % Assume initially that the robot is clear of obstacle
+            
+            % Loop through and test the sensors (only the front set)
+            if any(ir_distances(2:7) < obj.d_unsafe)
+                    rc = true;
+            end
+>>>>>>> c1cd3c77e424639d56cc1efadf6ce86c546f7367
+        end
+
+        function rc = at_goal(obj, state, robot)
+            [x,y,theta] = obj.state_estimate.unpack();
+            rc = false;
+            
+            % Test distance from goal
+            if norm([x - obj.goal(1); y - obj.goal(2)]) < obj.d_stop
+                rc = true;
+            end
+        end
+
+        function rc = obstacle_cleared(obj, state, robot)
+            ir_distances = obj.robot.get_ir_distances();
+            rc = false;              % Assume initially that the robot is clear of obstacle
+            
+            % Loop through and test the sensors (only front set)
+            if all(ir_distances(2:7) > obj.d_at_obs)
+                rc = true;
+            end
+        end
+        
+        function rc = progress_made(obj, state, robot)
+
+            % Check for any progress
+            [x, y, theta] = obj.state_estimate.unpack();
+            epsilon = 0.1;
+            
+            rc = false;
+            if norm([obj.goal(1)-x; obj.goal(2)-y]) < obj.d_prog-epsilon
+                rc = true;          % progress has been made
+            end
+            
+        end
+        
+        
+        %% State machine support functions
+        
+        function set_current_controller(obj, ctrl)
+            % save plots
+            obj.current_controller = ctrl;
+            obj.p.switch_2d_ref();
+            obj.current_controller.p = obj.p;
+        end
+        
+        function rc = is_in_state(obj, name)
+            rc = strcmp(name, obj.states{obj.current_state}.state);
+        end
+        
+        function switch_to_state(obj, name)
+            
+            if(~obj.is_in_state(name))
+                for i=1:numel(obj.states)
+                    if(strcmp(obj.states{i}.state, name))
+                        obj.set_current_controller(obj.states{i}.controller);
+                        obj.current_state = i;
+                        fprintf('switching to state %s\n', name);
+                        return;
+                    end
+                end
+            else
+%                 fprintf('already in state %s\n', name);
+                return
+            end
+            
+            fprintf('no state exists with name %s\n', name);
+        end
+        
+        function rc = check_event(obj, name)
+           for i=1:numel(obj.eventsd)
+               if(strcmp(obj.eventsd{i}.event, name))
+                   rc = obj.eventsd{i}.callback(obj, obj.states{obj.current_state}, obj.robot);
+                   return;
+               end
+           end
+           
+           % return code (rc)
+           fprintf('no event exists with name %s\n', name);
+           rc = false;
+        end
+        
+        %% Odometry
         
         %% Events %%
         
