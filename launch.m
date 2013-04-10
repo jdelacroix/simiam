@@ -14,7 +14,7 @@ else
 end
 addpath(genpath(root_path));
 
-app = simiam.ui.AppWindow(root_path);
+app = simiam.ui.AppWindow(root_path, false);
 app.load_ui();
 
 end

@@ -24,12 +24,14 @@ classdef Simulator < handle
         
         world           % A virtual world for the simulator
         physics
+        
+        from_simulink
     end
     
     methods
         %% METHODS
         
-        function obj = Simulator(parent, world, time_step)
+        function obj = Simulator(parent, world, time_step, from_simulink)
         %% SIMULATOR Constructor
         %   obj = Simulator(parent, time_step) is the default constructor
         %   that sets the graphics handle and the time step for the
@@ -37,11 +39,16 @@ classdef Simulator < handle
         
             obj.parent = parent;
             obj.time_step = time_step;
-            obj.clock = timer('Period', obj.time_step, ...
-                              'TimerFcn', @obj.step, ...
-                              'ExecutionMode', 'fixedRate');
+            if(~from_simulink)
+                obj.clock = timer('Period', obj.time_step, ...
+                                  'TimerFcn', @obj.step, ...
+                                  'ExecutionMode', 'fixedRate');
+            else
+                obj.clock = [];
+            end
             obj.world = world;
             obj.physics = simiam.simulator.Physics(world);
+            obj.from_simulink = from_simulink;
         end
         
         function step(obj, src, event)
@@ -77,19 +84,23 @@ classdef Simulator < handle
         
         function start(obj)
         %% START Starts the simulation.
-        
-            start(obj.clock);
+            if(~obj.from_simulink)
+                start(obj.clock);
+            end
         end
         
         function stop(obj)
         %% STOP Stops the simulation.
-        
-            stop(obj.clock);
+            if(~obj.from_simulink)
+                stop(obj.clock);
+            end
         end
         
         function shutdown(obj)
-            obj.stop();
-            delete(obj.clock);
+            if(~obj.from_simulink)
+                obj.stop();
+                delete(obj.clock);
+            end
         end
     end
     

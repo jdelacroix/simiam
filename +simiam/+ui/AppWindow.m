@@ -33,11 +33,13 @@ classdef AppWindow < handle
         time_
         
         root_
+        
+        from_simulink_
     end
     
     methods
         
-        function obj = AppWindow(root)
+        function obj = AppWindow(root, from_simulink)
             obj.root_ = root;
             obj.ui_colors_ = struct('gray',  [220 220 220]/255, ...
                                     'green', [ 57 200  67]/255, ...
@@ -57,6 +59,8 @@ classdef AppWindow < handle
             obj.ticks_ = [];
             
             obj.time_ = 0;
+            
+            obj.from_simulink_ = from_simulink;
         end
         
         function load_ui(obj)
@@ -65,7 +69,7 @@ classdef AppWindow < handle
         
         function create_simulator(obj, settings_file)
             world = simiam.simulator.World(obj.view_);
-            world.build_from_file(obj.root_, settings_file);
+            world.build_from_file(obj.root_, settings_file, obj.from_simulink_);
             
             token_k = world.robots.head_;
             while(~isempty(token_k))
@@ -75,7 +79,7 @@ classdef AppWindow < handle
                 token_k = token_k.next_;
             end
             
-            obj.simulator_ = simiam.simulator.Simulator(obj, world, 0.01);
+            obj.simulator_ = simiam.simulator.Simulator(obj, world, 0.01, obj.from_simulink_);
             obj.simulator_.step([],[]);
         end
         

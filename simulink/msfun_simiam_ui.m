@@ -34,23 +34,12 @@ setup(block);
 function setup(block)
 
 % Register number of ports
-block.NumInputPorts  = 1;
-block.NumOutputPorts = 1;
+block.NumInputPorts  = 0;
+block.NumOutputPorts = 0;
 
-% Setup port properties to be inherited or dynamic
-block.SetPreCompInpPortInfoToDynamic;
-block.SetPreCompOutPortInfoToDynamic;
-
-% Override input port properties
-block.InputPort(1).Dimensions        = 1;
-block.InputPort(1).DatatypeID  = 0;  % double
-block.InputPort(1).Complexity  = 'Real';
-block.InputPort(1).DirectFeedthrough = true;
-
-% Override output port properties
-block.OutputPort(1).Dimensions       = 1;
-block.OutputPort(1).DatatypeID  = 0; % double
-block.OutputPort(1).Complexity  = 'Real';
+% Set up the states
+block.NumContStates = 0;
+block.NumDworks = 0;
 
 % Register parameters
 block.NumDialogPrms     = 0;
@@ -61,7 +50,7 @@ block.NumDialogPrms     = 0;
 %
 %  [-1, 0]               : Inherited sample time
 %  [-2, 0]               : Variable sample time
-block.SampleTimes = [0 0];
+block.SampleTimes = [0 1];
 
 % Specify the block simStateCompliance. The allowed values are:
 %    'UnknownSimState', < The default setting; warn and assume DefaultSimState
@@ -137,8 +126,13 @@ root_path = fullfile(fileparts(mfilename('fullpath')), '../');
 addpath(genpath(root_path));
 root_path
 
-app = simiam.ui.AppWindow(root_path);
+app = simiam.ui.AppWindow(root_path, true);
 app.load_ui();
+
+% store info in custom data;
+customData = containers.Map('UniformValues', false);
+customData('simulatorHandle') = app.simulator_;
+set(block.BlockHandle, 'UserData', customData, 'UserDataPersistent', 'off');
 
 
 %endfunction
