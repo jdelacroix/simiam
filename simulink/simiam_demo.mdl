@@ -6,7 +6,7 @@ Model {
     NumRootInports	    0
     NumRootOutports	    0
     ParameterArgumentNames  ""
-    ComputedModelVersion    "1.9"
+    ComputedModelVersion    "1.27"
     NumModelReferences	    0
     NumTestPointedSignals   0
   }
@@ -30,7 +30,7 @@ Model {
       $ObjectID		      2
       $ClassName	      "Simulink.WindowInfo"
       IsActive		      [1]
-      Location		      [131.0, 112.0, 1301.0, 751.0]
+      Location		      [0.0, 24.0, 1600.0, 875.0]
       Object {
 	$PropName		"ModelBrowserInfo"
 	$ObjectID		3
@@ -39,7 +39,7 @@ Model {
 	DockPosition		"Left"
 	Width			[50]
 	Height			[50]
-	Filter			[8]
+	Filter			[9]
       }
       Object {
 	$PropName		"ExplorerBarInfo"
@@ -54,9 +54,9 @@ Model {
 	IsActive		[1]
 	ViewObjType		"SimulinkTopLevel"
 	LoadSaveID		"0"
-	Extents			[1245.0, 571.0]
-	ZoomFactor		[1.25]
-	Offset			[8.8000000000000114, -65.3391498565674]
+	Extents			[1564.0, 712.0]
+	ZoomFactor		[1.0]
+	Offset			[-71.298597416069924, 142.98785174655075]
       }
     }
   }
@@ -66,15 +66,15 @@ Model {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "jdelacroix"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Wed Apr 10 18:22:42 2013"
-  RTWModifiedTimeStamp	  287494054
-  ModelVersionFormat	  "1.%<AutoIncrement:9>"
+  LastModifiedDate	  "Thu Apr 11 18:56:02 2013"
+  RTWModifiedTimeStamp	  287607318
+  ModelVersionFormat	  "1.%<AutoIncrement:27>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
   LibraryLinkDisplay	  "disabled"
   WideLines		  off
-  ShowLineDimensions	  off
+  ShowLineDimensions	  on
   ShowPortDataTypes	  off
   ShowDesignRanges	  off
   ShowLoopsOnError	  on
@@ -172,7 +172,7 @@ Model {
 	  $ObjectID		  8
 	  Version		  "1.12.1"
 	  StartTime		  "0.0"
-	  StopTime		  "10.0"
+	  StopTime		  "Inf"
 	  AbsTol		  "auto"
 	  FixedStep		  "0.033"
 	  InitialStep		  "auto"
@@ -663,7 +663,7 @@ Model {
       }
       Name		      "Configuration"
       CurrentDlgPage	      "Solver"
-      ConfigPrmDlgPosition     [ 350, 75, 1250, 749 ] 
+      ConfigPrmDlgPosition     [ 340, 41, 1260, 759 ] 
     }
     PropName		    "ConfigurationSets"
   }
@@ -734,6 +734,12 @@ Model {
   }
   BlockParameterDefaults {
     Block {
+      BlockType		      Concatenate
+      NumInputs		      "2"
+      Mode		      "Vector"
+      ConcatenateDimension    "1"
+    }
+    Block {
       BlockType		      Constant
       Value		      "1"
       VectorParams1D	      on
@@ -747,11 +753,23 @@ Model {
       PreserveConstantTs      off
     }
     Block {
+      BlockType		      Demux
+      Outputs		      "4"
+      DisplayOption	      "none"
+      BusSelectionMode	      off
+    }
+    Block {
       BlockType		      Display
       Format		      "short"
       Decimation	      "10"
       Floating		      off
       SampleTime	      "-1"
+    }
+    Block {
+      BlockType		      From
+      GotoTag		      "A"
+      IconDisplay	      "Tag"
+      TagVisibility	      "local"
     }
     Block {
       BlockType		      Gain
@@ -769,6 +787,127 @@ Model {
       SampleTime	      "-1"
     }
     Block {
+      BlockType		      Goto
+      IconDisplay	      "Tag"
+      TagVisibility	      "local"
+    }
+    Block {
+      BlockType		      Inport
+      Port		      "1"
+      OutputFunctionCall      off
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeStr	      "Inherit: auto"
+      LockScale		      off
+      BusOutputAsStruct	      off
+      PortDimensions	      "-1"
+      VarSizeSig	      "Inherit"
+      SampleTime	      "-1"
+      SignalType	      "auto"
+      SamplingMode	      "auto"
+      LatchByDelayingOutsideSignal off
+      LatchInputForFeedbackSignals off
+      Interpolate	      on
+    }
+    Block {
+      BlockType		      Math
+      Operator		      "exp"
+      OutputSignalType	      "auto"
+      SampleTime	      "-1"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeStr	      "Inherit: Same as first input"
+      LockScale		      off
+      RndMeth		      "Floor"
+      SaturateOnIntegerOverflow	on
+      IntermediateResultsDataTypeStr "Inherit: Inherit via internal rule"
+      AlgorithmType	      "Newton-Raphson"
+      Iterations	      "3"
+    }
+    Block {
+      BlockType		      Outport
+      Port		      "1"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeStr	      "Inherit: auto"
+      LockScale		      off
+      BusOutputAsStruct	      off
+      PortDimensions	      "-1"
+      VarSizeSig	      "Inherit"
+      SampleTime	      "-1"
+      SignalType	      "auto"
+      SamplingMode	      "auto"
+      SourceOfInitialOutputValue "Dialog"
+      OutputWhenDisabled      "held"
+      InitialOutput	      "[]"
+    }
+    Block {
+      BlockType		      Scope
+      ModelBased	      off
+      TickLabels	      "OneTimeTick"
+      ZoomMode		      "on"
+      Grid		      "on"
+      TimeRange		      "auto"
+      YMin		      "-5"
+      YMax		      "5"
+      SaveToWorkspace	      off
+      SaveName		      "ScopeData"
+      DataFormat	      "Array"
+      LimitDataPoints	      on
+      MaxDataPoints	      "5000"
+      Decimation	      "1"
+      SampleInput	      off
+      SampleTime	      "-1"
+    }
+    Block {
+      BlockType		      Selector
+      NumberOfDimensions      "1"
+      IndexMode		      "One-based"
+      InputPortWidth	      "-1"
+      SampleTime	      "-1"
+    }
+    Block {
+      BlockType		      Sqrt
+      Operator		      "sqrt"
+      OutputSignalType	      "auto"
+      SampleTime	      "-1"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeStr	      "Inherit: Same as first input"
+      LockScale		      off
+      RndMeth		      "Floor"
+      SaturateOnIntegerOverflow	on
+      IntermediateResultsDataTypeStr "Inherit: Inherit via internal rule"
+      AlgorithmType	      "Exact"
+      Iterations	      "3"
+    }
+    Block {
+      BlockType		      Stop
+    }
+    Block {
+      BlockType		      SubSystem
+      ShowPortLabels	      "FromPortIcon"
+      Permissions	      "ReadWrite"
+      PermitHierarchicalResolution "All"
+      TreatAsAtomicUnit	      off
+      CheckFcnCallInpInsideContextMsg off
+      SystemSampleTime	      "-1"
+      RTWFcnNameOpts	      "Auto"
+      RTWFileNameOpts	      "Auto"
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      SimViewingDevice	      off
+      DataTypeOverride	      "UseLocalSettings"
+      DataTypeOverrideAppliesTo	"AllNumericTypes"
+      MinMaxOverflowLogging   "UseLocalSettings"
+      SFBlockType	      "NONE"
+      Variant		      off
+      GeneratePreprocessorConditionals off
+    }
+    Block {
       BlockType		      Sum
       IconShape		      "rectangular"
       Inputs		      "++"
@@ -784,10 +923,18 @@ Model {
       SaturateOnIntegerOverflow	on
       SampleTime	      "-1"
     }
+    Block {
+      BlockType		      Trigonometry
+      Operator		      "sin"
+      ApproximationMethod     "None"
+      NumberOfIterations      "11"
+      OutputSignalType	      "auto"
+      SampleTime	      "-1"
+    }
   }
   System {
     Name		    "simiam_demo"
-    Location		    [131, 112, 1432, 863]
+    Location		    [0, 24, 1600, 899]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -799,32 +946,628 @@ Model {
     TiledPaperMargins	    [0.500000, 0.500000, 0.500000, 0.500000]
     TiledPageScale	    1
     ShowPageBoundaries	    off
-    ZoomFactor		    "125"
+    ZoomFactor		    "100"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "28"
+    SIDHighWatermark	    "170"
     Block {
-      BlockType		      Constant
-      Name		      "Constant"
-      SID		      "14"
-      Position		      [180, 80, 210, 110]
-      ZOrder		      12
-      Value		      "0.1"
+      BlockType		      SubSystem
+      Name		      "Angle of Vector"
+      SID		      "130"
+      Ports		      [1, 1]
+      Position		      [390, 470, 435, 500]
+      ZOrder		      102
+      MinAlgLoopOccurrences   off
+      PropExecContextOutsideSubsystem off
+      RTWSystemCode	      "Auto"
+      FunctionWithSeparateData off
+      Opaque		      off
+      RequestExecContextInheritance off
+      MaskHideContents	      off
+      Object {
+	$PropName		"MaskObject"
+	$ObjectID		19
+	$ClassName		"Simulink.Mask"
+	Display			"port_label('input', 1, 'u')\nport_label('output', 1, 'theta')"
+      }
+      System {
+	Name			"Angle of Vector"
+	Location		[28, 24, 1628, 899]
+	Open			off
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"125"
+	Block {
+	  BlockType		  Inport
+	  Name			  "In1"
+	  SID			  "131"
+	  Position		  [40, 20, 70, 35]
+	  ZOrder		  98
+	  BlockRotation		  270
+	  BlockMirror		  on
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Demux
+	  Name			  "Demux2"
+	  SID			  "122"
+	  Ports			  [1, 2]
+	  Position		  [35, 123, 40, 187]
+	  ZOrder		  96
+	  ShowName		  off
+	  Outputs		  "2"
+	  DisplayOption		  "bar"
+	}
+	Block {
+	  BlockType		  Trigonometry
+	  Name			  "Trigonometric Function2"
+	  SID			  "124"
+	  Ports			  [2, 1]
+	  Position		  [80, 137, 110, 173]
+	  ZOrder		  97
+	  Operator		  "atan2"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out1"
+	  SID			  "132"
+	  Position		  [155, 148, 185, 162]
+	  ZOrder		  99
+	  IconDisplay		  "Port number"
+	}
+	Line {
+	  SrcBlock		  "Trigonometric Function2"
+	  SrcPort		  1
+	  DstBlock		  "Out1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Demux2"
+	  SrcPort		  1
+	  Points		  [15, 0; 0, 25]
+	  DstBlock		  "Trigonometric Function2"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "Demux2"
+	  SrcPort		  2
+	  Points		  [5, 0; 0, -25]
+	  DstBlock		  "Trigonometric Function2"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "In1"
+	  SrcPort		  1
+	  Points		  [0, 39; -35, 0]
+	  DstBlock		  "Demux2"
+	  DstPort		  1
+	}
+      }
+    }
+    Block {
+      BlockType		      SubSystem
+      Name		      "Angle of Vector1"
+      SID		      "133"
+      Ports		      [1, 1]
+      Position		      [270, 100, 315, 130]
+      ZOrder		      104
+      MinAlgLoopOccurrences   off
+      PropExecContextOutsideSubsystem off
+      RTWSystemCode	      "Auto"
+      FunctionWithSeparateData off
+      Opaque		      off
+      RequestExecContextInheritance off
+      MaskHideContents	      off
+      Object {
+	$PropName		"MaskObject"
+	$ObjectID		20
+	$ClassName		"Simulink.Mask"
+	Display			"port_label('input', 1, 'u')\nport_label('output', 1, 'theta')"
+      }
+      System {
+	Name			"Angle of Vector1"
+	Location		[28, 24, 1628, 899]
+	Open			off
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"125"
+	Block {
+	  BlockType		  Inport
+	  Name			  "In1"
+	  SID			  "134"
+	  Position		  [40, 20, 70, 35]
+	  ZOrder		  98
+	  BlockRotation		  270
+	  BlockMirror		  on
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Demux
+	  Name			  "Demux2"
+	  SID			  "135"
+	  Ports			  [1, 2]
+	  Position		  [35, 123, 40, 187]
+	  ZOrder		  96
+	  ShowName		  off
+	  Outputs		  "2"
+	  DisplayOption		  "bar"
+	}
+	Block {
+	  BlockType		  Trigonometry
+	  Name			  "Trigonometric Function2"
+	  SID			  "136"
+	  Ports			  [2, 1]
+	  Position		  [80, 137, 110, 173]
+	  ZOrder		  97
+	  Operator		  "atan2"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out1"
+	  SID			  "137"
+	  Position		  [155, 148, 185, 162]
+	  ZOrder		  99
+	  IconDisplay		  "Port number"
+	}
+	Line {
+	  SrcBlock		  "Trigonometric Function2"
+	  SrcPort		  1
+	  DstBlock		  "Out1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Demux2"
+	  SrcPort		  1
+	  Points		  [15, 0; 0, 25]
+	  DstBlock		  "Trigonometric Function2"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "Demux2"
+	  SrcPort		  2
+	  Points		  [5, 0; 0, -25]
+	  DstBlock		  "Trigonometric Function2"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "In1"
+	  SrcPort		  1
+	  Points		  [0, 39; -35, 0]
+	  DstBlock		  "Demux2"
+	  DstPort		  1
+	}
+      }
+    }
+    Block {
+      BlockType		      SubSystem
+      Name		      "Angle of Vector2"
+      SID		      "145"
+      Ports		      [1, 1]
+      Position		      [265, 285, 310, 315]
+      ZOrder		      107
+      MinAlgLoopOccurrences   off
+      PropExecContextOutsideSubsystem off
+      RTWSystemCode	      "Auto"
+      FunctionWithSeparateData off
+      Opaque		      off
+      RequestExecContextInheritance off
+      MaskHideContents	      off
+      Object {
+	$PropName		"MaskObject"
+	$ObjectID		21
+	$ClassName		"Simulink.Mask"
+	Display			"port_label('input', 1, 'u')\nport_label('output', 1, 'theta')"
+      }
+      System {
+	Name			"Angle of Vector2"
+	Location		[28, 24, 1628, 899]
+	Open			off
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"125"
+	Block {
+	  BlockType		  Inport
+	  Name			  "In1"
+	  SID			  "146"
+	  Position		  [40, 20, 70, 35]
+	  ZOrder		  98
+	  BlockRotation		  270
+	  BlockMirror		  on
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Demux
+	  Name			  "Demux2"
+	  SID			  "147"
+	  Ports			  [1, 2]
+	  Position		  [35, 123, 40, 187]
+	  ZOrder		  96
+	  ShowName		  off
+	  Outputs		  "2"
+	  DisplayOption		  "bar"
+	}
+	Block {
+	  BlockType		  Trigonometry
+	  Name			  "Trigonometric Function2"
+	  SID			  "148"
+	  Ports			  [2, 1]
+	  Position		  [80, 137, 110, 173]
+	  ZOrder		  97
+	  Operator		  "atan2"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out1"
+	  SID			  "149"
+	  Position		  [155, 148, 185, 162]
+	  ZOrder		  99
+	  IconDisplay		  "Port number"
+	}
+	Line {
+	  SrcBlock		  "Trigonometric Function2"
+	  SrcPort		  1
+	  DstBlock		  "Out1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Demux2"
+	  SrcPort		  1
+	  Points		  [15, 0; 0, 25]
+	  DstBlock		  "Trigonometric Function2"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "Demux2"
+	  SrcPort		  2
+	  Points		  [5, 0; 0, -25]
+	  DstBlock		  "Trigonometric Function2"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "In1"
+	  SrcPort		  1
+	  Points		  [0, 39; -35, 0]
+	  DstBlock		  "Demux2"
+	  DstPort		  1
+	}
+      }
+    }
+    Block {
+      BlockType		      SubSystem
+      Name		      "Avoid-Obstacles"
+      SID		      "69"
+      Ports		      [3, 1]
+      Position		      [350, 20, 390, 80]
+      ZOrder		      59
+      BlockMirror	      on
+      MinAlgLoopOccurrences   off
+      PropExecContextOutsideSubsystem off
+      RTWSystemCode	      "Auto"
+      FunctionWithSeparateData off
+      Opaque		      off
+      RequestExecContextInheritance off
+      MaskHideContents	      off
+      Object {
+	$PropName		"MaskObject"
+	$ObjectID		22
+	$ClassName		"Simulink.Mask"
+	Display			"port_label('input', 1, 'x')\nport_label('input', 2, 'y')\nport_label('input', 3, 'ir_wf')\nport_label('out"
+	"put', 1, 'u_ao')"
+      }
+      System {
+	Name			"Avoid-Obstacles"
+	Location		[0, 24, 1600, 899]
+	Open			off
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"125"
+	Block {
+	  BlockType		  Inport
+	  Name			  "In1"
+	  SID			  "70"
+	  Position		  [460, 115, 490, 130]
+	  ZOrder		  54
+	  BlockRotation		  270
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Inport
+	  Name			  "In2"
+	  SID			  "71"
+	  Position		  [410, 115, 440, 130]
+	  ZOrder		  55
+	  BlockRotation		  270
+	  Port			  "2"
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Inport
+	  Name			  "In3"
+	  SID			  "72"
+	  Position		  [290, 118, 320, 132]
+	  ZOrder		  56
+	  BlockMirror		  on
+	  Port			  "3"
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Display
+	  Name			  "Display"
+	  SID			  "115"
+	  Ports			  [1]
+	  Position		  [360, 242, 900, 288]
+	  ZOrder		  61
+	  Decimation		  "1"
+	  Lockdown		  off
+	}
+	Block {
+	  BlockType		  Display
+	  Name			  "Display1"
+	  SID			  "117"
+	  Ports			  [1]
+	  Position		  [360, 312, 900, 358]
+	  ZOrder		  63
+	  Decimation		  "1"
+	  Lockdown		  off
+	}
+	Block {
+	  BlockType		  Display
+	  Name			  "Display2"
+	  SID			  "118"
+	  Ports			  [1]
+	  Position		  [545, 55, 635, 85]
+	  ZOrder		  64
+	  Decimation		  "1"
+	  Lockdown		  off
+	}
+	Block {
+	  BlockType		  Display
+	  Name			  "Display3"
+	  SID			  "119"
+	  Ports			  [1]
+	  Position		  [545, 110, 635, 140]
+	  ZOrder		  65
+	  Decimation		  "1"
+	  Lockdown		  off
+	}
+	Block {
+	  BlockType		  Display
+	  Name			  "Display4"
+	  SID			  "120"
+	  Ports			  [1]
+	  Position		  [360, 382, 900, 428]
+	  ZOrder		  66
+	  Decimation		  "1"
+	  Lockdown		  off
+	}
+	Block {
+	  BlockType		  Display
+	  Name			  "Display5"
+	  SID			  "121"
+	  Ports			  [1]
+	  Position		  [60, 197, 145, 253]
+	  ZOrder		  67
+	  Decimation		  "1"
+	  Lockdown		  off
+	}
+	Block {
+	  BlockType		  Selector
+	  Name			  "Selector"
+	  SID			  "62"
+	  Ports			  [1, 1]
+	  Position		  [285, 21, 325, 59]
+	  ZOrder		  53
+	  BlockMirror		  on
+	  NumberOfDimensions	  "2"
+	  IndexMode		  "Zero-based"
+	  InputPortWidth	  "3"
+	  IndexOptions		  "Select all,Index vector (dialog)"
+	  Indices		  "-1,[0 0 0 0 0 0 0 0 0]"
+	  OutputSizes		  "1,1"
+	}
+	Block {
+	  BlockType		  Sum
+	  Name			  "Subtract"
+	  SID			  "61"
+	  Ports			  [2, 1]
+	  Position		  [195, 16, 225, 49]
+	  ZOrder		  52
+	  BlockMirror		  on
+	  Inputs		  "+-"
+	  InputSameDT		  off
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	}
+	Block {
+	  BlockType		  Sum
+	  Name			  "Sum of Elements"
+	  SID			  "58"
+	  Ports			  [1, 1]
+	  Position		  [130, 20, 160, 50]
+	  ZOrder		  49
+	  BlockMirror		  on
+	  Inputs		  "+"
+	  CollapseMode		  "Specified dimension"
+	  CollapseDim		  "2"
+	  InputSameDT		  off
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	}
+	Block {
+	  BlockType		  Concatenate
+	  Name			  "Vector Concatenate"
+	  SID			  "57"
+	  Ports			  [2, 1]
+	  Position		  [370, 21, 375, 59]
+	  ZOrder		  48
+	  BlockMirror		  on
+	  Mode			  "Multidimensional array"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out1"
+	  SID			  "73"
+	  Position		  [60, 28, 90, 42]
+	  ZOrder		  57
+	  BlockMirror		  on
+	  IconDisplay		  "Port number"
+	}
+	Line {
+	  SrcBlock		  "Vector Concatenate"
+	  SrcPort		  1
+	  DstBlock		  "Selector"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Subtract"
+	  SrcPort		  1
+	  Points		  [-12, 0]
+	  Branch {
+	    Points		    [0, 370]
+	    DstBlock		    "Display4"
+	    DstPort		    1
+	  }
+	  Branch {
+	    DstBlock		    "Sum of Elements"
+	    DstPort		    1
+	  }
+	}
+	Line {
+	  SrcBlock		  "Sum of Elements"
+	  SrcPort		  1
+	  Points		  [-15, 0]
+	  Branch {
+	    Points		    [0, 89; -65, 0]
+	    DstBlock		    "Display5"
+	    DstPort		    1
+	  }
+	  Branch {
+	    DstBlock		    "Out1"
+	    DstPort		    1
+	  }
+	}
+	Line {
+	  SrcBlock		  "In3"
+	  SrcPort		  1
+	  Points		  [-29, 0]
+	  Branch {
+	    Points		    [0, 140]
+	    DstBlock		    "Display"
+	    DstPort		    1
+	  }
+	  Branch {
+	    Points		    [0, -100]
+	    DstBlock		    "Subtract"
+	    DstPort		    1
+	  }
+	}
+	Line {
+	  SrcBlock		  "Selector"
+	  SrcPort		  1
+	  Points		  [-13, 0]
+	  Branch {
+	    Points		    [0, 295]
+	    DstBlock		    "Display1"
+	    DstPort		    1
+	  }
+	  Branch {
+	    DstBlock		    "Subtract"
+	    DstPort		    2
+	  }
+	}
+	Line {
+	  SrcBlock		  "In1"
+	  SrcPort		  1
+	  Points		  [0, -40]
+	  Branch {
+	    DstBlock		    "Display2"
+	    DstPort		    1
+	  }
+	  Branch {
+	    Points		    [0, -40]
+	    DstBlock		    "Vector Concatenate"
+	    DstPort		    1
+	  }
+	}
+	Line {
+	  SrcBlock		  "In2"
+	  SrcPort		  1
+	  Points		  [0, -16]
+	  Branch {
+	    Points		    [98, 0; 0, 31]
+	    DstBlock		    "Display3"
+	    DstPort		    1
+	  }
+	  Branch {
+	    Points		    [0, -44]
+	    DstBlock		    "Vector Concatenate"
+	    DstPort		    2
+	  }
+	}
+      }
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Compare To Constant"
+      SID		      "150"
+      Ports		      [1, 1]
+      Position		      [915, 460, 955, 490]
+      ZOrder		      108
+      LibraryVersion	      "1.281"
+      SourceBlock	      "simulink/Logic and Bit\nOperations/Compare\nTo Constant"
+      SourceType	      "Compare To Constant"
+      relop		      "<"
+      const		      "0.05"
+      OutDataTypeStr	      "boolean"
+      ZeroCross		      on
     }
     Block {
       BlockType		      Constant
-      Name		      "Constant2"
-      SID		      "23"
-      Position		      [180, 230, 210, 260]
-      ZOrder		      20
-      Value		      "0.785"
+      Name		      "Constant Linear Velocity"
+      SID		      "14"
+      Position		      [420, 180, 450, 210]
+      ZOrder		      12
+      Value		      "0.1"
     }
     Block {
       BlockType		      Display
       Name		      "Display"
       SID		      "20"
       Ports		      [1]
-      Position		      [920, 170, 1010, 200]
+      Position		      [1280, 320, 1370, 350]
       ZOrder		      17
+      ShowName		      off
       Decimation	      "1"
       Lockdown		      off
     }
@@ -833,8 +1576,9 @@ Model {
       Name		      "Display1"
       SID		      "21"
       Ports		      [1]
-      Position		      [920, 220, 1010, 250]
+      Position		      [1280, 370, 1370, 400]
       ZOrder		      18
+      ShowName		      off
       Decimation	      "1"
       Lockdown		      off
     }
@@ -843,44 +1587,674 @@ Model {
       Name		      "Display2"
       SID		      "22"
       Ports		      [1]
-      Position		      [920, 270, 1010, 300]
+      Position		      [1280, 420, 1370, 450]
       ZOrder		      19
+      ShowName		      off
       Decimation	      "1"
       Lockdown		      off
     }
     Block {
+      BlockType		      Display
+      Name		      "Display3"
+      SID		      "138"
+      Ports		      [1]
+      Position		      [340, 100, 395, 130]
+      ZOrder		      103
+      Decimation	      "1"
+      Lockdown		      off
+    }
+    Block {
+      BlockType		      Display
+      Name		      "Display4"
+      SID		      "123"
+      Ports		      [1]
+      Position		      [470, 470, 525, 500]
+      ZOrder		      95
+      Decimation	      "1"
+      Lockdown		      off
+    }
+    Block {
+      BlockType		      Display
+      Name		      "Display7"
+      SID		      "127"
+      Ports		      [1]
+      Position		      [205, 235, 295, 265]
+      ZOrder		      100
+      BlockMirror	      on
+      Decimation	      "1"
+      Lockdown		      off
+    }
+    Block {
+      BlockType		      SubSystem
+      Name		      "Distance to Goal"
+      SID		      "164"
+      Ports		      [4, 1]
+      Position		      [835, 442, 875, 503]
+      ZOrder		      117
+      MinAlgLoopOccurrences   off
+      PropExecContextOutsideSubsystem off
+      RTWSystemCode	      "Auto"
+      FunctionWithSeparateData off
+      Opaque		      off
+      RequestExecContextInheritance off
+      MaskHideContents	      off
+      Object {
+	$PropName		"MaskObject"
+	$ObjectID		23
+	$ClassName		"Simulink.Mask"
+	Display			"port_label('input', 1, 'x_g')\nport_label('input', 2, 'x')\nport_label('input', 3, 'y_g')\nport_label('inp"
+	"ut', 4, 'y')\nport_label('output', 1, 'd')"
+      }
+      System {
+	Name			"Distance to Goal"
+	Location		[100, 100, 900, 600]
+	Open			off
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"125"
+	Block {
+	  BlockType		  Inport
+	  Name			  "In1"
+	  SID			  "165"
+	  Position		  [20, 23, 50, 37]
+	  ZOrder		  116
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Inport
+	  Name			  "In2"
+	  SID			  "166"
+	  Position		  [180, 25, 210, 40]
+	  ZOrder		  117
+	  BlockRotation		  270
+	  BlockMirror		  on
+	  Port			  "2"
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Inport
+	  Name			  "In3"
+	  SID			  "167"
+	  Position		  [80, 53, 110, 67]
+	  ZOrder		  118
+	  Port			  "3"
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Inport
+	  Name			  "In4"
+	  SID			  "168"
+	  Position		  [135, 55, 165, 70]
+	  ZOrder		  119
+	  BlockRotation		  270
+	  BlockMirror		  on
+	  Port			  "4"
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Sum
+	  Name			  "Add"
+	  SID			  "152"
+	  Ports			  [2, 1]
+	  Position		  [365, 192, 395, 223]
+	  ZOrder		  110
+	  InputSameDT		  off
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	}
+	Block {
+	  BlockType		  Math
+	  Name			  "Math Function"
+	  SID			  "153"
+	  Ports			  [1, 1]
+	  Position		  [305, 220, 335, 250]
+	  ZOrder		  111
+	  Operator		  "magnitude^2"
+	}
+	Block {
+	  BlockType		  Math
+	  Name			  "Math Function1"
+	  SID			  "157"
+	  Ports			  [1, 1]
+	  Position		  [305, 165, 335, 195]
+	  ZOrder		  115
+	  Operator		  "magnitude^2"
+	}
+	Block {
+	  BlockType		  Sqrt
+	  Name			  "Sqrt"
+	  SID			  "151"
+	  Position		  [420, 195, 450, 225]
+	  ZOrder		  109
+	}
+	Block {
+	  BlockType		  Sum
+	  Name			  "Subtract"
+	  SID			  "155"
+	  Ports			  [2, 1]
+	  Position		  [245, 162, 275, 193]
+	  ZOrder		  113
+	  Inputs		  "+-"
+	  InputSameDT		  off
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	}
+	Block {
+	  BlockType		  Sum
+	  Name			  "Subtract1"
+	  SID			  "156"
+	  Ports			  [2, 1]
+	  Position		  [245, 217, 275, 248]
+	  ZOrder		  114
+	  Inputs		  "+-"
+	  InputSameDT		  off
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out1"
+	  SID			  "169"
+	  Position		  [500, 203, 530, 217]
+	  ZOrder		  120
+	  IconDisplay		  "Port number"
+	}
+	Line {
+	  SrcBlock		  "In4"
+	  SrcPort		  1
+	  Points		  [0, 165]
+	  DstBlock		  "Subtract1"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "Subtract1"
+	  SrcPort		  1
+	  DstBlock		  "Math Function"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Math Function"
+	  SrcPort		  1
+	  Points		  [10, 0]
+	  DstBlock		  "Add"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "Sqrt"
+	  SrcPort		  1
+	  DstBlock		  "Out1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Subtract"
+	  SrcPort		  1
+	  DstBlock		  "Math Function1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Math Function1"
+	  SrcPort		  1
+	  Points		  [10, 0]
+	  DstBlock		  "Add"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Add"
+	  SrcPort		  1
+	  DstBlock		  "Sqrt"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "In2"
+	  SrcPort		  1
+	  Points		  [0, 140]
+	  DstBlock		  "Subtract"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "In3"
+	  SrcPort		  1
+	  Points		  [59, 0; 0, 165]
+	  DstBlock		  "Subtract1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "In1"
+	  SrcPort		  1
+	  Points		  [165, 0; 0, 140]
+	  DstBlock		  "Subtract"
+	  DstPort		  1
+	}
+      }
+    }
+    Block {
+      BlockType		      From
+      Name		      "From"
+      SID		      "40"
+      Position		      [1215, 326, 1255, 344]
+      ZOrder		      37
+      ShowName		      off
+      GotoTag		      "x"
+    }
+    Block {
+      BlockType		      From
+      Name		      "From1"
+      SID		      "41"
+      Position		      [1215, 376, 1255, 394]
+      ZOrder		      38
+      ShowName		      off
+      GotoTag		      "y"
+    }
+    Block {
+      BlockType		      From
+      Name		      "From2"
+      SID		      "42"
+      Position		      [1215, 426, 1260, 444]
+      ZOrder		      39
+      ShowName		      off
+      GotoTag		      "theta"
+    }
+    Block {
       BlockType		      Gain
       Name		      "Gain"
-      SID		      "28"
-      Position		      [360, 230, 390, 260]
-      ZOrder		      25
+      SID		      "63"
+      Position		      [290, 390, 320, 420]
+      ZOrder		      54
+      BlockMirror	      on
+      Gain		      "0.4"
+      ParamDataTypeStr	      "Inherit: Inherit via internal rule"
+      OutDataTypeStr	      "Inherit: Inherit via internal rule"
+      SaturateOnIntegerOverflow	off
+    }
+    Block {
+      BlockType		      Gain
+      Name		      "Gain1"
+      SID		      "78"
+      Position		      [485, 285, 515, 315]
+      ZOrder		      64
       Gain		      "5"
       ParamDataTypeStr	      "Inherit: Inherit via internal rule"
       OutDataTypeStr	      "Inherit: Inherit via internal rule"
       SaturateOnIntegerOverflow	off
     }
     Block {
+      BlockType		      Gain
+      Name		      "Gain2"
+      SID		      "74"
+      Position		      [190, 35, 220, 65]
+      ZOrder		      60
+      BlockMirror	      on
+      Gain		      "0.6"
+      ParamDataTypeStr	      "Inherit: Inherit via internal rule"
+      OutDataTypeStr	      "Inherit: Inherit via internal rule"
+      SaturateOnIntegerOverflow	off
+    }
+    Block {
+      BlockType		      SubSystem
+      Name		      "Go-To-Goal"
+      SID		      "46"
+      Ports		      [4, 1]
+      Position		      [485, 372, 555, 433]
+      ZOrder		      43
+      BlockMirror	      on
+      MinAlgLoopOccurrences   off
+      PropExecContextOutsideSubsystem off
+      RTWSystemCode	      "Auto"
+      FunctionWithSeparateData off
+      Opaque		      off
+      RequestExecContextInheritance off
+      MaskHideContents	      off
+      Object {
+	$PropName		"MaskObject"
+	$ObjectID		24
+	$ClassName		"Simulink.Mask"
+	Display			"port_label('input', 1, 'x_g')\nport_label('input', 2, 'x')\nport_label('input', 3, 'y_g')\nport_label('inp"
+	"ut', 4, 'y')\nport_label('output', 1, 'u_gtg')"
+      }
+      System {
+	Name			"Go-To-Goal"
+	Location		[121, 78, 1442, 873]
+	Open			off
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"125"
+	Block {
+	  BlockType		  Inport
+	  Name			  "In2"
+	  SID			  "48"
+	  Position		  [45, 158, 75, 172]
+	  ZOrder		  34
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Inport
+	  Name			  "In3"
+	  SID			  "49"
+	  Position		  [45, 173, 75, 187]
+	  ZOrder		  35
+	  Port			  "2"
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Inport
+	  Name			  "In4"
+	  SID			  "50"
+	  Position		  [45, 243, 75, 257]
+	  ZOrder		  36
+	  Port			  "3"
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Inport
+	  Name			  "In5"
+	  SID			  "51"
+	  Position		  [45, 258, 75, 272]
+	  ZOrder		  37
+	  Port			  "4"
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Sum
+	  Name			  "Subtract"
+	  SID			  "34"
+	  Ports			  [2, 1]
+	  Position		  [120, 242, 150, 273]
+	  ZOrder		  31
+	  Inputs		  "+-"
+	  InputSameDT		  off
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	}
+	Block {
+	  BlockType		  Sum
+	  Name			  "Subtract1"
+	  SID			  "35"
+	  Ports			  [2, 1]
+	  Position		  [120, 157, 150, 188]
+	  ZOrder		  32
+	  Inputs		  "+-"
+	  InputSameDT		  off
+	  OutDataTypeStr	  "Inherit: Inherit via internal rule"
+	  SaturateOnIntegerOverflow off
+	}
+	Block {
+	  BlockType		  Concatenate
+	  Name			  "Vector Concatenate"
+	  SID			  "68"
+	  Ports			  [2, 1]
+	  Position		  [235, 166, 240, 204]
+	  ZOrder		  39
+	  Mode			  "Multidimensional array"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out1"
+	  SID			  "52"
+	  Position		  [300, 178, 330, 192]
+	  ZOrder		  38
+	  IconDisplay		  "Port number"
+	}
+	Line {
+	  SrcBlock		  "In5"
+	  SrcPort		  1
+	  DstBlock		  "Subtract"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "In2"
+	  SrcPort		  1
+	  DstBlock		  "Subtract1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "In3"
+	  SrcPort		  1
+	  DstBlock		  "Subtract1"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "In4"
+	  SrcPort		  1
+	  DstBlock		  "Subtract"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Vector Concatenate"
+	  SrcPort		  1
+	  DstBlock		  "Out1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Subtract1"
+	  SrcPort		  1
+	  DstBlock		  "Vector Concatenate"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Subtract"
+	  SrcPort		  1
+	  Points		  [22, 0; 0, -65]
+	  DstBlock		  "Vector Concatenate"
+	  DstPort		  2
+	}
+      }
+    }
+    Block {
+      BlockType		      Goto
+      Name		      "Goto"
+      SID		      "37"
+      Position		      [1180, 182, 1210, 198]
+      ZOrder		      34
+      ShowName		      off
+      GotoTag		      "x"
+    }
+    Block {
+      BlockType		      Goto
+      Name		      "Goto1"
+      SID		      "38"
+      Position		      [1180, 207, 1210, 223]
+      ZOrder		      35
+      ShowName		      off
+      GotoTag		      "y"
+    }
+    Block {
+      BlockType		      Goto
+      Name		      "Goto2"
+      SID		      "39"
+      Position		      [1175, 232, 1220, 248]
+      ZOrder		      36
+      ShowName		      off
+      GotoTag		      "theta"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "IR distance from RAW to WF"
+      SID		      "54"
+      Ports		      [4, 1]
+      Position		      [615, 58, 730, 127]
+      ZOrder		      45
+      BlockMirror	      on
+      LibraryVersion	      "1.9"
+      SourceBlock	      "simiam/IR distance from RAW to WF"
+      SourceType	      ""
+    }
+    Block {
       BlockType		      Reference
       Name		      "Khepera III"
       SID		      "17"
       Ports		      [2, 2]
-      Position		      [395, 76, 530, 154]
+      Position		      [615, 176, 750, 254]
       ZOrder		      14
-      LibraryVersion	      "1.7"
+      LibraryVersion	      "1.9"
       SourceBlock	      "simiam/Khepera III"
-      SourceType	      ""
+      SourceType	      "Khepera3"
       x_0		      "0"
       y_0		      "0"
       theta_0		      "0"
+      robot_id		      "1"
+    }
+    Block {
+      BlockType		      SubSystem
+      Name		      "Limit to -pi to pi"
+      SID		      "108"
+      Ports		      [1, 1]
+      Position		      [405, 280, 450, 320]
+      ZOrder		      91
+      MinAlgLoopOccurrences   off
+      PropExecContextOutsideSubsystem off
+      RTWSystemCode	      "Auto"
+      FunctionWithSeparateData off
+      Opaque		      off
+      RequestExecContextInheritance off
+      MaskHideContents	      off
+      Object {
+	$PropName		"MaskObject"
+	$ObjectID		25
+	$ClassName		"Simulink.Mask"
+	Display			"port_label('input', 1, 'e')\nport_label('output', 1, 'e')"
+      }
+      System {
+	Name			"Limit to -pi to pi"
+	Location		[96, 66, 1417, 895]
+	Open			off
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"150"
+	Block {
+	  BlockType		  Inport
+	  Name			  "In1"
+	  SID			  "109"
+	  Position		  [15, 63, 45, 77]
+	  ZOrder		  91
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Trigonometry
+	  Name			  "Trigonometric Function1"
+	  SID			  "105"
+	  Ports			  [2, 1]
+	  Position		  [150, 52, 180, 88]
+	  ZOrder		  88
+	  Operator		  "atan2"
+	}
+	Block {
+	  BlockType		  Trigonometry
+	  Name			  "Trigonometric Function2"
+	  SID			  "106"
+	  Ports			  [1, 1]
+	  Position		  [70, 22, 100, 58]
+	  ZOrder		  89
+	}
+	Block {
+	  BlockType		  Trigonometry
+	  Name			  "Trigonometric Function3"
+	  SID			  "107"
+	  Ports			  [1, 1]
+	  Position		  [70, 82, 100, 118]
+	  ZOrder		  90
+	  Operator		  "cos"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out1"
+	  SID			  "111"
+	  Position		  [200, 63, 230, 77]
+	  ZOrder		  93
+	  IconDisplay		  "Port number"
+	}
+	Line {
+	  SrcBlock		  "In1"
+	  SrcPort		  1
+	  Points		  [5, 0]
+	  Branch {
+	    DstBlock		    "Trigonometric Function2"
+	    DstPort		    1
+	  }
+	  Branch {
+	    DstBlock		    "Trigonometric Function3"
+	    DstPort		    1
+	  }
+	}
+	Line {
+	  SrcBlock		  "Trigonometric Function3"
+	  SrcPort		  1
+	  Points		  [7, 0; 0, -20]
+	  DstBlock		  "Trigonometric Function1"
+	  DstPort		  2
+	}
+	Line {
+	  SrcBlock		  "Trigonometric Function1"
+	  SrcPort		  1
+	  DstBlock		  "Out1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Trigonometric Function2"
+	  SrcPort		  1
+	  Points		  [20, 0; 0, 20]
+	  DstBlock		  "Trigonometric Function1"
+	  DstPort		  1
+	}
+      }
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Normalize Vector"
+      SID		      "88"
+      Ports		      [1, 1]
+      Position		      [375, 390, 450, 420]
+      ZOrder		      73
+      BlockMirror	      on
+      LibraryVersion	      "1.11"
+      SourceBlock	      "vrlib/Utilities/Normalize Vector"
+      SourceType	      "Normalize Vector"
+      maxzero		      "0"
+    }
+    Block {
+      BlockType		      Reference
+      Name		      "Normalize Vector1"
+      SID		      "89"
+      Ports		      [1, 1]
+      Position		      [255, 35, 330, 65]
+      ZOrder		      74
+      BlockMirror	      on
+      LibraryVersion	      "1.11"
+      SourceBlock	      "vrlib/Utilities/Normalize Vector"
+      SourceType	      "Normalize Vector"
+      maxzero		      "0"
     }
     Block {
       BlockType		      Reference
       Name		      "Pose2D"
       SID		      "18"
       Ports		      [3, 3]
-      Position		      [740, 79, 825, 151]
+      Position		      [1000, 179, 1085, 251]
       ZOrder		      15
-      LibraryVersion	      "1.7"
+      LibraryVersion	      "1.9"
       SourceBlock	      "simiam/Pose2D"
       SourceType	      ""
       ShowPortLabels	      "FromPortIcon"
@@ -893,20 +2267,39 @@ Model {
       Name		      "Simulator"
       SID		      "9"
       Ports		      []
-      Position		      [20, 62, 135, 173]
+      Position		      [20, 142, 135, 253]
       ZOrder		      7
       Priority		      "1"
-      LibraryVersion	      "1.7"
+      LibraryVersion	      "1.9"
       SourceBlock	      "simiam/Simulator"
       SourceType	      "Simulator"
     }
     Block {
+      BlockType		      Stop
+      Name		      "Stop Simulation"
+      SID		      "170"
+      Position		      [1000, 457, 1035, 493]
+      ZOrder		      118
+    }
+    Block {
       BlockType		      Sum
       Name		      "Sum"
-      SID		      "27"
+      SID		      "64"
       Ports		      [2, 1]
-      Position		      [275, 235, 295, 255]
-      ZOrder		      24
+      Position		      [195, 282, 215, 318]
+      ZOrder		      55
+      ShowName		      off
+      InputSameDT	      off
+      OutDataTypeStr	      "Inherit: Inherit via internal rule"
+      SaturateOnIntegerOverflow	off
+    }
+    Block {
+      BlockType		      Sum
+      Name		      "Sum1"
+      SID		      "77"
+      Ports		      [2, 1]
+      Position		      [360, 290, 380, 310]
+      ZOrder		      63
       ShowName		      off
       IconShape		      "round"
       Inputs		      "|+-"
@@ -919,9 +2312,9 @@ Model {
       Name		      "odometry"
       SID		      "19"
       Ports		      [4, 3]
-      Position		      [595, 78, 695, 147]
+      Position		      [855, 178, 955, 247]
       ZOrder		      16
-      LibraryVersion	      "1.7"
+      LibraryVersion	      "1.9"
       SourceBlock	      "simiam/odometry"
       SourceType	      ""
       wheel_radius	      "0.021"
@@ -933,13 +2326,61 @@ Model {
       Name		      "uni_to_diff"
       SID		      "13"
       Ports		      [2, 2]
-      Position		      [265, 76, 340, 154]
+      Position		      [485, 176, 560, 254]
       ZOrder		      11
-      LibraryVersion	      "1.7"
+      LibraryVersion	      "1.9"
       SourceBlock	      "simiam/uni_to_diff"
       SourceType	      ""
       wheel_radius	      "0.021"
       wheel_base_length	      "0.0885"
+    }
+    Block {
+      BlockType		      Constant
+      Name		      "x_g"
+      SID		      "33"
+      Position		      [565, 470, 595, 500]
+      ZOrder		      30
+      BlockRotation	      270
+      Value		      "-1"
+    }
+    Block {
+      BlockType		      Constant
+      Name		      "y_g"
+      SID		      "32"
+      Position		      [625, 470, 655, 500]
+      ZOrder		      29
+      BlockRotation	      270
+      Value		      "0.5"
+    }
+    Block {
+      BlockType		      Scope
+      Name		      "Floating\nScope"
+      SID		      "85"
+      Ports		      []
+      Position		      [185, 14, 215, 46]
+      ZOrder		      71
+      IOType		      "viewer"
+      Floating		      on
+      Location		      [356, 278, 680, 517]
+      Open		      off
+      NumInputPorts	      "1"
+      List {
+	ListType		AxesTitles
+	axes1			"%<SignalLabel>"
+      }
+      List {
+	ListType		ScopeGraphics
+	FigureColor		"[0.5 0.5 0.5]"
+	AxesColor		"[0 0 0]"
+	AxesTickColor		"[1 1 1]"
+	LineColors		"[1 1 0;1 0 1;0 1 1;1 0 0;0 1 0;0 0 1]"
+	LineStyles		"-|-|-|-|-|-"
+	LineWidths		"[0.5 0.5 0.5 0.5 0.5 0.5]"
+	MarkerStyles		"none|none|none|none|none|none"
+      }
+      ShowLegends	      off
+      DataFormat	      "StructureWithTime"
+      SampleTime	      "0"
     }
     Line {
       SrcBlock		      "uni_to_diff"
@@ -954,7 +2395,7 @@ Model {
       DstPort		      2
     }
     Line {
-      SrcBlock		      "Constant"
+      SrcBlock		      "Constant Linear Velocity"
       SrcPort		      1
       DstBlock		      "uni_to_diff"
       DstPort		      1
@@ -986,74 +2427,317 @@ Model {
     Line {
       SrcBlock		      "Pose2D"
       SrcPort		      1
-      Points		      [45, 0]
+      Points		      [5, 0]
       Branch {
-	Points			[0, 95]
-	DstBlock		"Display"
+	DstBlock		"Goto"
 	DstPort			1
       }
       Branch {
-	Points			[0, -27; -295, 0]
-	DstBlock		"odometry"
-	DstPort			1
+	Points			[0, -27]
+	Branch {
+	  Points		  [-299, 0; 0, 27]
+	  DstBlock		  "odometry"
+	  DstPort		  1
+	}
+	Branch {
+	  Points		  [0, -93; -313, 0]
+	  Branch {
+	    Points		    [0, -40]
+	    DstBlock		    "Avoid-Obstacles"
+	    DstPort		    1
+	  }
+	  Branch {
+	    DstBlock		    "IR distance from RAW to WF"
+	    DstPort		    1
+	  }
+	}
+      }
+      Branch {
+	Points			[0, 205; -375, 0]
+	Branch {
+	  Points		  [0, 70]
+	  DstBlock		  "Distance to Goal"
+	  DstPort		  2
+	}
+	Branch {
+	  DstBlock		  "Go-To-Goal"
+	  DstPort		  2
+	}
       }
     }
     Line {
       SrcBlock		      "Pose2D"
       SrcPort		      2
-      Points		      [55, 0]
+      Points		      [15, 0]
       Branch {
-	Points			[0, 120]
-	DstBlock		"Display1"
-	DstPort			1
+	Points			[35, 0]
+	Branch {
+	  DstBlock		  "Goto1"
+	  DstPort		  1
+	}
+	Branch {
+	  Points		  [0, 210; -465, 0]
+	  Branch {
+	    Points		    [0, 70]
+	    DstBlock		    "Distance to Goal"
+	    DstPort		    4
+	  }
+	  Branch {
+	    DstBlock		    "Go-To-Goal"
+	    DstPort		    4
+	  }
+	}
       }
       Branch {
-	Points			[0, -65; -319, 0; 0, 55]
-	DstBlock		"odometry"
-	DstPort			2
+	Points			[0, -65]
+	Branch {
+	  Points		  [-319, 0; 0, 55]
+	  DstBlock		  "odometry"
+	  DstPort		  2
+	}
+	Branch {
+	  Points		  [0, -65; -339, 0]
+	  Branch {
+	    Points		    [0, -35]
+	    DstBlock		    "Avoid-Obstacles"
+	    DstPort		    2
+	  }
+	  Branch {
+	    DstBlock		    "IR distance from RAW to WF"
+	    DstPort		    2
+	  }
+	}
       }
     }
     Line {
-      SrcBlock		      "Constant2"
+      SrcBlock		      "From2"
       SrcPort		      1
+      DstBlock		      "Display2"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "From1"
+      SrcPort		      1
+      DstBlock		      "Display1"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "From"
+      SrcPort		      1
+      DstBlock		      "Display"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "x_g"
+      SrcPort		      1
+      Points		      [0, -85]
+      Branch {
+	Points			[171, 0; 0, 70]
+	DstBlock		"Distance to Goal"
+	DstPort			1
+      }
+      Branch {
+	DstBlock		"Go-To-Goal"
+	DstPort			1
+      }
+    }
+    Line {
+      SrcBlock		      "y_g"
+      SrcPort		      1
+      Points		      [0, -55]
+      Branch {
+	Points			[54, 0; 0, 70]
+	DstBlock		"Distance to Goal"
+	DstPort			3
+      }
+      Branch {
+	DstBlock		"Go-To-Goal"
+	DstPort			3
+      }
+    }
+    Line {
+      SrcBlock		      "Khepera III"
+      SrcPort		      1
+      Points		      [10, 0; 0, -80]
+      DstBlock		      "IR distance from RAW to WF"
+      DstPort		      4
+    }
+    Line {
+      SrcBlock		      "IR distance from RAW to WF"
+      SrcPort		      1
+      Points		      [-28, 0; 0, -25]
+      DstBlock		      "Avoid-Obstacles"
+      DstPort		      3
+    }
+    Line {
+      SrcBlock		      "Avoid-Obstacles"
+      SrcPort		      1
+      DstBlock		      "Normalize Vector1"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Go-To-Goal"
+      SrcPort		      1
+      DstBlock		      "Normalize Vector"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Gain2"
+      SrcPort		      1
+      Points		      [-28, 0; 0, 240]
       DstBlock		      "Sum"
       DstPort		      1
     }
     Line {
-      SrcBlock		      "Sum"
+      SrcBlock		      "Gain"
       SrcPort		      1
-      DstBlock		      "Gain"
+      Points		      [-127, 0; 0, -95]
+      DstBlock		      "Sum"
+      DstPort		      2
+    }
+    Line {
+      SrcBlock		      "Sum1"
+      SrcPort		      1
+      DstBlock		      "Limit to -pi to pi"
       DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Angle of Vector2"
+      SrcPort		      1
+      Points		      [28, 0]
+      Branch {
+	Points			[0, -50]
+	DstBlock		"Display7"
+	DstPort			1
+      }
+      Branch {
+	DstBlock		"Sum1"
+	DstPort			1
+      }
     }
     Line {
       SrcBlock		      "Pose2D"
       SrcPort		      3
-      Points		      [18, 0]
+      Points		      [26, 0]
       Branch {
-	Points			[0, 192; -563, 0]
-	DstBlock		"Sum"
-	DstPort			2
-      }
-      Branch {
-	Points			[48, 0]
+	Points			[41, 0]
 	Branch {
-	  Points		  [0, 145]
-	  DstBlock		  "Display2"
-	  DstPort		  1
+	  Points		  [0, 93; -787, 0]
+	  DstBlock		  "Sum1"
+	  DstPort		  2
 	}
 	Branch {
-	  Points		  [0, -106; -341, 0; 0, 86]
+	  DstBlock		  "Goto2"
+	  DstPort		  1
+	}
+      }
+      Branch {
+	Points			[0, -106]
+	Branch {
+	  Points		  [0, -34]
+	  DstBlock		  "IR distance from RAW to WF"
+	  DstPort		  3
+	}
+	Branch {
+	  Points		  [-341, 0; 0, 86]
 	  DstBlock		  "odometry"
 	  DstPort		  3
 	}
       }
     }
     Line {
-      SrcBlock		      "Gain"
+      SrcBlock		      "Gain1"
       SrcPort		      1
-      Points		      [62, 0; 0, -56; -226, 0; 0, -54]
+      Points		      [12, 0; 0, -21; -62, 0]
       DstBlock		      "uni_to_diff"
       DstPort		      2
     }
+    Line {
+      SrcBlock		      "Limit to -pi to pi"
+      SrcPort		      1
+      DstBlock		      "Gain1"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Normalize Vector"
+      SrcPort		      1
+      Points		      [-20, 0]
+      Branch {
+	Points			[0, 80]
+	DstBlock		"Angle of Vector"
+	DstPort			1
+      }
+      Branch {
+	DstBlock		"Gain"
+	DstPort			1
+      }
+    }
+    Line {
+      SrcBlock		      "Angle of Vector"
+      SrcPort		      1
+      DstBlock		      "Display4"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Normalize Vector1"
+      SrcPort		      1
+      Points		      [-10, 0]
+      Branch {
+	Points			[0, 65]
+	DstBlock		"Angle of Vector1"
+	DstPort			1
+      }
+      Branch {
+	DstBlock		"Gain2"
+	DstPort			1
+      }
+    }
+    Line {
+      SrcBlock		      "Angle of Vector1"
+      SrcPort		      1
+      DstBlock		      "Display3"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Sum"
+      SrcPort		      1
+      DstBlock		      "Angle of Vector2"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Distance to Goal"
+      SrcPort		      1
+      DstBlock		      "Compare To Constant"
+      DstPort		      1
+    }
+    Line {
+      SrcBlock		      "Compare To Constant"
+      SrcPort		      1
+      DstBlock		      "Stop Simulation"
+      DstPort		      1
+    }
+  }
+}
+# Finite State Machines
+#
+#    Stateflow Version 7.6 (R2012b) dated Jul 26 2012, 17:33:50
+#
+#
+
+Stateflow {
+  machine {
+    id			    1
+    name		    "simiam_demo"
+    created		    "10-Apr-2013 20:42:09"
+    isLibrary		    0
+    firstTarget		    2
+    sfVersion		    76014001.001
+  }
+  target {
+    id			    2
+    name		    "sfun"
+    description		    "Default Simulink S-Function Target."
+    machine		    1
+    linkNode		    [1 0 0]
   }
 }

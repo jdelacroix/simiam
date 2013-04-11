@@ -16,10 +16,10 @@ function msfun_simiam_ui(block)
 %% S-function such as ports, parameters, etc. Do not add any other
 %% calls to the main body of the function.
 %%
-simulator = [];
+app = [];
 setup(block);
 
-%endfunction
+ %endfunction
 
 %% Function: setup ===================================================
 %% Abstract:
@@ -77,7 +77,7 @@ block.RegBlockMethod('Update', @Update);
 block.RegBlockMethod('Derivatives', @Derivatives);
 block.RegBlockMethod('Terminate', @Terminate); % Required
 
-%end setup
+end %end setup
 
 
 %%
@@ -91,7 +91,7 @@ block.RegBlockMethod('Terminate', @Terminate); % Required
 %%
 function InitializeConditions(block)
 
-%end InitializeConditions
+end %end InitializeConditions
 
 
 %%
@@ -118,7 +118,7 @@ customData('simulatorHandle') = simulator;
 set(block.BlockHandle, 'UserData', customData, 'UserDataPersistent', 'off');
 
 
-%endfunction
+end %endfunction
 
 %%
 %% Outputs:
@@ -129,7 +129,7 @@ set(block.BlockHandle, 'UserData', customData, 'UserDataPersistent', 'off');
 %%
 function Outputs(block)
 
-%end Outputs
+end %end Outputs
 
 %%
 %% Update:
@@ -143,9 +143,13 @@ function Update(block)
 customData = get(block.BlockHandle, 'UserData');
 simulator = customData('simulatorHandle');
 
-simulator.step([],[]);
+if(~app.is_state_crashed_)
+    simulator.step([],[]);
+else
+    error('Collision detected!');
+end
 
-%end Update
+end %end Update
 
 %%
 %% Derivatives:
@@ -156,7 +160,7 @@ simulator.step([],[]);
 %%
 function Derivatives(block)
 
-%end Derivatives
+end %end Derivatives
 
 %%
 %% Terminate:
@@ -166,5 +170,6 @@ function Derivatives(block)
 %%
 function Terminate(block)
 
-%end Terminate
+end %end Terminate
 
+end

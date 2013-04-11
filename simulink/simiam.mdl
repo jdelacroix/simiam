@@ -19,7 +19,7 @@ Library {
       $ObjectID		      2
       $ClassName	      "Simulink.WindowInfo"
       IsActive		      [1]
-      Location		      [448.0, 69.0, 1038.0, 660.0]
+      Location		      [436.0, 33.0, 1058.0, 704.0]
       Object {
 	$PropName		"ModelBrowserInfo"
 	$ObjectID		3
@@ -28,7 +28,7 @@ Library {
 	DockPosition		"Left"
 	Width			[50]
 	Height			[50]
-	Filter			[8]
+	Filter			[9]
       }
       Object {
 	$PropName		"ExplorerBarInfo"
@@ -43,7 +43,7 @@ Library {
 	IsActive		[1]
 	ViewObjType		"SimulinkTopLevel"
 	LoadSaveID		"0"
-	Extents			[982.0, 488.0]
+	Extents			[1002.0, 532.0]
 	ZoomFactor		[1.25]
 	Offset			[-33.554691523676922, 1.8688394640464878]
       }
@@ -55,9 +55,9 @@ Library {
   ModifiedByFormat	  "%<Auto>"
   LastModifiedBy	  "jdelacroix"
   ModifiedDateFormat	  "%<Auto>"
-  LastModifiedDate	  "Wed Apr 10 13:18:52 2013"
-  RTWModifiedTimeStamp	  287493850
-  ModelVersionFormat	  "1.%<AutoIncrement:7>"
+  LastModifiedDate	  "Wed Apr 10 23:32:29 2013"
+  RTWModifiedTimeStamp	  287526931
+  ModelVersionFormat	  "1.%<AutoIncrement:9>"
   ConfigurationManager	  "None"
   SampleTimeColors	  off
   SampleTimeAnnotations	  off
@@ -682,14 +682,81 @@ Library {
   }
   BlockParameterDefaults {
     Block {
+      BlockType		      Inport
+      Port		      "1"
+      OutputFunctionCall      off
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeStr	      "Inherit: auto"
+      LockScale		      off
+      BusOutputAsStruct	      off
+      PortDimensions	      "-1"
+      VarSizeSig	      "Inherit"
+      SampleTime	      "-1"
+      SignalType	      "auto"
+      SamplingMode	      "auto"
+      LatchByDelayingOutsideSignal off
+      LatchInputForFeedbackSignals off
+      Interpolate	      on
+    }
+    Block {
       BlockType		      M-S-Function
       FunctionName	      "matlabfile"
       DisplayMFileStacktrace  on
     }
+    Block {
+      BlockType		      Memory
+      X0		      "0"
+      InheritSampleTime	      off
+      LinearizeMemory	      off
+      LinearizeAsDelay	      off
+      StateMustResolveToSignalObject off
+      RTWStateStorageClass    "Auto"
+    }
+    Block {
+      BlockType		      Outport
+      Port		      "1"
+      OutMin		      "[]"
+      OutMax		      "[]"
+      OutDataTypeStr	      "Inherit: auto"
+      LockScale		      off
+      BusOutputAsStruct	      off
+      PortDimensions	      "-1"
+      VarSizeSig	      "Inherit"
+      SampleTime	      "-1"
+      SignalType	      "auto"
+      SamplingMode	      "auto"
+      SourceOfInitialOutputValue "Dialog"
+      OutputWhenDisabled      "held"
+      InitialOutput	      "[]"
+    }
+    Block {
+      BlockType		      SubSystem
+      ShowPortLabels	      "FromPortIcon"
+      Permissions	      "ReadWrite"
+      PermitHierarchicalResolution "All"
+      TreatAsAtomicUnit	      off
+      CheckFcnCallInpInsideContextMsg off
+      SystemSampleTime	      "-1"
+      RTWFcnNameOpts	      "Auto"
+      RTWFileNameOpts	      "Auto"
+      RTWMemSecFuncInitTerm   "Inherit from model"
+      RTWMemSecFuncExecute    "Inherit from model"
+      RTWMemSecDataConstants  "Inherit from model"
+      RTWMemSecDataInternal   "Inherit from model"
+      RTWMemSecDataParameters "Inherit from model"
+      SimViewingDevice	      off
+      DataTypeOverride	      "UseLocalSettings"
+      DataTypeOverrideAppliesTo	"AllNumericTypes"
+      MinMaxOverflowLogging   "UseLocalSettings"
+      SFBlockType	      "NONE"
+      Variant		      off
+      GeneratePreprocessorConditionals off
+    }
   }
   System {
     Name		    "simiam"
-    Location		    [448, 69, 1486, 729]
+    Location		    [436, 33, 1494, 737]
     Open		    on
     ModelBrowserVisibility  off
     ModelBrowserWidth	    200
@@ -703,10 +770,26 @@ Library {
     ShowPageBoundaries	    off
     ZoomFactor		    "125"
     ReportName		    "simulink-default.rpt"
-    SIDHighWatermark	    "3"
+    SIDHighWatermark	    "15"
     Block {
       BlockType		      M-S-Function
-      Name		      "Khepera3"
+      Name		      "IR distance from RAW to WF"
+      SID		      "15"
+      Ports		      [4, 1]
+      Position		      [45, 243, 160, 312]
+      ZOrder		      8
+      FunctionName	      "msfun_ir_distances_to_wf"
+      Object {
+	$PropName		"MaskObject"
+	$ObjectID		17
+	$ClassName		"Simulink.Mask"
+	Display			"port_label('input', 1, 'x')\nport_label('input', 2, 'y')\nport_label('input', 3, 'theta')\nport_label('inp"
+	"ut', 4, 'ir_raw')\nport_label('output', 1, 'ir_wf')"
+      }
+    }
+    Block {
+      BlockType		      M-S-Function
+      Name		      "Khepera III"
       SID		      "3"
       Ports		      [2, 2]
       Position		      [430, 66, 565, 144]
@@ -715,15 +798,16 @@ Library {
       Parameters	      "x_0,y_0,theta_0"
       Object {
 	$PropName		"MaskObject"
-	$ObjectID		17
+	$ObjectID		18
 	$ClassName		"Simulink.Mask"
+	Type			"Khepera3"
 	Display			"port_label('output', 1, 'ir_raw')\nport_label('output', 2, 'wheel_ticks')\nport_label('input', 1, 'vel_r')"
 	"\nport_label('input', 2, 'vel_l')\n"
 	Array {
 	  Type			  "Simulink.MaskParameter"
-	  Dimension		  3
+	  Dimension		  4
 	  Object {
-	    $ObjectID		    18
+	    $ObjectID		    19
 	    Type		    "edit"
 	    Name		    "x_0"
 	    Prompt		    "x_0"
@@ -731,7 +815,7 @@ Library {
 	    Tunable		    "off"
 	  }
 	  Object {
-	    $ObjectID		    19
+	    $ObjectID		    20
 	    Type		    "edit"
 	    Name		    "y_0"
 	    Prompt		    "y_0"
@@ -739,14 +823,175 @@ Library {
 	    Tunable		    "off"
 	  }
 	  Object {
-	    $ObjectID		    20
+	    $ObjectID		    21
 	    Type		    "edit"
 	    Name		    "theta_0"
 	    Prompt		    "theta_0"
 	    Value		    "0"
 	    Tunable		    "off"
 	  }
+	  Object {
+	    $ObjectID		    22
+	    Type		    "edit"
+	    Name		    "robot_id"
+	    Prompt		    "ID"
+	    Value		    "1"
+	    Tunable		    "off"
+	  }
 	  PropName		  "Parameters"
+	}
+      }
+    }
+    Block {
+      BlockType		      SubSystem
+      Name		      "Pose2D"
+      SID		      "8"
+      Ports		      [3, 3]
+      Position		      [455, 244, 540, 316]
+      ZOrder		      7
+      MinAlgLoopOccurrences   off
+      PropExecContextOutsideSubsystem off
+      RTWSystemCode	      "Auto"
+      FunctionWithSeparateData off
+      Opaque		      off
+      RequestExecContextInheritance off
+      MaskHideContents	      off
+      Object {
+	$PropName		"MaskObject"
+	$ObjectID		23
+	$ClassName		"Simulink.Mask"
+	Display			"port_label('input', 1, 'x')\nport_label('input', 2, 'y')\nport_label('input', 3, 'theta')\nport_label('out"
+	"put', 1, 'x')\nport_label('output', 2, 'y')\nport_label('output', 3, 'theta')"
+      }
+      System {
+	Name			"Pose2D"
+	Location		[446, 67, 1484, 727]
+	Open			off
+	ModelBrowserVisibility	off
+	ModelBrowserWidth	200
+	ScreenColor		"white"
+	PaperOrientation	"landscape"
+	PaperPositionMode	"auto"
+	PaperType		"usletter"
+	PaperUnits		"inches"
+	TiledPaperMargins	[0.500000, 0.500000, 0.500000, 0.500000]
+	TiledPageScale		1
+	ShowPageBoundaries	off
+	ZoomFactor		"125"
+	Block {
+	  BlockType		  Inport
+	  Name			  "In1"
+	  SID			  "9"
+	  Position		  [20, 28, 50, 42]
+	  ZOrder		  7
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Inport
+	  Name			  "In2"
+	  SID			  "10"
+	  Position		  [20, 83, 50, 97]
+	  ZOrder		  8
+	  Port			  "2"
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Inport
+	  Name			  "In3"
+	  SID			  "11"
+	  Position		  [20, 138, 50, 152]
+	  ZOrder		  9
+	  Port			  "3"
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Memory
+	  Name			  "Memory"
+	  SID			  "5"
+	  Position		  [70, 20, 100, 50]
+	  ZOrder		  4
+	  InheritSampleTime	  on
+	  StateIdentifier	  "state_estimate_x"
+	}
+	Block {
+	  BlockType		  Memory
+	  Name			  "Memory1"
+	  SID			  "6"
+	  Position		  [70, 75, 100, 105]
+	  ZOrder		  5
+	  InheritSampleTime	  on
+	  StateIdentifier	  "state_estimate_y"
+	}
+	Block {
+	  BlockType		  Memory
+	  Name			  "Memory2"
+	  SID			  "7"
+	  Position		  [70, 130, 100, 160]
+	  ZOrder		  6
+	  InheritSampleTime	  on
+	  StateIdentifier	  "state_estimate_theta"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out1"
+	  SID			  "12"
+	  Position		  [120, 28, 150, 42]
+	  ZOrder		  10
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out2"
+	  SID			  "13"
+	  Position		  [120, 83, 150, 97]
+	  ZOrder		  11
+	  Port			  "2"
+	  IconDisplay		  "Port number"
+	}
+	Block {
+	  BlockType		  Outport
+	  Name			  "Out3"
+	  SID			  "14"
+	  Position		  [120, 138, 150, 152]
+	  ZOrder		  12
+	  Port			  "3"
+	  IconDisplay		  "Port number"
+	}
+	Line {
+	  SrcBlock		  "In3"
+	  SrcPort		  1
+	  DstBlock		  "Memory2"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Memory1"
+	  SrcPort		  1
+	  DstBlock		  "Out2"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "In1"
+	  SrcPort		  1
+	  DstBlock		  "Memory"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Memory"
+	  SrcPort		  1
+	  DstBlock		  "Out1"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "Memory2"
+	  SrcPort		  1
+	  DstBlock		  "Out3"
+	  DstPort		  1
+	}
+	Line {
+	  SrcBlock		  "In2"
+	  SrcPort		  1
+	  DstBlock		  "Memory1"
+	  DstPort		  1
 	}
       }
     }
@@ -760,7 +1005,7 @@ Library {
       FunctionName	      "msfun_simiam_ui"
       Object {
 	$PropName		"MaskObject"
-	$ObjectID		21
+	$ObjectID		24
 	$ClassName		"Simulink.Mask"
 	Type			"Simulator"
 	Display			"image(imread('simulink/simiam-round-logo.png'))"
@@ -768,24 +1013,24 @@ Library {
     }
     Block {
       BlockType		      M-S-Function
-      Name		      "uni_to_diff"
-      SID		      "2"
-      Ports		      [2, 2]
-      Position		      [215, 214, 275, 256]
-      ZOrder		      1
-      FunctionName	      "msfun_uni_to_diff"
-      Parameters	      "wheel_radius,wheel_base_length"
+      Name		      "odometry"
+      SID		      "4"
+      Ports		      [4, 3]
+      Position		      [270, 218, 370, 287]
+      ZOrder		      3
+      FunctionName	      "msfun_odometry"
+      Parameters	      "wheel_radius,wheel_base_length,ticks_per_rev"
       Object {
 	$PropName		"MaskObject"
-	$ObjectID		22
+	$ObjectID		25
 	$ClassName		"Simulink.Mask"
-	Display			"port_label('output', 1, 'vel_r')\nport_label('output', 2, 'vel_l')\nport_label('input', 1, 'v')\nport_labe"
-	"l('input', 2, 'w')"
+	Display			"port_label('input', 1, 'x')\nport_label('input', 2, 'y')\nport_label('input', 3, 'theta')\nport_label('inp"
+	"ut', 4, 'wheel_ticks')\nport_label('output', 1, 'x')\nport_label('output', 2, 'y')\nport_label('output', 3, 'theta')"
 	Array {
 	  Type			  "Simulink.MaskParameter"
-	  Dimension		  2
+	  Dimension		  3
 	  Object {
-	    $ObjectID		    23
+	    $ObjectID		    26
 	    Type		    "edit"
 	    Name		    "wheel_radius"
 	    Prompt		    "wheel_radius"
@@ -793,7 +1038,53 @@ Library {
 	    Tunable		    "off"
 	  }
 	  Object {
-	    $ObjectID		    24
+	    $ObjectID		    27
+	    Type		    "edit"
+	    Name		    "wheel_base_length"
+	    Prompt		    "wheel_base_length"
+	    Value		    "0.0885"
+	    Tunable		    "off"
+	  }
+	  Object {
+	    $ObjectID		    28
+	    Type		    "edit"
+	    Name		    "ticks_per_rev"
+	    Prompt		    "ticks_per_rev"
+	    Value		    "2675"
+	    Tunable		    "off"
+	  }
+	  PropName		  "Parameters"
+	}
+      }
+    }
+    Block {
+      BlockType		      M-S-Function
+      Name		      "uni_to_diff"
+      SID		      "2"
+      Ports		      [2, 2]
+      Position		      [285, 66, 370, 144]
+      ZOrder		      1
+      FunctionName	      "msfun_uni_to_diff"
+      Parameters	      "wheel_radius,wheel_base_length"
+      Object {
+	$PropName		"MaskObject"
+	$ObjectID		29
+	$ClassName		"Simulink.Mask"
+	Display			"port_label('output', 1, 'vel_r')\nport_label('output', 2, 'vel_l')\nport_label('input', 1, 'v')\nport_labe"
+	"l('input', 2, 'w')"
+	Array {
+	  Type			  "Simulink.MaskParameter"
+	  Dimension		  2
+	  Object {
+	    $ObjectID		    30
+	    Type		    "edit"
+	    Name		    "wheel_radius"
+	    Prompt		    "wheel_radius"
+	    Value		    "0.021"
+	    Tunable		    "off"
+	  }
+	  Object {
+	    $ObjectID		    31
 	    Type		    "edit"
 	    Name		    "wheel_base_length"
 	    Prompt		    "wheel_base_length"

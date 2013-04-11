@@ -75,8 +75,7 @@ classdef AOandGTG < simiam.controller.Controller
             % 3. Blend the two vectors
             u_gtg = u_gtg/norm(u_gtg);
             u_ao = u_ao/norm(u_ao);
-            
-            alpha = 0.6;
+            alpha = 0.4;
             u_ao_gtg = alpha*u_gtg+(1-alpha)*u_ao;
             
             %% END CODE BLOCK %%

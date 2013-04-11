@@ -43,7 +43,7 @@
         </geometry>
     </obstacle>
     
-    <obstacle>
+    <!--<obstacle>
         <pose x="-0.4" y="-0.2" theta="1.5708" />
         <geometry>
             <point x="0" y="0" />
@@ -51,7 +51,7 @@
             <point x="0.6" y="0.2" />
             <point x="0" y="0.2" />
         </geometry>
-    </obstacle>
+    </obstacle>-->
     
     <obstacle>
         <pose x="0.4" y="0.4" theta="-1.5708" />

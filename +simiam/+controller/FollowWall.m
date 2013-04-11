@@ -70,10 +70,7 @@ classdef FollowWall < simiam.controller.Controller
             ir_distances_rf = obj.apply_sensor_geometry(ir_distances, state_estimate);            
             
             % Compute the heading vector
-<<<<<<< HEAD
-           
-=======
->>>>>>> c1cd3c77e424639d56cc1efadf6ce86c546f7367
+
             % 1. Select p_2 and p_1, then compute u_fw_t
             if(strcmp(inputs.direction,'right'))
                 % Pick two of the right sensors based on ir_distances
@@ -99,10 +96,7 @@ classdef FollowWall < simiam.controller.Controller
                 S = [1:4 ; ir_distances(1:4)];
                 [Y,i] = sort(S(2,:));
                 S = S(1,i);
-<<<<<<< HEAD
                 
-=======
->>>>>>> c1cd3c77e424639d56cc1efadf6ce86c546f7367
                 if(S(1) > S(2))
                     p_1 = ir_distances_rf(:,S(2));
                     p_2 = ir_distances_rf(:,S(1));

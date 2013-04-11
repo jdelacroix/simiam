@@ -1,4 +1,4 @@
-function msfun_khepera3(block)
+function msfun_ir_distances_to_wf(block)
 %MSFUNTMPL_BASIC A Template for a Level-2 MATLAB S-Function
 %   The MATLAB S-function is written as a MATLAB function with the
 %   same name as the S-function. Replace 'msfuntmpl_basic' with the
@@ -17,6 +17,7 @@ function msfun_khepera3(block)
 %% calls to the main body of the function.
 %%
 robot = [];
+sensor_placement = zeros(3,9);
 
 setup(block);
 
@@ -34,8 +35,8 @@ setup(block);
     function setup(block)
         
         % Register number of ports
-        block.NumInputPorts  = 2;
-        block.NumOutputPorts = 2;
+        block.NumInputPorts  = 4;
+        block.NumOutputPorts = 1;
         
         % Setup port properties to be inherited or dynamic
         % block.SetPreCompInpPortInfoToDynamic;
@@ -43,35 +44,31 @@ setup(block);
         block.SetPreCompPortInfoToDefaults;
         
         % Override input port properties
-        block.InputPort(1).Dimensions        = 1;
-        block.InputPort(1).DatatypeID  = 0;  % double
-        block.InputPort(1).Complexity  = 'Real';
-        block.InputPort(1).DirectFeedthrough = false;
+        for i=1:3
+            block.InputPort(i).Dimensions  = 1;
+            block.InputPort(i).DatatypeID  = 0;  % double
+            block.InputPort(i).Complexity  = 'Real';
+            block.InputPort(i).DirectFeedthrough = true;      
+            block.InputPort(i).SamplingMode = 0;
+        end
         
-        block.InputPort(2).Dimensions        = 1;
-        block.InputPort(2).DatatypeID  = 0;  % double
-        block.InputPort(2).Complexity  = 'Real';
-        block.InputPort(2).DirectFeedthrough = false;
-        
-        block.InputPort(1).SamplingMode = 0;
-        block.InputPort(2).SamplingMode = 0;
+        block.InputPort(4).Dimensions  = 9;
+        block.InputPort(4).DatatypeID  = 0;  % double
+        block.InputPort(4).Complexity  = 'Real';
+        block.InputPort(4).DirectFeedthrough = true;
         
         % Override output port properties
-        block.OutputPort(1).Dimensions       = 9;
+        block.OutputPort(1).Dimensions       = [2 9];
         block.OutputPort(1).DatatypeID  = 0; % double
         block.OutputPort(1).Complexity  = 'Real';
-        
-        block.OutputPort(2).Dimensions       = 2;
-        block.OutputPort(2).DatatypeID  = 0; % double
-        block.OutputPort(2).Complexity  = 'Real';
         
         % Set up the states
         block.NumContStates = 0;
         block.NumDworks = 0;
         
         % Register parameters
-        block.NumDialogPrms     = 3;
-        block.DialogPrmsTunable = {'NonTunable', 'NonTunable', 'NonTunable'};
+        block.NumDialogPrms     = 0;
+%         block.DialogPrmsTunable = {'NonTunable', 'NonTunable', 'NonTunable'};
         
         % Register sample times
         %  [0 offset]            : Continuous sample time
@@ -118,7 +115,6 @@ setup(block);
     function DoPostPropSetup(block)
         
     end
-
 %%
 %% InitializeConditions:
 %%   Functionality    : Called at the start of simulation and if it is
@@ -143,21 +139,19 @@ setup(block);
 %%
     function Start(block)
         
-        x_0 = block.DialogPrm(1).Data;
-        y_0 = block.DialogPrm(2).Data;
-        theta_0 = block.DialogPrm(3).Data;
+        customData = getRobotBlockUserData(bdroot(block.BlockHandle), '1');
+        robot = customData('robotHandle');
         
-        customData = getSimulatorBlockUserData(bdroot(block.BlockHandle));
-        simulator = customData('simulatorHandle');
-        
-        robot = simulator.world.add_robot('Khepera3', 'Supervisor', x_0, y_0, theta_0);
-        
-        % store info in custom data;
-        customData = containers.Map('UniformValues', false);
-        customData('robotHandle') = robot;
-        set(block.BlockHandle, 'UserData', customData, 'UserDataPersistent', 'off');
+        for i=1:9
+            [x, y, theta] = robot.ir_array(i).location.unpack();
+            sensor_placement(:,i) = [x; y; theta];
+        end
         
     end %endfunction
+
+    function R = get_transformation_matrix(x, y, theta)
+        R = [cos(theta) -sin(theta) x; sin(theta) cos(theta) y; 0 0 1];
+    end
 
 %%
 %% Outputs:
@@ -168,12 +162,29 @@ setup(block);
 %%
     function Outputs(block)
         
-%         customData = get(block.BlockHandle, 'UserData');
-%         robot = customData('robotHandle');
+        ir_array_values = block.InputPort(4).Data;
+        ir_distances_sf = 0.02-log(ir_array_values/3960)/30;
         
-        block.OutputPort(1).Data = robot.ir_array.get_range();
-        robot.encoders.ticks
-        block.OutputPort(2).Data = [robot.encoders.ticks];
+        ir_distances_rf = zeros(3,9);
+        for i=1:9
+            x_s = sensor_placement(1,i);
+            y_s = sensor_placement(2,i);
+            theta_s = sensor_placement(3,i);
+            
+            R = get_transformation_matrix(x_s,y_s,theta_s);
+            ir_distances_rf(:,i) = R*[ir_distances_sf(i); 0; 1];
+        end
+        
+        % Apply the transformation to world frame.
+        x = block.InputPort(1).Data;
+        y = block.InputPort(2).Data;
+        theta = block.InputPort(3).Data;
+        
+        R = get_transformation_matrix(x,y,theta);
+        ir_distances_wf = R*ir_distances_rf;
+        
+        block.OutputPort(1).Data = ir_distances_wf(1:2,:);
+        
         
     end %end Outputs
 
@@ -185,14 +196,6 @@ setup(block);
 %%   C-MEX counterpart: mdlUpdate
 %%
     function Update(block)
-        
-%         customData = get(block.BlockHandle, 'UserData');
-%         robot = customData('robotHandle');
-        
-        vel_r = block.InputPort(1).Data;
-        vel_l = block.InputPort(2).Data;
-        
-        robot.set_wheel_speeds(vel_r,vel_l);
         
     end %end Update
 

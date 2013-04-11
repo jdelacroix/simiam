@@ -35,6 +35,7 @@ classdef AppWindow < handle
         root_
         
         from_simulink_
+        is_state_crashed_
     end
     
     methods
@@ -61,6 +62,7 @@ classdef AppWindow < handle
             obj.time_ = 0;
             
             obj.from_simulink_ = from_simulink;
+            obj.is_state_crashed_ = false;
         end
         
         function load_ui(obj)
@@ -251,11 +253,13 @@ classdef AppWindow < handle
         end
         
         function ui_update(obj, dt, is_state_crashed)
-            
+            obj.is_state_crashed_ = is_state_crashed;
             if (is_state_crashed)
                 obj.simulator_.stop();
                 obj.ui_set_button_icon(obj.ui_buttons_.status, 'ui_status_error.png');
-                obj.ui_toggle_control(obj.ui_buttons_.refresh, true);
+                if(~obj.from_simulink_)
+                    obj.ui_toggle_control(obj.ui_buttons_.refresh, true);
+                end
                 obj.ui_toggle_control(obj.ui_buttons_.play, false);
             end
             
@@ -273,6 +277,7 @@ classdef AppWindow < handle
             obj.ui_update_clock(0);
             obj.ui_button_home(src, event);
             obj.ui_button_start(src, event);
+            obj.is_state_crashed_ = false;
         end
         
         function ui_button_start(obj, src, event)
