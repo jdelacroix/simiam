@@ -75,7 +75,7 @@ classdef AppWindow < handle
                 token_k = token_k.next_;
             end
             
-            obj.simulator_ = simiam.simulator.Simulator(obj, world, 0.033, obj.ui_buttons_.hardware_state);
+            obj.simulator_ = simiam.simulator.Simulator(obj, world, 0.066, obj.ui_buttons_.hardware_state);
             obj.simulator_.step([],[]);
         end
         

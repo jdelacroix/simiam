@@ -7,6 +7,7 @@ classdef Robot < simiam.ui.Drawable
         supervisor
         
         driver
+        optitrack
         hostname
         port
         islinked
@@ -16,6 +17,8 @@ classdef Robot < simiam.ui.Drawable
         function obj = Robot(parent, start_pose)
             obj = obj@simiam.ui.Drawable(parent, start_pose);
             obj.islinked = false;
+            obj.driver = [];
+            obj.optitrack = [];
         end
         
         function attach_supervisor(obj, supervisor)

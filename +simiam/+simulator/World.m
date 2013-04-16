@@ -54,6 +54,15 @@ classdef World < handle
                    r.add_hardware_link(hostname,port);
                    r.open_hardware_link();
                end
+               
+               optitrack = robot.getElementsByTagName('optitrack').item(0);
+               if(~isempty(optitrack) && islinked)
+                   hostname = char(optitrack.getAttribute('ip'));
+                   port = str2double(optitrack.getAttribute('port'));
+                   id = str2double(optitrack.getAttribute('id'));
+                   r.add_optitrack_link(hostname, port, id);
+               end
+                   
 
                
             end

@@ -152,9 +152,22 @@ classdef Khepera3 < simiam.robot.Robot
             ir_distances = 0.02-log(ir_array_values/3960)/30;
         end
         
+        function pose = get_optitrack_pose(obj)
+            if(~isempty(obj.optitrack))
+                data = obj.optitrack.update();
+                pose = simiam.ui.Pose2D(data(1),data(2),data(3));
+            else
+                pose = simiam.ui.Pose2D(Inf,Inf,Inf);
+            end
+        end
+        
         % Hardware connectivty related functions
         function add_hardware_link(obj, hostname, port)
             obj.driver = simiam.robot.driver.K3Driver(hostname, port);
+        end
+        
+        function add_optitrack_link(obj, hostname, port, id)
+            obj.optitrack = simiam.robot.driver.OptiTrackDriver(hostname, port, id);
         end
         
         function open_hardware_link(obj)
@@ -165,6 +178,7 @@ classdef Khepera3 < simiam.robot.Robot
         function close_hardware_link(obj)
             obj.islinked = false;
             obj.driver.close();
+            obj.optitrack.close();
         end
         
         function pose = update_state_from_hardware(obj, pose, dt)

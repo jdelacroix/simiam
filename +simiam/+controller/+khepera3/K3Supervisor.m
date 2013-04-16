@@ -49,8 +49,8 @@ classdef K3Supervisor < simiam.controller.Supervisor
             obj.controllers{6} = simiam.controller.FollowWall();
             
             % set the initial controller
-            obj.current_controller = obj.controllers{5};
-            obj.current_state = 5;
+            obj.current_controller = obj.controllers{2};
+            obj.current_state = 2;
             
             % generate the set of states
             for i = 1:length(obj.controllers)
@@ -95,29 +95,43 @@ classdef K3Supervisor < simiam.controller.Supervisor
             inputs.x_g = obj.goal(1);
             inputs.y_g = obj.goal(2);    
                     
-            if(obj.is_blending)
-                % The following (finite state machine) logic sets the
-                % blending controller as the current controller until the
-                % robot arrives at the goal.
-                
-                if(obj.check_event('at_goal'))
-                    obj.switch_to_state('stop');
-                else
-                    obj.switch_to_state('ao_and_gtg');
-                end
-            elseif(obj.is_switching)                
-                if(obj.check_event('at_goal'))
-                    obj.switch_to_state('stop');
-                elseif(obj.check_event('at_obstacle'))
-                    obj.switch_to_state('avoid_obstacles');
-                elseif(obj.check_event('obstacle_cleared'))
-                    obj.switch_to_state('go_to_goal');
-                end
+%             if(obj.is_blending)
+%                 % The following (finite state machine) logic sets the
+%                 % blending controller as the current controller until the
+%                 % robot arrives at the goal.
+%                 
+%                 if(obj.check_event('at_goal'))
+%                     obj.switch_to_state('stop');
+%                 else
+%                     obj.switch_to_state('ao_and_gtg');
+%                 end
+%             elseif(obj.is_switching)                
+%                 if(obj.check_event('at_goal'))
+%                     obj.switch_to_state('stop');
+%                 elseif(obj.check_event('at_obstacle'))
+%                     obj.switch_to_state('avoid_obstacles');
+%                 elseif(obj.check_event('obstacle_cleared'))
+%                     obj.switch_to_state('go_to_goal');
+%                 end
+%             else
+%                 inputs = obj.current_controller.inputs;
+%                 inputs.direction = 'right';
+%                 inputs.v = 0.1;
+%                 obj.set_current_controller(obj.controllers{6});
+%             end
+
+            if(obj.check_event('at_goal'))
+                obj.switch_to_state('stop');
             else
-                inputs = obj.current_controller.inputs;
-                inputs.direction = 'right';
-                inputs.v = 0.1;
-                obj.set_current_controller(obj.controllers{6});
+                obj.switch_to_state('go_to_goal');
+            end
+
+            obj.update_odometry();
+            
+            optitrack_pose = obj.robot.get_optitrack_pose();
+            [x,y,theta] = optitrack_pose.unpack();
+            if(~all([x,y,theta]==Inf))
+                obj.state_estimate.set_pose([x, y, theta]);
             end
             
             outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
@@ -125,7 +139,6 @@ classdef K3Supervisor < simiam.controller.Supervisor
             [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
             obj.robot.set_wheel_speeds(vel_r, vel_l);
             
-            obj.update_odometry();
 %             [x, y, theta] = obj.state_estimate.unpack();
 %             fprintf('current_pose: (%0.3f,%0.3f,%0.3f)\n', x, y, theta);
         end

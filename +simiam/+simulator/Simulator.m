@@ -63,6 +63,10 @@ classdef Simulator < handle
                 robot_s.supervisor.execute(split);
                 [x, y, theta] = robot_s.robot.update_state(robot_s.pose, split).unpack();
                 robot_s.pose.set_pose([x, y, theta]);
+                if(robot_s.robot.islinked && ~isempty(robot_s.robot.optitrack))
+                    [x,y,theta] = robot_s.robot.get_optitrack_pose().unpack();
+                    robot_s.pose.set_pose([x, y, theta]);
+                end
                 token_k = token_k.next_;
             end
 %             fprintf('controls: %0.3fs\n', toc(tstart));
