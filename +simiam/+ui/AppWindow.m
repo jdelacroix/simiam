@@ -402,13 +402,16 @@ classdef AppWindow < handle
             
             pose = simiam.ui.Pose2D(0,0,0);
             
-            token_k = obj.simulator_.world.robots.head_;
-            while(~isempty(token_k))
-                if(token_k.key_.robot == robot)
-                    pose = token_k.key_.pose;
+%             token_k = obj.simulator_.world.robots.head_;
+            nRobots = length(obj.simulator_.world);
+            for k = 1:nRobots
+%             while(~isempty(token_k))
+                robot_f = obj.simulator_.world.robots.elementAt(k);
+                if(robot_f.robot == robot)
+                    pose = robot_f.pose;
                     break;
                 end
-                token_k = token_k.next_;
+%                 token_k = token_k.next_;
             end
             
             obj.center_ = pose;
