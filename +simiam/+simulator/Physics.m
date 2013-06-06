@@ -90,6 +90,8 @@ classdef Physics < handle
                     ir = robot.ir_array(i);
                     body_ir_s = ir.surfaces.head_.key_;
                     d_min = ir.max_range;
+                    
+                    if ir.
                     ir.update_range(d_min);
 
                     % check against obstacles

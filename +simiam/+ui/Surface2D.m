@@ -63,7 +63,8 @@ classdef Surface2D < handle
         function bool = precheck_surface(obj, surface)
 %             d = norm(obj.centroid_-surface_b.centroid_);
             d = sqrt((obj.centroid_(1)-surface.centroid_(1))^2+(obj.centroid_(2)-surface.centroid_(2))^2);
-            bool = (d < (obj.geometric_span_+surface.geometric_span_)/sqrt(3));
+%             bool = (d < (obj.geometric_span_+surface.geometric_span_)/sqrt(3));
+            bool = (d < (obj.geometric_span_+surface.geometric_span_)/1.7321);
         end
         
         function points = intersection_with_surface(obj, surface, is_cursory)
@@ -73,16 +74,19 @@ classdef Surface2D < handle
             n_edges_a = size(edge_set_a,1);
             n_edges_b = size(edge_set_b,2);
             
-            m_x_1 = edge_set_a(:,1*ones(n_edges_b,1));
-            m_x_2 = edge_set_a(:,3*ones(n_edges_b,1));
-            m_x_3 = edge_set_b(1*ones(1,n_edges_a),:);
-            m_x_4 = edge_set_b(3*ones(1,n_edges_a),:);
+            index_a = ones(1,n_edges_a);
+            index_b = ones(n_edges_b, 1);
             
-            m_y_1 = edge_set_a(:,2*ones(n_edges_b,1));
-            m_y_2 = edge_set_a(:,4*ones(n_edges_b,1));
-            m_y_3 = edge_set_b(2*ones(1,n_edges_a),:);
-            m_y_4 = edge_set_b(4*ones(1,n_edges_a),:);
-       
+            m_x_1 = edge_set_a(:,1*index_b);
+            m_x_2 = edge_set_a(:,3*index_b);
+            m_x_3 = edge_set_b(1*index_a,:);
+            m_x_4 = edge_set_b(3*index_a,:);
+            
+            m_y_1 = edge_set_a(:,2*index_b);
+            m_y_2 = edge_set_a(:,4*index_b);
+            m_y_3 = edge_set_b(2*index_a,:);
+            m_y_4 = edge_set_b(4*index_a,:);
+          
             m_y_13 = (m_y_1-m_y_3);
             m_x_13 = (m_x_1-m_x_3);
             m_x_21 = (m_x_2-m_x_1);

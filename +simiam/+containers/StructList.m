@@ -1,4 +1,4 @@
-classdef ArrayList < handle
+classdef StructList < handle
     %ARRAYLIST A cell array implementation of java.util.ArrayList
     %   ArrayList(initialCapacity) mimics a fixed sized Java ArrayList
     %   using a cell array to store the data elements. initialCapacity must
@@ -50,7 +50,7 @@ classdef ArrayList < handle
     methods
         
         
-        function obj = ArrayList(initialCapacity)
+        function obj = StructList(prototype, initialCapacity)
             %% ARRAYLIST Constructor
             %   obj = ArrayList(initialCapacity) is the default constructor
             %   that creates an array list with a maximum, fixed capacity
@@ -64,7 +64,9 @@ classdef ArrayList < handle
                    'Initial capacity must be greater than zero and less than infinity.');
             
             obj.Capacity = initialCapacity;
-            obj.Array = cell(obj.Capacity, 1);
+%             obj.Array = cell(obj.Capacity, 1);
+%             obj.Array = prototype.empty(obj.Capacity, 0);
+            obj.Array = repmat(prototype, obj.Capacity, 1);
             obj.Count = 0;
         end
         
@@ -76,18 +78,20 @@ classdef ArrayList < handle
             %   elements are appended, then they must be input as a cell
             %   array. An error is thrown if there is not enough space to
             %   append all of the elements.
-            if iscell(elementOrElements)
-                nElements = length(elementOrElements);
-            else
-                elementOrElements = {elementOrElements};
-                nElements = 1;
-            end
+%             if iscell(elementOrElements)
+%                 nElements = length(elementOrElements);
+%             else
+%                 elementOrElements = {elementOrElements};
+%                 nElements = 1;
+%             end
+            nElements = numel(elementOrElements);
             assert(obj.Count+nElements <= obj.Capacity, ...
                    'simiam:NotEnoughSpace', ...
                    'Not enough space to append %d elements.', nElements);
 %             assert(iscell(elementOrElements), ...
 %                    'simiam:IncorrectDataType', ...
 %                    'Input must be a cell array.');
+%             elementOrElements
             obj.Array(obj.Count+(1:nElements)) = elementOrElements;
             obj.Count = obj.Count+nElements;
         end
@@ -244,7 +248,7 @@ classdef ArrayList < handle
 %             else
 %                 elementOrElements = obj.Array{indexOrIndices};
 %             end
-            elementOrElements = obj.Array{indexOrIndices};
+            elementOrElements = obj.Array(indexOrIndices);
         end
         
         function elementOrElements = allElements(obj)
@@ -260,6 +264,7 @@ classdef ArrayList < handle
             
             disp(obj.Array);
         end
+
         
     end
     

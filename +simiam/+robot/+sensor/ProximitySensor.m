@@ -53,31 +53,36 @@ classdef ProximitySensor < simiam.ui.Drawable
         end
                
         function update_range(obj, distance)
-            variance = 0.00;
-            noise = -variance+2*variance*rand();
-            obj.range = obj.limit_to_sensor(distance+noise);
+%             variance = 0.00;
+%             noise = -variance+2*variance*rand();
+%             obj.range = obj.limit_to_sensor(distance+noise);
+            distance = obj.limit_to_sensor(distance);
             
-            r1 = distance*tan(obj.spread/4);
-            r2 = distance*tan(obj.spread/2);
-            sensor_cone =  [                     0    0   1;
-                             sqrt(distance^2-r2^2)   r2   1;
-                             sqrt(distance^2-r1^2)   r1   1;
-                                          distance    0   1;
-                             sqrt(distance^2-r1^2)  -r1   1;
-                             sqrt(distance^2-r2^2)  -r2   1];
-            T = obj.location.get_transformation_matrix();
-%             surface = obj.surfaces.get_iterator().next();
-            surface = obj.surfaces.head_.key_;
-%             surface.geometry_ = sensor_cone*T';
-            surface.update_geometry(sensor_cone*T');
-            if (distance < obj.max_range)
-                set(surface.handle_, 'EdgeColor', 'r');
-                set(surface.handle_, 'FaceColor', [1 0.8 0.8]);
-            else
-                set(surface.handle_, 'EdgeColor', 'b')
-                set(surface.handle_, 'FaceColor', [0.8 0.8 1]);
+            if abs(obj.range - distance) > 0
+                obj.range = distance;
+
+                r1 = distance*tan(obj.spread/4);
+                r2 = distance*tan(obj.spread/2);
+                sensor_cone =  [                     0    0   1;
+                                 sqrt(distance^2-r2^2)   r2   1;
+                                 sqrt(distance^2-r1^2)   r1   1;
+                                              distance    0   1;
+                                 sqrt(distance^2-r1^2)  -r1   1;
+                                 sqrt(distance^2-r2^2)  -r2   1];
+                T = obj.location.get_transformation_matrix();
+    %             surface = obj.surfaces.get_iterator().next();
+                surface = obj.surfaces.head_.key_;
+    %             surface.geometry_ = sensor_cone*T';
+                surface.update_geometry(sensor_cone*T');
+                if (distance < obj.max_range)
+                    set(surface.handle_, 'EdgeColor', 'r');
+                    set(surface.handle_, 'FaceColor', [1 0.8 0.8]);
+                else
+                    set(surface.handle_, 'EdgeColor', 'b')
+                    set(surface.handle_, 'FaceColor', [0.8 0.8 1]);
+                end
+                obj.draw_surfaces();
             end
-            obj.draw_surfaces();
         end
         
         function raw = get_range(obj)

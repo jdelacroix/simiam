@@ -31,7 +31,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
         d_at_obs
         d_unsafe
         d_prog
-        p
+%         p
         
         direction
         
@@ -94,7 +94,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
             
             obj.v               = 0.1;
             
-            obj.goal            = [1;1];
+            obj.goal            = [0;0];
             obj.goal_prev       = obj.goal;
             obj.d_stop          = 0.05; 
             obj.d_at_obs        = 0.10;                
@@ -102,8 +102,8 @@ classdef K3Supervisor < simiam.controller.Supervisor
             
             obj.d_prog = 10;
             
-            obj.p = simiam.util.Plotter();
-            obj.current_controller.p = obj.p;
+%             obj.p = simiam.util.Plotter();
+%             obj.current_controller.p = obj.p;
             
             obj.direction = 'right';
             
@@ -314,8 +314,8 @@ classdef K3Supervisor < simiam.controller.Supervisor
         function set_current_controller(obj, ctrl)
             % save plots
             obj.current_controller = ctrl;
-            obj.p.switch_2d_ref();
-            obj.current_controller.p = obj.p;
+%             obj.p.switch_2d_ref();
+%             obj.current_controller.p = obj.p;
         end
         
         function rc = is_in_state(obj, name)

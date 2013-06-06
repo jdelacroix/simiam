@@ -51,9 +51,9 @@ classdef Simulator < handle
             
             split = max(obj.time_step, get(obj.clock, 'InstantPeriod'));
 %             split = obj.time_step;
-%             fprintf('***TIMING***\nsimulator split: %0.3fs, %0.3fHz\n', split, 1/split);
+            fprintf('***TIMING***\nsimulator split: %0.3fs, %0.3fHz\n', split, 1/split);
             
-%             tstart = tic;
+            tstart = tic;
             nRobots = length(obj.world.robots);
             for k = 1:nRobots
                 robot_s = obj.world.robots.elementAt(k);
@@ -61,18 +61,20 @@ classdef Simulator < handle
                 [x, y, theta] = robot_s.robot.update_state(robot_s.pose, split).unpack();
                 robot_s.pose.set_pose([x, y, theta]);
             end
-%             fprintf('controls: %0.3fs\n', toc(tstart));
+            fprintf('controls: %0.3fs\n', toc(tstart));
             
-%             tstart = tic;
+            tstart = tic;
             obj.world.apps.head_.key_.run(split);
-%             fprintf('app: %0.3fs\n', toc(tstart));
+            fprintf('app: %0.3fs\n', toc(tstart));
             
+            tstart = tic;
             bool = obj.physics.apply_physics();
+            fprintf('physics: %0.3fs\n', toc(tstart));
             
-%             tstart = tic;
+            tstart = tic;
             obj.parent.ui_update(split, bool);
             drawnow;
-%             fprintf('ui: %0.3fs\n', toc(tstart));
+            fprintf('ui: %0.3fs\n', toc(tstart));
         end
         
         function start(obj)
