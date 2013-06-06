@@ -49,18 +49,17 @@ classdef Simulator < handle
         %   step(obj, src, event) is the timer callback which is executed
         %   once every time_step seconds.
             
-            split = max(obj.time_step,get(obj.clock, 'InstantPeriod'));
+            split = max(obj.time_step, get(obj.clock, 'InstantPeriod'));
 %             split = obj.time_step;
 %             fprintf('***TIMING***\nsimulator split: %0.3fs, %0.3fHz\n', split, 1/split);
             
 %             tstart = tic;
-            token_k = obj.world.robots.head_;
-            while (~isempty(token_k))
-                robot_s = token_k.key_;
+            nRobots = length(obj.world.robots);
+            for k = 1:nRobots
+                robot_s = obj.world.robots.elementAt(k);
                 robot_s.supervisor.execute(split);
                 [x, y, theta] = robot_s.robot.update_state(robot_s.pose, split).unpack();
                 robot_s.pose.set_pose([x, y, theta]);
-                token_k = token_k.next_;
             end
 %             fprintf('controls: %0.3fs\n', toc(tstart));
             

@@ -33,9 +33,9 @@ classdef AOandGTG < simiam.controller.Controller
             obj = obj@simiam.controller.Controller('ao_and_gtg');            
             obj.calibrated = false;
             
-            obj.Kp = 5;
-            obj.Ki = 0.01;
-            obj.Kd = 0.1;
+            obj.Kp = 10;
+            obj.Ki = 0.0;
+            obj.Kd = 0.0;
             
             obj.E_k = 0;
             obj.e_k_1 = 0;
@@ -76,7 +76,7 @@ classdef AOandGTG < simiam.controller.Controller
             u_gtg = u_gtg/norm(u_gtg);
             u_ao = u_ao/norm(u_ao);
             
-            alpha = 0.6;
+            alpha = 0.3;
             u_ao_gtg = alpha*u_gtg+(1-alpha)*u_ao;
             
             %% END CODE BLOCK %%

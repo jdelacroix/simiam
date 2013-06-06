@@ -67,12 +67,15 @@ classdef AppWindow < handle
             world = simiam.simulator.World(obj.view_);
             world.build_from_file(obj.root_, settings_file);
             
-            token_k = world.robots.head_;
-            while(~isempty(token_k))
-                robot = token_k.key_.robot;
+%             token_k = world.robots.head_;
+%             while(~isempty(token_k))
+            nRobots = length(world.robots);
+            for k = 1:nRobots
+%                 robot = token_k.key_.robot;
+                robot = world.robots.elementAt(k).robot;
                 set(robot.surfaces.head_.key_.handle_, 'ButtonDownFcn', {@obj.ui_focus_view,robot});
                 set(robot.surfaces.tail_.key_.handle_, 'ButtonDownFcn', {@obj.ui_focus_view,robot});
-                token_k = token_k.next_;
+%                 token_k = token_k.next_;
             end
             
             obj.simulator_ = simiam.simulator.Simulator(obj, world, 0.01);
@@ -286,7 +289,7 @@ classdef AppWindow < handle
             Update(obj.layout_);            
                     
             % Target Marker
-            obj.target_marker_ = plot(obj.view_, inf, inf, ...
+            obj.target_marker_ = plot(obj.view_, -1, 1, ...
                 'Marker', 'o', ...
                 'MarkerFaceColor', obj.ui_colors_.green, ...
                 'MarkerEdgeColor', obj.ui_colors_.green, ...

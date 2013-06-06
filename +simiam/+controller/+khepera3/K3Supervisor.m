@@ -59,8 +59,8 @@ classdef K3Supervisor < simiam.controller.Supervisor
             obj.controllers{7} = simiam.controller.SlidingMode();
             
             % set the initial controller
-            obj.current_controller = obj.controllers{2};
-            obj.current_state = 2;
+            obj.current_controller = obj.controllers{4};
+            obj.current_state = 4;
             
             % generate the set of states
             for i = 1:length(obj.controllers)
@@ -143,46 +143,50 @@ classdef K3Supervisor < simiam.controller.Supervisor
                 obj.switch_to_state('stop');
 %                 [x,y,theta] = obj.state_estimate.unpack();
 %                 fprintf('stopped at (%0.3f,%0.3f)\n', x, y);
-            elseif(obj.check_event('unsafe'))
-                obj.switch_to_state('avoid_obstacles');                
             else
-                if (obj.is_in_state('go_to_goal'))
-                    if(obj.check_event('at_obstacle') && obj.check_event('sliding_left'))
-                        obj.direction = 'left';
-%                         fprintf('now following to the left\n');
-                        obj.switch_to_state('follow_wall');
-                        obj.set_progress_point();
-                    elseif(obj.check_event('at_obstacle') && obj.check_event('sliding_right'))
-                        obj.direction = 'right';
-%                         fprintf('now following to the right\n');
-                        obj.switch_to_state('follow_wall');
-                        obj.set_progress_point();
-                    end
-                elseif (obj.is_in_state('follow_wall') && strcmp(obj.direction,'left'))
-                    if(obj.check_event('progress_made') && ~obj.check_event('sliding_left'))
-                        obj.switch_to_state('go_to_goal');
-                    end
-                elseif (obj.is_in_state('follow_wall') && strcmp(obj.direction, 'right'))
-                    if(obj.check_event('progress_made') && ~obj.check_event('sliding_right'))
-                        obj.switch_to_state('go_to_goal');
-                    end
-                elseif (obj.is_in_state('avoid_obstacles'))
-                    if(obj.check_event('obstacle_cleared'))
-%                         if(obj.check_event('sliding_left'))
-%                             obj.direction = 'left';
-%                             obj.switch_to_state('follow_wall');
-%                         elseif(obj.check_event('sliding_right'))
-%                             obj.direction = 'right';
-%                             obj.switch_to_state('follow_wall');
-%                         else
-                            obj.switch_to_state('go_to_goal');
-%                         end
-                    end
-                end
- 
+                obj.switch_to_state('ao_and_gtg');
             end
             
-            inputs.direction = obj.direction;
+%             elseif(obj.check_event('unsafe'))
+%                 obj.switch_to_state('avoid_obstacles');                
+%             else
+%                 if (obj.is_in_state('go_to_goal'))
+%                     if(obj.check_event('at_obstacle') && obj.check_event('sliding_left'))
+%                         obj.direction = 'left';
+% %                         fprintf('now following to the left\n');
+%                         obj.switch_to_state('follow_wall');
+%                         obj.set_progress_point();
+%                     elseif(obj.check_event('at_obstacle') && obj.check_event('sliding_right'))
+%                         obj.direction = 'right';
+% %                         fprintf('now following to the right\n');
+%                         obj.switch_to_state('follow_wall');
+%                         obj.set_progress_point();
+%                     end
+%                 elseif (obj.is_in_state('follow_wall') && strcmp(obj.direction,'left'))
+%                     if(obj.check_event('progress_made') && ~obj.check_event('sliding_left'))
+%                         obj.switch_to_state('go_to_goal');
+%                     end
+%                 elseif (obj.is_in_state('follow_wall') && strcmp(obj.direction, 'right'))
+%                     if(obj.check_event('progress_made') && ~obj.check_event('sliding_right'))
+%                         obj.switch_to_state('go_to_goal');
+%                     end
+%                 elseif (obj.is_in_state('avoid_obstacles'))
+%                     if(obj.check_event('obstacle_cleared'))
+% %                         if(obj.check_event('sliding_left'))
+% %                             obj.direction = 'left';
+% %                             obj.switch_to_state('follow_wall');
+% %                         elseif(obj.check_event('sliding_right'))
+% %                             obj.direction = 'right';
+% %                             obj.switch_to_state('follow_wall');
+% %                         else
+%                             obj.switch_to_state('go_to_goal');
+% %                         end
+%                     end
+%                 end
+ 
+%             end
+            
+%             inputs.direction = obj.direction;
                                     
             outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
                 

@@ -14,7 +14,8 @@ classdef World < handle
     methods
         function obj = World(parent)
             obj.parent = parent;
-            obj.robots = mcodekit.list.dl_list(); %struct('robot', {}, 'pose', {});
+%             obj.robots = mcodekit.list.dl_list(); %struct('robot', {}, 'pose', {});
+            obj.robots = simiam.containers.ArrayList(10);
             obj.obstacles = mcodekit.list.dl_list(); %struct('obstacle', {}, 'pose', {});
             obj.apps = mcodekit.list.dl_list();
             obj.root_path = '';
@@ -77,25 +78,27 @@ classdef World < handle
         end
         
         function add_robot(obj, type, spv, x, y, theta)
-           pose = simiam.ui.Pose2D(x, y, theta);
-           
-           r = str2func(strcat('simiam.robot.', type));
-           robot = r(obj.parent, pose);
-           
-           r = str2func(strcat('simiam.controller.', spv));
-           supervisor = r();
-           
-           supervisor.attach_robot(robot, pose);
-           
-%            parameter_file = fullfile(obj.root_path, 'parameters.xml');
-%            [file, path, extension] = uigetfile(parameter_file, 'Pick a XML file with the parameters for the PID regulator.');
-%            
-%            parameter_file = fullfile(path, file);
-%            supervisor.configure_from_file(parameter_file);
-           
-           s = struct('robot', robot, 'supervisor', supervisor, 'pose', pose);
-           obj.robots.append_key(s);
-           obj.apps.head_.key_.supervisors.append_key(supervisor);
+            pose = simiam.ui.Pose2D(x, y, theta);
+            
+            r = str2func(strcat('simiam.robot.', type));
+            robot = r(obj.parent, pose);
+            
+            r = str2func(strcat('simiam.controller.', spv));
+            supervisor = r();
+            
+            supervisor.attach_robot(robot, pose);
+            
+            %            parameter_file = fullfile(obj.root_path, 'parameters.xml');
+            %            [file, path, extension] = uigetfile(parameter_file, 'Pick a XML file with the parameters for the PID regulator.');
+            %
+            %            parameter_file = fullfile(path, file);
+            %            supervisor.configure_from_file(parameter_file);
+            
+            s = struct('robot', robot, 'supervisor', supervisor, 'pose', pose);
+            %            obj.robots.append_key(s);
+            
+            obj.robots.appendElement(s);          
+            obj.apps.head_.key_.supervisors.appendElement(supervisor);
         end
         
         function add_obstacle(obj, x, y, theta, geometry)
