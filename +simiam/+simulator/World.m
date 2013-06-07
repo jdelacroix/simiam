@@ -15,9 +15,11 @@ classdef World < handle
         function obj = World(parent)
             obj.parent = parent;
 %             obj.robots = mcodekit.list.dl_list(); %struct('robot', {}, 'pose', {});
-            obj.robots = simiam.containers.ArrayList(10);
-            obj.obstacles = mcodekit.list.dl_list(); %struct('obstacle', {}, 'pose', {});
+%             obj.robots = simiam.containers.ArrayList(10);
+            obj.robots = simiam.containers.StructList(struct('robot', {}, 'supervisor', {}, 'pose', {}), 10);
+%             obj.obstacles = simiam.containers.ArrayList(50); %struct('obstacle', {}, 'pose', {});
             obj.apps = mcodekit.list.dl_list();
+            obj.obstacles = simiam.containers.StructList(struct('obstacle', {}, 'pose', {}), 50);
             obj.root_path = '';
         end
         
@@ -103,7 +105,7 @@ classdef World < handle
         
         function add_obstacle(obj, x, y, theta, geometry)
            pose = simiam.ui.Pose2D(x, y, theta);
-           obj.obstacles.append_key(struct('obstacle', simiam.simulator.Obstacle(obj.parent, pose, geometry), 'pose', pose));
+           obj.obstacles.appendElement(struct('obstacle', simiam.simulator.Obstacle(obj.parent, pose, geometry), 'pose', pose));
         end
            
     end
