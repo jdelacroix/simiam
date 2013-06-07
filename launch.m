@@ -13,7 +13,7 @@ else
     root_path = fileparts(mfilename('fullpath'));
 end
 addpath(genpath(root_path));
-
+root_path = 'H:\\Documents\GitHub\simiam';
 app = simiam.ui.AppWindow(root_path);
 app.load_ui();
 

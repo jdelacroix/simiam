@@ -32,6 +32,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
         d_unsafe
         d_prog
 %         p
+        d_pursue
         
         direction
         
@@ -89,6 +90,9 @@ classdef K3Supervisor < simiam.controller.Supervisor
                                
             obj.eventsd{7} = struct('event', 'sliding_right', ...
                                     'callback', @sliding_right);
+                                
+            obj.eventsd{8} = struct('event', 'near_goal', ...
+                                    'callback', @near_goal);
                                
             obj.prev_ticks = struct('left', 0, 'right', 0);
             
@@ -99,7 +103,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
             obj.d_stop          = 0.05; 
             obj.d_at_obs        = 0.10;                
             obj.d_unsafe        = 0.03;
-            
+            obj.d_pursue        = 5*obj.d_stop;
             obj.d_prog = 10;
             
 %             obj.p = simiam.util.Plotter();
@@ -136,13 +140,16 @@ classdef K3Supervisor < simiam.controller.Supervisor
                     obj.set_progress_point();
 %                 end
                 obj.goal_prev = obj.goal;
-                obj.switch_to_state('go_to_goal');
+                obj.switch_to_state('ao_and_gtg');
             end
             
             if (obj.check_event('at_goal'))
                 obj.switch_to_state('stop');
 %                 [x,y,theta] = obj.state_estimate.unpack();
 %                 fprintf('stopped at (%0.3f,%0.3f)\n', x, y);
+            elseif (obj.check_event('near_goal'))
+%                 obj.switch_to_state('go_to_goal');
+                obj.controllers{4}.alpha = 1;
             else
                 obj.switch_to_state('ao_and_gtg');
             end
@@ -281,6 +288,16 @@ classdef K3Supervisor < simiam.controller.Supervisor
             
             % Test distance from goal
             if norm([x - obj.goal(1); y - obj.goal(2)]) < obj.d_stop
+                rc = true;
+            end
+        end
+        
+        function rc = near_goal(obj, state, robot)
+            [x,y,theta] = obj.state_estimate.unpack();
+            rc = false;
+            
+            % Test distance from goal
+            if norm([x - obj.goal(1); y - obj.goal(2)]) < obj.d_pursue
                 rc = true;
             end
         end

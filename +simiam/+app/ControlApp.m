@@ -10,6 +10,7 @@ classdef ControlApp < handle
         goals
         index
         root
+        theta_o
     end
     
     methods
@@ -20,16 +21,42 @@ classdef ControlApp < handle
         end
         
         function run(obj, dt)
-            [x, y, theta] = obj.supervisors.elementAt(1).state_estimate.unpack();
+            robot = obj.supervisors.elementAt(1);
+            [x, y, theta] = robot.state_estimate.unpack();
+            robot.controllers{4}.v_max = 0;
+            robot.controllers{4}.alpha = 0.25;
+            robot.controllers{4}.Kp = 12;
+            robot.d_pursue = 0;
             
             nRobots = length(obj.supervisors);
             
             for i = 2:nRobots
-                [xf, yf, thetaf] = obj.supervisors.elementAt(i).state_estimate.unpack();
+                robot = obj.supervisors.elementAt(i);
+                [xf, yf, thetaf] = robot.state_estimate.unpack();
+                
                 u = [xf-x; yf-y];
-                theta_o = atan2(u(2), u(1));
-                d = 0.3;
-                obj.supervisors.elementAt(i).goal = [x+d*cos(theta_o); y+d*sin(theta_o)];
+                d = sqrt(u(1)^2+u(2)^2);
+                
+                if (d < 1)
+                    robot.controllers{4}.v_max = 0.3;
+                    robot.controllers{4}.alpha = 0.2;
+                    robot.controllers{4}.Kp = 4;
+                    obj.theta_o = atan2(u(2), u(1));
+                    d = 0;
+                elseif (d > 1.1)
+                    robot.controllers{4}.v_max = 0.15;
+                    robot.controllers{4}.alpha = 0.2;
+                    robot.controllers{4}.Kp = 8;
+                    obj.theta_o = atan2(u(2), u(1)) + (-pi/2+pi/4*(randi(5,1)-1));
+                end
+%                 u = [xf-x; yf-y];
+%                 theta_o = atan2(u(2), u(1));
+%                 theta_o = atan2(sin(theta_o), cos(theta_o));
+%                 d = 0.00;
+%                 obj.supervisors.elementAt(i).goal = [x+d*cos(theta_o); y+d*sin(theta_o)];
+                d = 2/3*d;
+                obj.theta_o = atan2(sin(obj.theta_o), cos(obj.theta_o));
+                obj.supervisors.elementAt(i).goal = [x+d*cos(obj.theta_o); y+d*sin(obj.theta_o)];
             end
             
         end

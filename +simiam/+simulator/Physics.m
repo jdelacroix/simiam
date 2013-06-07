@@ -18,15 +18,15 @@ classdef Physics < handle
         
         function bool = apply_physics(obj)
             bool = obj.body_collision_detection();
-            if (bool)
+            if any(bool)
                 return;
             end
             obj.proximity_sensor_detection();
         end
         
         function bool = body_collision_detection(obj)
-            bool = false;
             nRobots = length(obj.robots);
+            bool = zeros(nRobots,1);
             nObstacles = length(obj.obstacles);
 
             for k = 1:nRobots
@@ -39,10 +39,10 @@ classdef Physics < handle
                     body_o_s = obj.obstacles(l).surfaces.head_.key_;
                     
                     if(body_r_s.precheck_surface(body_o_s))
-                        pts = body_r_s.intersection_with_surface(body_o_s, true);
+                        pts = body_r_s.intersection_with_surface(body_o_s);
                         if (size(pts,1) > 0)
                             fprintf('COLLISION!\n');
-                            bool = true;
+                            bool(k) = true;
                             return;
                         end
                     end
@@ -56,10 +56,10 @@ classdef Physics < handle
                         body_o_s = robot_o.surfaces.head_.key_;
                         
                         if(body_r_s.precheck_surface(body_o_s))
-                            pts = body_r_s.intersection_with_surface(body_o_s, true);
+                            pts = body_r_s.intersection_with_surface(body_o_s);
                             if (size(pts,1) > 0)
                                 fprintf('COLLISION!\n');
-                                bool = true;
+                                bool(k) = true;
                                 return;
                             end
                         end
@@ -81,7 +81,7 @@ classdef Physics < handle
                     ir = robot.ir_array(i);
                     body_ir_s = ir.surfaces.head_.key_;
                     d_min = ir.max_range;
-                    ir.update_range(d_min);
+                    ir.update_range(d_min, false);
 
                     % check against obstacles
                     for l = 1:nObstacles;
@@ -106,7 +106,7 @@ classdef Physics < handle
                     end
                     
                     if(d_min < ir.max_range)
-                        ir.update_range(d_min);
+                        ir.update_range(d_min, true);
                     end
                 end
             end
@@ -116,7 +116,7 @@ classdef Physics < handle
     methods (Access = private)
 
         function d_min = update_proximity_sensor(obj, sensor, sensor_surface, obstacle_surface, d_min)
-            pts = sensor_surface.intersection_with_surface(obstacle_surface, false);
+            pts = sensor_surface.intersection_with_surface(obstacle_surface);
             if ~isempty(pts)
                 d = sqrt((pts(:,1)-sensor_surface.geometry_(1,1)).^2+(pts(:,2)-sensor_surface.geometry_(1,2)).^2);
                 d = sensor.limit_to_sensor(d);

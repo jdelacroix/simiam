@@ -17,6 +17,10 @@ classdef AOandGTG < simiam.controller.Controller
         % plot support     
         p
         
+        % mixing factor
+        alpha
+        v_max
+        
         % sensor geometry
         calibrated
         sensor_placement
@@ -39,6 +43,9 @@ classdef AOandGTG < simiam.controller.Controller
             
             obj.E_k = 0;
             obj.e_k_1 = 0;
+            
+            obj.alpha = 0.3;
+            obj.v_max = 0.25;
             
 %             obj.p = simiam.util.Plotter();
         end
@@ -76,8 +83,7 @@ classdef AOandGTG < simiam.controller.Controller
             u_gtg = u_gtg/norm(u_gtg);
             u_ao = u_ao/norm(u_ao);
             
-            alpha = 0.3;
-            u_ao_gtg = alpha*u_gtg+(1-alpha)*u_ao;
+            u_ao_gtg = obj.alpha*u_gtg+(1-obj.alpha)*u_ao;
             
             %% END CODE BLOCK %%
             
@@ -104,7 +110,13 @@ classdef AOandGTG < simiam.controller.Controller
 %             obj.p.plot_2d_ref(dt, theta, theta_ao_gtg, 'c');
             
 %             fprintf('(v,w) = (%0.4g,%0.4g)\n', v,w);
-            v = 0.25/(log(abs(w)+2)+1);
+            if obj.v_max > 0
+%                 v = obj.v_max/(log(abs(w)+2)+1);
+                v = obj.v_max*exp(-0.5*abs(w));
+            else
+%                 v = 0.2;
+                v = 0.35/(log(abs(w)+2)+1);
+            end
 
             outputs.v = v;
             outputs.w = w;

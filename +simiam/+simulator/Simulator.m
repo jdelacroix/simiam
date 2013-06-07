@@ -24,6 +24,8 @@ classdef Simulator < handle
         
         world           % A virtual world for the simulator
         physics
+        
+        coi
     end
     
     methods
@@ -42,6 +44,8 @@ classdef Simulator < handle
                               'ExecutionMode', 'fixedRate');
             obj.world = world;
             obj.physics = simiam.simulator.Physics(world);
+            
+            obj.coi = rectangle('Position', [[0 0]-1 2 2], 'Curvature', [1 1], 'LineStyle', '--', 'EdgeColor', [254 206 0]/255, 'LineWidth', 2, 'Parent', obj.parent.view_);
         end
         
         function step(obj, src, event)
@@ -55,11 +59,21 @@ classdef Simulator < handle
             
             tstart = tic;
             nRobots = length(obj.world.robots);
+            poseMat = zeros(nRobots, 3);
             for k = 1:nRobots
                 robot_s = obj.world.robots.elementAt(k);
                 robot_s.supervisor.execute(split);
                 [x, y, theta] = robot_s.robot.update_state(robot_s.pose, split).unpack();
+                poseMat(k,:) = [x y theta];
                 robot_s.pose.set_pose([x, y, theta]);
+            end
+            set(obj.coi, 'Position', [poseMat(nRobots,1:2)-1 2 2]);
+            u = poseMat(2,1:2)-poseMat(1,1:2);
+            d = sqrt(u(1)^2+u(2)^2);
+            if d < 1
+                set(obj.coi, 'EdgeColor', 'r');
+            else
+                set(obj.coi, 'EdgeColor', [150 150 150]/255);
             end
             fprintf('controls: %0.3fs\n', toc(tstart));
             
@@ -71,8 +85,24 @@ classdef Simulator < handle
             bool = obj.physics.apply_physics();
             fprintf('physics: %0.3fs\n', toc(tstart));
             
+            if bool(2)
+                robot_s = obj.world.robots.elementAt(2);
+                [x, y, theta] = robot_s.pose.unpack();
+                robot_s.pose.set_pose([1, 1, theta]);
+                robot_s.supervisor.state_estimate.set_pose([1, 1, theta]);
+            end
+            
+%             if bool(3)
+%                 robot_s = obj.world.robots.elementAt(3);
+%                 [x, y, theta] = robot_s.pose.unpack();
+%                 robot_s.pose.set_pose([-1, 1, theta]);
+%                 robot_s.supervisor.state_estimate([-1, 1, theta]);
+%             end
+            
             tstart = tic;
-            obj.parent.ui_update(split, bool);
+            bool
+            any(bool)
+            obj.parent.ui_update(split, any(bool));
             drawnow;
             fprintf('ui: %0.3fs\n', toc(tstart));
         end
