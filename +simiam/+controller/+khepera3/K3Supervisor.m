@@ -31,7 +31,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
         d_at_obs
         d_unsafe
         d_prog
-%         p
+        p
         d_pursue
         
         direction
@@ -40,7 +40,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
         v_ao
         v_fw
         
-%         is_init
+        is_init
     end
     
     methods
@@ -106,12 +106,12 @@ classdef K3Supervisor < simiam.controller.Supervisor
             obj.d_pursue        = 5*obj.d_stop;
             obj.d_prog = 10;
             
-%             obj.p = simiam.util.Plotter();
-%             obj.current_controller.p = obj.p;
+            obj.p = simiam.util.Plotter();
+            obj.current_controller.p = obj.p;
             
             obj.direction = 'right';
             
-%             obj.is_init = false;
+            obj.is_init = false;
         end
         
         function execute(obj, dt)
@@ -198,7 +198,9 @@ classdef K3Supervisor < simiam.controller.Supervisor
             outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
                 
             [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
-            obj.robot.set_wheel_speeds(vel_r, vel_l);
+            if obj.is_init
+                obj.robot.set_wheel_speeds(vel_r, vel_l);
+            end
                         
             obj.update_odometry();
 %             [x, y, theta] = obj.state_estimate.unpack();
@@ -325,14 +327,17 @@ classdef K3Supervisor < simiam.controller.Supervisor
             
         end
         
+        function delete(obj)
+            delete(obj.p.f);
+        end
         
         %% State machine support functions
         
         function set_current_controller(obj, ctrl)
             % save plots
             obj.current_controller = ctrl;
-%             obj.p.switch_2d_ref();
-%             obj.current_controller.p = obj.p;
+            obj.p.switch_2d_ref();
+            obj.current_controller.p = obj.p;
         end
         
         function rc = is_in_state(obj, name)

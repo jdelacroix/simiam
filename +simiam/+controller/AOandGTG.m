@@ -107,12 +107,14 @@ classdef AOandGTG < simiam.controller.Controller
             obj.e_k_1 = e_k;
                         
             % plot  
-%             obj.p.plot_2d_ref(dt, theta, theta_ao_gtg, 'c');
+            theta = atan2(sin(theta), cos(theta));
+            theta_ao_gtg = atan2(sin(theta_ao_gtg), cos(theta_ao_gtg));
+            obj.p.plot_2d_ref(dt, theta, theta_ao_gtg, 'c');
             
 %             fprintf('(v,w) = (%0.4g,%0.4g)\n', v,w);
             if obj.v_max > 0
 %                 v = obj.v_max/(log(abs(w)+2)+1);
-                v = obj.v_max*exp(-0.5*abs(w));
+                v = obj.v_max*exp(-0.75*abs(w));
             else
 %                 v = 0.2;
                 v = 0.35/(log(abs(w)+2)+1);

@@ -19,6 +19,7 @@ classdef Plotter < handle
         h
         g
         a
+        f
     end
     
     methods
@@ -31,7 +32,7 @@ classdef Plotter < handle
             obj.h = -1;
             obj.g = -1;
             
-            figure;
+            obj.f = figure;
             obj.a = axes;
             set(obj.a, 'NextPlot', 'add');
             hold(obj.a, 'all');

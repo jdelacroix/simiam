@@ -28,12 +28,15 @@ classdef ControlApp < handle
             robot.controllers{4}.Kp = 12;
             robot.d_pursue = 0;
             
+            is_init = ~all(robot.goal == [0;0]);
+            robot.is_init = is_init;
+            
             nRobots = length(obj.supervisors);
             
             for i = 2:nRobots
                 robot = obj.supervisors.elementAt(i);
                 [xf, yf, thetaf] = robot.state_estimate.unpack();
-                
+                robot.is_init = is_init;
                 u = [xf-x; yf-y];
                 d = sqrt(u(1)^2+u(2)^2);
                 

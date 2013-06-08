@@ -100,8 +100,6 @@ classdef Simulator < handle
 %             end
             
             tstart = tic;
-            bool
-            any(bool)
             obj.parent.ui_update(split, any(bool));
             drawnow;
             fprintf('ui: %0.3fs\n', toc(tstart));
