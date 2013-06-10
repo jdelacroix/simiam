@@ -48,7 +48,7 @@ classdef AppWindow < handle
             
             obj.ui_size_ = [0 0 800 600];
             
-            obj.is_tracking_ = false;
+            obj.is_tracking_ = true;
             obj.center_ = simiam.ui.Pose2D(0,0,0);
             
             obj.click_src_ = [0;0];
@@ -326,6 +326,8 @@ classdef AppWindow < handle
 %             obj.create_simulator(fullfile(pathname, filename));
             obj.create_simulator(fullfile(obj.root_, 'settings.xml'));
             
+            obj.center_ = obj.simulator_.world.robots.elementAt(1).pose;
+            
             obj.ui_buttons_.play_state = true;
             obj.ui_set_button_icon(obj.ui_buttons_.play, 'ui_control_pause.png');
             set(obj.ui_buttons_.play, 'Callback', @obj.ui_button_play);
@@ -526,7 +528,7 @@ classdef AppWindow < handle
             [x, y, theta] = obj.center_.unpack();
             obj.center_ = simiam.ui.Pose2D(x,y,theta);
             
-            obj.is_tracking_ = false;
+%             obj.is_tracking_ = false;
             
             click = get(obj.view_, 'CurrentPoint');
             click_pose = click(1,1:2)';
