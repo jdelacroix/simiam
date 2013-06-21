@@ -120,6 +120,8 @@ classdef K3Supervisor < simiam.controller.Supervisor
 %                 obj.set_current_controller(obj.controllers{6});
 %             end
 
+            obj.robot.get_ir_distances()
+
             if(obj.check_event('at_goal'))
                 obj.switch_to_state('stop');
             else

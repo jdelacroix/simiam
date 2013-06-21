@@ -148,7 +148,7 @@ classdef Khepera3 < simiam.robot.Robot
         end
         
         function ir_distances = get_ir_distances(obj)
-            ir_array_values = obj.ir_array.get_range();
+            ir_array_values = obj.ir_array.get_range()
             ir_distances = 0.02-log(ir_array_values/3960)/30;
         end
         
@@ -198,6 +198,7 @@ classdef Khepera3 < simiam.robot.Robot
                 
                 for i=1:9
                     obj.ir_array(i).update_pose(pose);
+                    double(data(i))
                     obj.ir_array(i).update_range(log(double(data(i))/3960)/(-30)+0.02);
                 end
                 
