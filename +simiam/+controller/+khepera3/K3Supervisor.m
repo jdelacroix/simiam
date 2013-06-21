@@ -137,10 +137,13 @@ classdef K3Supervisor < simiam.controller.Supervisor
 %                 obj.switch_to_state('go_to_goal');
 %             end
 %             
-%             if (obj.check_event('at_goal'))
-%                 obj.switch_to_state('stop');
-% %                 [x,y,theta] = obj.state_estimate.unpack();
-% %                 fprintf('stopped at (%0.3f,%0.3f)\n', x, y);
+            if (obj.check_event('at_goal'))
+                obj.switch_to_state('stop');
+                [x,y,theta] = obj.state_estimate.unpack();
+                fprintf('stopped at (%0.3f,%0.3f)\n', x, y);
+            else
+                obj.switch_to_state('ao_and_gtg');
+            end
 %             elseif(obj.check_event('unsafe'))
 %                 obj.switch_to_state('avoid_obstacles');                
 %             else
