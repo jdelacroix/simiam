@@ -112,7 +112,7 @@ classdef AppWindow < handle
 
             
             % Create UI buttons
-            icon_file = fullfile(obj.root_, 'resources/simiam_splash.png');
+            icon_file = fullfile(obj.root_, 'resources/splash/simiam_splash.png');
             if(isunix)
                 icon_url = ['file://' icon_file];
             else
@@ -353,7 +353,7 @@ classdef AppWindow < handle
             view_parent = obj.layout_.Cell(2,1);
             set(view_parent, 'Children', []);
             Update(obj.layout_);
-            icon_file = fullfile(obj.root_, 'resources/simiam_splash.png');
+            icon_file = fullfile(obj.root_, 'resources/splash/simiam_splash.png');
             if(isunix)
                 icon_url = ['file://' icon_file];
             else
