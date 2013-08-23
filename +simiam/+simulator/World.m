@@ -80,7 +80,7 @@ classdef World < handle
             end
         end
         
-        function add_robot(obj, type, spv, x, y, theta)
+        function aRobot = add_robot(obj, type, spv, x, y, theta)
             pose = simiam.ui.Pose2D(x, y, theta);
             
             r = str2func(strcat('simiam.robot.', type));
@@ -103,6 +103,8 @@ classdef World < handle
             obj.robots.appendElement(s);          
             anApp = obj.apps.elementAt(1);
             anApp.supervisors.appendElement(supervisor);
+            
+            aRobot = s.robot;
         end
         
         function add_obstacle(obj, x, y, theta, geometry)

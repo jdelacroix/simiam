@@ -75,9 +75,12 @@ classdef Simulator < handle
 %             fprintf('controls: %0.3fs\n', toc(tstart));
             
 %             tstart = tic;
-            obj.world.apps.head_.key_.leader = obj.world.robots.head_.key_.pose;
-            obj.world.apps.head_.key_.follower = obj.world.robots.head_.next_.key_.pose;
-            obj.world.apps.head_.key_.run(split);
+            if obj.from_simulink
+                % skip
+            else
+                anApp = obj.world.apps.elementAt(1);
+                anApp.run(split);
+            end
 %             fprintf('app: %0.3fs\n', toc(tstart));
             
             bool = obj.physics.apply_physics();

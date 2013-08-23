@@ -1,15 +1,7 @@
 function msfun_ir_distances_to_wf(block)
-%MSFUNTMPL_BASIC A Template for a Level-2 MATLAB S-Function
-%   The MATLAB S-function is written as a MATLAB function with the
-%   same name as the S-function. Replace 'msfuntmpl_basic' with the
-%   name of your S-function.
-%
-%   It should be noted that the MATLAB S-function is very similar
-%   to Level-2 C-Mex S-functions. You should be able to get more
-%   information for each of the block methods by referring to the
-%   documentation for C-Mex S-functions.
-%
-%   Copyright 2003-2010 The MathWorks, Inc.
+
+% Copyright (C) 2013, Georgia Tech Research Corporation
+% see the LICENSE file included with this software
 
 %%
 %% The setup method is used to set up the basic attributes of the

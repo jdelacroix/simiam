@@ -517,7 +517,8 @@ classdef AppWindow < handle
                 case 'open'
                     set(obj.target_marker_, 'XData', obj.click_src_(1));
                     set(obj.target_marker_, 'YData', obj.click_src_(2));
-                    obj.simulator_.world.apps.head_.key_.ui_press_mouse(obj.click_src_);
+                    anApp = obj.simulator_.world.apps.elementAt(1);
+                    anApp.ui_press_mouse(obj.click_src_);
                 otherwise
                     % noop
             end
