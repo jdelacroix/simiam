@@ -33,11 +33,14 @@ classdef AppWindow < handle
         time_
         
         root_
+        
+        from_simulink_
+        is_state_crashed_
     end
     
     methods
         
-        function obj = AppWindow(root)
+        function obj = AppWindow(root, from_simulink)
             obj.root_ = root;
             obj.ui_colors_ = struct('gray',  [220 220 220]/255, ...
                                     'green', [ 57 200  67]/255, ...
@@ -57,6 +60,9 @@ classdef AppWindow < handle
             obj.ticks_ = [];
             
             obj.time_ = 0;
+            
+            obj.from_simulink_ = from_simulink;
+            obj.is_state_crashed_ = false;
         end
         
         function load_ui(obj)
@@ -65,7 +71,7 @@ classdef AppWindow < handle
         
         function create_simulator(obj, settings_file)
             world = simiam.simulator.World(obj.view_);
-            world.build_from_file(obj.root_, settings_file);
+            world.build_from_file(obj.root_, settings_file, obj.from_simulink_);
             
 %             token_k = world.robots.head_;
 %             while(~isempty(token_k))
@@ -78,7 +84,7 @@ classdef AppWindow < handle
 %                 token_k = token_k.next_;
             end
             
-            obj.simulator_ = simiam.simulator.Simulator(obj, world, 0.01);
+            obj.simulator_ = simiam.simulator.Simulator(obj, world, 0.033, obj.from_simulink_);
             obj.simulator_.step([],[]);
         end
         
@@ -200,6 +206,13 @@ classdef AppWindow < handle
                               
             Update(obj.layout_);
             
+            if(obj.from_simulink_)
+                obj.ui_toggle_control(play, false);
+                obj.ui_toggle_control(refresh, false);
+                obj.ui_toggle_control(load, false);
+                obj.ui_button_start([],[]);
+            end
+            
         end
         
         function create_callbacks(obj)
@@ -243,11 +256,13 @@ classdef AppWindow < handle
         end
         
         function ui_update(obj, dt, is_state_crashed)
-            
+            obj.is_state_crashed_ = is_state_crashed;
             if (is_state_crashed)
                 obj.simulator_.stop();
                 obj.ui_set_button_icon(obj.ui_buttons_.status, 'ui_status_error.png');
-                obj.ui_toggle_control(obj.ui_buttons_.refresh, true);
+                if(~obj.from_simulink_)
+                    obj.ui_toggle_control(obj.ui_buttons_.refresh, true);
+                end
                 obj.ui_toggle_control(obj.ui_buttons_.play, false);
             end
             
@@ -265,6 +280,7 @@ classdef AppWindow < handle
             obj.ui_update_clock(0);
             obj.ui_button_home(src, event);
             obj.ui_button_start(src, event);
+            obj.is_state_crashed_ = false;
         end
         
         function ui_button_start(obj, src, event)
@@ -325,7 +341,12 @@ classdef AppWindow < handle
             set(obj.ui_buttons_.play, 'Callback', @obj.ui_button_play);
             
             obj.is_ready_ = true;
-            obj.ui_toggle_control(obj.ui_buttons_.load, true);
+            if(~obj.from_simulink_)
+                obj.ui_toggle_control(obj.ui_buttons_.load, true);
+            else
+                obj.ui_toggle_control(obj.ui_buttons_.play, false);
+            end
+
             obj.ui_toggle_control(obj.ui_buttons_.zoom_in, true);
             obj.ui_toggle_control(obj.ui_buttons_.zoom_out, true);
             obj.time_ = 0;

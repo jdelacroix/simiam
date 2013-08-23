@@ -86,6 +86,7 @@ classdef SlidingMode < simiam.controller.Controller
                 S = [1:4 ; ir_distances(1:4)];
                 [Y,i] = sort(S(2,:));
                 S = S(1,i);
+
                 if(S(1) > S(2))
                     p_1 = ir_distances_rf(:,S(2));
                     p_2 = ir_distances_rf(:,S(1));
@@ -147,4 +148,3 @@ classdef SlidingMode < simiam.controller.Controller
     end
     
 end
-

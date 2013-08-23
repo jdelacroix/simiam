@@ -24,12 +24,14 @@ classdef Simulator < handle
         
         world           % A virtual world for the simulator
         physics
+        
+        from_simulink
     end
     
     methods
         %% METHODS
         
-        function obj = Simulator(parent, world, time_step)
+        function obj = Simulator(parent, world, time_step, from_simulink)
         %% SIMULATOR Constructor
         %   obj = Simulator(parent, time_step) is the default constructor
         %   that sets the graphics handle and the time step for the
@@ -37,11 +39,16 @@ classdef Simulator < handle
         
             obj.parent = parent;
             obj.time_step = time_step;
-            obj.clock = timer('Period', obj.time_step, ...
-                              'TimerFcn', @obj.step, ...
-                              'ExecutionMode', 'fixedRate');
+            if(~from_simulink)
+                obj.clock = timer('Period', obj.time_step, ...
+                                  'TimerFcn', @obj.step, ...
+                                  'ExecutionMode', 'fixedRate');
+            else
+                obj.clock = [];
+            end
             obj.world = world;
             obj.physics = simiam.simulator.Physics(world);
+            obj.from_simulink = from_simulink;
         end
         
         function step(obj, src, event)
@@ -49,7 +56,11 @@ classdef Simulator < handle
         %   step(obj, src, event) is the timer callback which is executed
         %   once every time_step seconds.
             
-            split = max(obj.time_step, get(obj.clock, 'InstantPeriod'));
+            if(obj.from_simulink)
+                split = obj.time_step;
+            else
+                split = max(obj.time_step,get(obj.clock, 'InstantPeriod'));
+            end
 %             split = obj.time_step;
 %             fprintf('***TIMING***\nsimulator split: %0.3fs, %0.3fHz\n', split, 1/split);
             
@@ -64,6 +75,8 @@ classdef Simulator < handle
 %             fprintf('controls: %0.3fs\n', toc(tstart));
             
 %             tstart = tic;
+            obj.world.apps.head_.key_.leader = obj.world.robots.head_.key_.pose;
+            obj.world.apps.head_.key_.follower = obj.world.robots.head_.next_.key_.pose;
             obj.world.apps.head_.key_.run(split);
 %             fprintf('app: %0.3fs\n', toc(tstart));
             
@@ -77,19 +90,23 @@ classdef Simulator < handle
         
         function start(obj)
         %% START Starts the simulation.
-        
-            start(obj.clock);
+            if(~obj.from_simulink)
+                start(obj.clock);
+            end
         end
         
         function stop(obj)
         %% STOP Stops the simulation.
-        
-            stop(obj.clock);
+            if(~obj.from_simulink)
+                stop(obj.clock);
+            end
         end
         
         function shutdown(obj)
-            obj.stop();
-            delete(obj.clock);
+            if(~obj.from_simulink)
+                obj.stop();
+                delete(obj.clock);
+            end
         end
     end
     

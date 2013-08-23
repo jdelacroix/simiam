@@ -21,7 +21,7 @@ classdef World < handle
             obj.root_path = '';
         end
         
-        function build_from_file(obj, root, file)
+        function build_from_file(obj, root, file, from_simulink)
             
             % Read in XML file
             blueprint = xmlread(file);
@@ -34,22 +34,25 @@ classdef World < handle
             r = str2func(strcat('simiam.app.', app));
             obj.apps.appendElement(r(root));
             
-            robot_list = blueprint.getElementsByTagName('robot');
+            if(~from_simulink)
             
-            for k = 0:(robot_list.getLength-1)
-               robot = robot_list.item(k);
-               
-               type = char(robot.getAttribute('type'));
-               
-               s = robot.getElementsByTagName('supervisor').item(0);
-               spv = char(s.getAttribute('type'));
-               
-               pose = robot.getElementsByTagName('pose').item(0);
-               x = str2double(pose.getAttribute('x'));
-               y = str2double(pose.getAttribute('y'));
-               theta = str2double(pose.getAttribute('theta'));         
+                robot_list = blueprint.getElementsByTagName('robot');
 
-               obj.add_robot(type, spv, x, y, theta);
+                for k = 0:(robot_list.getLength-1)
+                   robot = robot_list.item(k);
+
+                   type = char(robot.getAttribute('type'));
+
+                   s = robot.getElementsByTagName('supervisor').item(0);
+                   spv = char(s.getAttribute('type'));
+
+                   pose = robot.getElementsByTagName('pose').item(0);
+                   x = str2double(pose.getAttribute('x'));
+                   y = str2double(pose.getAttribute('y'));
+                   theta = str2double(pose.getAttribute('theta'));         
+
+                   obj.add_robot(type, spv, x, y, theta);
+                end
             end
             
             % Parse XML file for obstacle configurations
