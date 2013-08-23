@@ -1,104 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<<<<<<< HEAD
-<deployment-project plugin="plugin.deploytool" plugin-version="1.0">
-  <configuration target="target.standalone" target-name="Standalone Application" name="simiam" location="/home/jdelacroix/Documents/MATLAB/simiam-coursera-sp13" file="/home/jdelacroix/Documents/MATLAB/simiam-coursera-sp13/simiam.prj" preferred-package-type="package.type.zip" build-checksum="3365649283" preferred-package-location="/home/jdelacroix/Documents/MATLAB/simiam-coursera-sp13">
-    <param.project.name>/home/jdelacroix/Documents/MATLAB/simiam-coursera-sp13/simiam.prj</param.project.name>
-    <param.target.type>Standalone Application</param.target.type>
-    <param.appname>simiam</param.appname>
-    <param.intermediate>${PROJECT_ROOT}/simiam/src</param.intermediate>
-    <param.output>${PROJECT_ROOT}/simiam/distrib</param.output>
-    <param.embed.ctf>true</param.embed.ctf>
-    <param.tbx_on_path>
-      <item>all</item>
-    </param.tbx_on_path>
-    <param.warnings>
-      <warning.fullpath>on</warning.fullpath>
-      <warning.duplicate>on</warning.duplicate>
-      <warning.option.ignored>on</warning.option.ignored>
-      <warning.libname>on</warning.libname>
-      <warning.demo>on</warning.demo>
-    </param.warnings>
-    <param.version>1.0</param.version>
-    <param.user.only.registration>false</param.user.only.registration>
-    <param.c.cpp.options.file />
-    <param.include.dirs />
-    <param.lib.dirs />
-    <param.lib.files />
-    <param.defines />
-    <param.undefines />
-    <param.debug>false</param.debug>
-    <param.share.mcr>false</param.share.mcr>
-    <param.disable.jvm>false</param.disable.jvm>
-    <param.disable.display>false</param.disable.display>
-    <param.create.log>false</param.create.log>
-    <param.log.file />
-    <param.user.defined.mcr.options />
-    <unset>
-      <param.project.name />
-      <param.target.type />
-      <param.appname />
-      <param.intermediate />
-      <param.output />
-      <param.embed.ctf />
-      <param.tbx_on_path />
-      <param.warnings />
-      <param.version />
-      <param.user.only.registration />
-      <param.c.cpp.options.file />
-      <param.include.dirs />
-      <param.lib.dirs />
-      <param.lib.files />
-      <param.defines />
-      <param.undefines />
-      <param.debug />
-      <param.share.mcr />
-      <param.disable.jvm />
-      <param.disable.display />
-      <param.create.log />
-      <param.log.file />
-      <param.user.defined.mcr.options />
-=======
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration target="target.mlapps" target-name="Package App" name="simiam" location="/home/jdelacroix/Workspace/github/simiam" file="/home/jdelacroix/Workspace/github/simiam/simiam.prj" build-checksum="1033465818">
-    <param.appname>simiam</param.appname>
+  <configuration target="target.mlapps" target-name="Package App" name="Sim.I.am" location="/home/jdelacroix/Workspace/github/simiam" file="/home/jdelacroix/Workspace/github/simiam/Sim.I.am.prj" build-checksum="3213441707">
+    <param.appname>Sim.I.am</param.appname>
     <param.authnamewatermark>Jean-Pierre de la Croix</param.authnamewatermark>
-    <param.email>ajpl.delacroix@gmail.com</param.email>
+    <param.email>jdelacroix@gatech.edu</param.email>
     <param.company>Georgia Institute of Technology</param.company>
-    <param.icon />
-    <param.summary>A MATLAB-based educational bridge between theory and pratice in robotics.</param.summary>
+    <param.icon>${PROJECT_ROOT}/Sim.I.am_24.png</param.icon>
+    <param.summary>A MATLAB-based educational bridge between theory and practice in robotics.</param.summary>
     <param.description>Sim.I.am is a robotics simulator that can be used to learn how to apply controls to mobile robots.
 
-This app is a working demo of a full navigation system for a mobile robot implemented in the simulator. On-screen instructions are included.</param.description>
+The app is a demo of a multi-agent application, where one robot follows the other robot through a cluttered environment. On-screen instructions are included.
+
+A manual is included to help learn how to work with the simulator. It also provides as set of programming exercises focused on how to implement the mobile robot navigation system from scratch.
+
+Sim.I.am is maintained by the Georgia Robotics and InTelligent (GRITS) Laboratory at the Georgia Institute of Technology. The project page is located at http://gritslab.gatech.edu/projects/robot-simulator.</param.description>
     <param.screenshot />
-    <param.version>2013.03</param.version>
+    <param.version>2013.08</param.version>
     <param.products.name>
+      <item>Simulink</item>
       <item>MATLAB</item>
     </param.products.name>
     <param.products.id>
+      <item>2</item>
       <item>1</item>
     </param.products.id>
     <param.products.version>
-      <item>8.0</item>
+      <item>8.1</item>
+      <item>8.1</item>
     </param.products.version>
     <param.platforms />
-    <param.output>${PROJECT_ROOT}/simiam.mlappinstall</param.output>
-    <param.guid>0fabb02a-7b35-4a4b-b469-0a3764540580</param.guid>
+    <param.output>${PROJECT_ROOT}/Sim.I.am.mlappinstall</param.output>
+    <param.guid>e54a5843-1823-45f9-ad75-6cd2c2aede30</param.guid>
     <unset>
-      <param.icon />
       <param.screenshot />
       <param.platforms />
->>>>>>> c1cd3c77e424639d56cc1efadf6ce86c546f7367
     </unset>
     <fileset.main>
       <file>${PROJECT_ROOT}/launch.m</file>
     </fileset.main>
-<<<<<<< HEAD
-    <fileset.resources>
-      <file>${PROJECT_ROOT}/+simiam</file>
-      <file>${PROJECT_ROOT}/COPYING</file>
-=======
     <fileset.depfun>
       <file>${PROJECT_ROOT}/+simiam/+app/ControlApp.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+containers/ArrayList.m</file>
+      <file>${PROJECT_ROOT}/+simiam/+containers/Queue.m</file>
       <file>${PROJECT_ROOT}/+simiam/+controller/+khepera3/K3Supervisor.m</file>
       <file>${PROJECT_ROOT}/+simiam/+controller/AOandGTG.m</file>
       <file>${PROJECT_ROOT}/+simiam/+controller/AvoidObstacles.m</file>
@@ -136,18 +79,6 @@ This app is a working demo of a full navigation system for a mobile robot implem
       <file>${PROJECT_ROOT}/bundled/matlab_code_kit/+mcodekit/+list/dl_list_node.m</file>
       <file>${PROJECT_ROOT}/bundled/matlab_code_kit/LICENSE</file>
       <file>${PROJECT_ROOT}/bundled/matlab_code_kit/README.md</file>
-      <file>${PROJECT_ROOT}/manual/ir_actual.eps</file>
-      <file>${PROJECT_ROOT}/manual/k3sensors.png</file>
-      <file>${PROJECT_ROOT}/manual/manual.pdf</file>
-      <file>${PROJECT_ROOT}/manual/manual.tex</file>
-      <file>${PROJECT_ROOT}/manual/simiam.png</file>
-      <file>${PROJECT_ROOT}/manual/week-4-ir-points.png</file>
-      <file>${PROJECT_ROOT}/manual/week-5-part-2.png</file>
-      <file>${PROJECT_ROOT}/manual/week-5-part-3.png</file>
-      <file>${PROJECT_ROOT}/manual/week-5-part-4.png</file>
-      <file>${PROJECT_ROOT}/manual/week-6-part-1.png</file>
-      <file>${PROJECT_ROOT}/manual/week-6-part-1b.png</file>
-      <file>${PROJECT_ROOT}/manual/week-6-part-2.png</file>
       <file>${PROJECT_ROOT}/resources/icons/ui_control_home.png</file>
       <file>${PROJECT_ROOT}/resources/icons/ui_control_pause.png</file>
       <file>${PROJECT_ROOT}/resources/icons/ui_control_play.png</file>
@@ -159,291 +90,37 @@ This app is a working demo of a full navigation system for a mobile robot implem
       <file>${PROJECT_ROOT}/resources/icons/ui_status_ok.png</file>
       <file>${PROJECT_ROOT}/resources/simiam_screenshot.jpg</file>
       <file>${PROJECT_ROOT}/resources/splash/simiam_splash.png</file>
+      <file>${PROJECT_ROOT}/simulink/getRobotBlockUserData.m</file>
+      <file>${PROJECT_ROOT}/simulink/getSimulatorBlockUserData.m</file>
+      <file>${PROJECT_ROOT}/simulink/msfun_ir_distances_to_wf.m</file>
+      <file>${PROJECT_ROOT}/simulink/msfun_khepera3.m</file>
+      <file>${PROJECT_ROOT}/simulink/msfun_odometry.m</file>
+      <file>${PROJECT_ROOT}/simulink/msfun_simiam_ui.m</file>
+      <file>${PROJECT_ROOT}/simulink/msfun_uni_to_diff.m</file>
+      <file>${PROJECT_ROOT}/simulink/simiam-round-logo.png</file>
+      <file>${PROJECT_ROOT}/simulink/simiam.mdl</file>
+      <file>${PROJECT_ROOT}/simulink/simiam_demo.mdl</file>
     </fileset.depfun>
     <fileset.resources>
       <file>${PROJECT_ROOT}/+simiam</file>
       <file>${PROJECT_ROOT}/AUTHORS</file>
->>>>>>> c1cd3c77e424639d56cc1efadf6ce86c546f7367
       <file>${PROJECT_ROOT}/LICENSE</file>
       <file>${PROJECT_ROOT}/README.md</file>
       <file>${PROJECT_ROOT}/bundled</file>
       <file>${PROJECT_ROOT}/launch.m</file>
-<<<<<<< HEAD
       <file>${PROJECT_ROOT}/parameters.xml</file>
-=======
-      <file>${PROJECT_ROOT}/manual</file>
->>>>>>> c1cd3c77e424639d56cc1efadf6ce86c546f7367
       <file>${PROJECT_ROOT}/resources</file>
       <file>${PROJECT_ROOT}/settings.xml</file>
+      <file>${PROJECT_ROOT}/simulink</file>
     </fileset.resources>
     <fileset.package />
     <build-deliverables>
-<<<<<<< HEAD
-      <file name="readme.txt" location="${PROJECT_ROOT}/simiam/distrib" optional="true">/home/jdelacroix/Documents/MATLAB/simiam-coursera-sp13/simiam/distrib/readme.txt</file>
-      <file name="simiam" location="${PROJECT_ROOT}/simiam/distrib" optional="false">/home/jdelacroix/Documents/MATLAB/simiam-coursera-sp13/simiam/distrib/simiam</file>
-      <file name="run_simiam.sh" location="${PROJECT_ROOT}/simiam/distrib" optional="false">/home/jdelacroix/Documents/MATLAB/simiam-coursera-sp13/simiam/distrib/run_simiam.sh</file>
+      <file name="Sim.I.am.mlappinstall" location="/home/jdelacroix/Workspace/github/simiam" optional="false">/home/jdelacroix/Workspace/github/simiam/Sim.I.am.mlappinstall</file>
     </build-deliverables>
     <workflow />
     <matlab>
-      <root>/home/jdelacroix/Applications/MathWorks/MATLAB/R2012b</root>
-      <path>
-        <directory>/home/jdelacroix/Documents/MATLAB</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/codetools</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/datafun</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/datamanager</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/datatypes</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/elfun</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/elmat</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/funfun</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/general</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/guide</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/helptools</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/iofun</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/lang</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/matfun</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/ops</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/polyfun</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/randfun</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/sparfun</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/specfun</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/strfun</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/timefun</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/verctrl</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/optimfun</directory>
-        <directory>${MATLAB_ROOT}/toolbox/local</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/demos</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/graph2d</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/graph3d</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/graphics</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/plottools</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/scribe</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/specgraph</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/uitools</directory>
-        <directory>${MATLAB_ROOT}/toolbox/simulink/simulink/dataclasses</directory>
-        <directory>${MATLAB_ROOT}/toolbox/simulink/simulink</directory>
-        <directory>${MATLAB_ROOT}/toolbox/simulink/simulink/slresolve</directory>
-        <directory>${MATLAB_ROOT}/toolbox/simulink/blocks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/simulink/components</directory>
-        <directory>${MATLAB_ROOT}/toolbox/simulink/fixedandfloat</directory>
-        <directory>${MATLAB_ROOT}/toolbox/simulink/fixedandfloat/obsolete</directory>
-        <directory>${MATLAB_ROOT}/toolbox/simulink/dee</directory>
-        <directory>${MATLAB_ROOT}/toolbox/simulink/simulink/MPlayIO</directory>
-        <directory>${MATLAB_ROOT}/toolbox/simulink/simulink/dataobjectwizard</directory>
-        <directory>${MATLAB_ROOT}/toolbox/rtw/targets/AUTOSAR/AUTOSAR/dataclasses</directory>
-        <directory>${MATLAB_ROOT}/toolbox/rtw/targets/AUTOSAR/AUTOSAR</directory>
-        <directory>${MATLAB_ROOT}/toolbox/rtw/accel</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/glue</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/glue/studio</directory>
-        <directory>${MATLAB_ROOT}/toolbox/simulink/blocks/library</directory>
-        <directory>${MATLAB_ROOT}/toolbox/simulink/blocks/obsolete</directory>
-        <directory>${MATLAB_ROOT}/toolbox/simulink/simdemos/dataclasses</directory>
-        <directory>${MATLAB_ROOT}/toolbox/simulink/simdemos</directory>
-        <directory>${MATLAB_ROOT}/toolbox/simulink/simdemos/aerospace</directory>
-        <directory>${MATLAB_ROOT}/toolbox/simulink/simdemos/automotive</directory>
-        <directory>${MATLAB_ROOT}/toolbox/simulink/simdemos/industrial</directory>
-        <directory>${MATLAB_ROOT}/toolbox/simulink/simdemos/simfeatures</directory>
-        <directory>${MATLAB_ROOT}/toolbox/simulink/simdemos/simgeneral</directory>
-        <directory>${MATLAB_ROOT}/toolbox/simulink/simulink/modeladvisor</directory>
-        <directory>${MATLAB_ROOT}/toolbox/simulink/simulink/modeladvisor/fixpt</directory>
-        <directory>${MATLAB_ROOT}/toolbox/stateflow/stateflow</directory>
-        <directory>${MATLAB_ROOT}/toolbox/stateflow/coder</directory>
-        <directory>${MATLAB_ROOT}/toolbox/stateflow/sfdemos</directory>
-        <directory>${MATLAB_ROOT}/toolbox/simulink/simulink/iodata/iomap</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/targetdemos</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/dastudio</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/dastudio/depviewer</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/comparisons</directory>
-        <directory>${MATLAB_ROOT}/toolbox/coder/rtiostream</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/timeseries</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/hds</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/operatingsystem/vxworks/blks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/operatingsystem/vxworks/blks/mex</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/operatingsystem/vxworks/blks/masks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/operatingsystem/vxworks/src</directory>
-        <directory>${MATLAB_ROOT}/toolbox/javabuilder/javabuilderdemos</directory>
-        <directory>${MATLAB_ROOT}/toolbox/simulink/simulink/slproject</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/instrument</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/slvnv</directory>
-        <directory>${MATLAB_ROOT}/toolbox/slvnv/simcoverage</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/blackfin/blackfindemos</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/rptgen</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/cgir_fe</directory>
-        <directory>${MATLAB_ROOT}/toolbox/simulink/blocks/sb2sl</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/blackfin</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/blackfin/blks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/blackfin/blks/mex</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/blackfin/blks/masks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/foundation</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/foundation/util</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/foundation/errorhandler</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/foundation/xmakefile</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/foundation/hookpoints</directory>
-        <directory>${MATLAB_ROOT}/toolbox/rptgen/xmlcomp</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/system/coreblocks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/stm/stm</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/system/sfun</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/asynciolib</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/spcuilib</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/hdlshared</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/tic6000</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/tic6000/rtw</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/tic6000/tfl</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/tic6000/utils</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/tic6000/blks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/tic6000/blks/mex</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/tic6000/blks/sysobj_mex</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/tic6000/blks/masks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/coder/float2fixed</directory>
-        <directory>${MATLAB_ROOT}/toolbox/rptgen/rptgendemos</directory>
-        <directory>${MATLAB_ROOT}/toolbox/simulink/fixedandfloat/fxpdemos</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/audiovideo</directory>
-        <directory>${MATLAB_ROOT}/toolbox/fixedpoint/fixedpoint</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/apps</directory>
-        <directory>${MATLAB_ROOT}/toolbox/coder/matlabcoder</directory>
-        <directory>${MATLAB_ROOT}/toolbox/rptgen/rptgen</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/foundation</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/foundation/utils</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/foundation/utils/resource_config</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/foundation/blks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/foundation/blks/mex</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/foundation/blks/masks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/shared</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/shared/ti</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/shared/ti/mdlinfo</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/shared/ti/utils</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/shared/ti/blks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/shared/ti/blks/mex</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/shared/ti/blks/masks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/etargets/etargets</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/etargets/etargets/demoutils</directory>
-        <directory>${MATLAB_ROOT}/toolbox/simulink/simulink/performance</directory>
-        <directory>${MATLAB_ROOT}/toolbox/simulink/simulink/performance/performancea</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/idelinkdemos</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/adivdsp/vdspdemos</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/eclipseide/eclipseidedemos</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/iarew/iarewdemos</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/ticcs/ccsdemos</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/ticcs/ccsdemos/util</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/siglib</directory>
-        <directory>${MATLAB_ROOT}/toolbox/coder/profile</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/operatingsystem/linux/blks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/operatingsystem/linux/blks/masks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/operatingsystem/linux/blks/mex</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/operatingsystem/linux/src</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/hwconnectinstaller</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/sldv</directory>
-        <directory>${MATLAB_ROOT}/toolbox/eml/eml</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/simulink</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/system/simulink</directory>
-        <directory>${MATLAB_ROOT}/toolbox/stm/stmdemos</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/controllib/general</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/testmeaslib/graphics</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/system/coder</directory>
-        <directory>${MATLAB_ROOT}/toolbox/fixedpoint/fixedpointtool</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/tic2000</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/tic2000/rtw</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/tic2000/utils</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/tic2000/blks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/tic2000/blks/mex</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/tic2000/blks/masks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/coder/coverage</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/tic5000/tic5000demos</directory>
-        <directory>${MATLAB_ROOT}/toolbox/realtime</directory>
-        <directory>${MATLAB_ROOT}/toolbox/realtime/realtime</directory>
-        <directory>${MATLAB_ROOT}/toolbox/realtime/realtime/rtw</directory>
-        <directory>${MATLAB_ROOT}/toolbox/slvnv/reqmgt</directory>
-        <directory>${MATLAB_ROOT}/toolbox/slvnv/slvnv</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/can</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/can/canblks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/can/canmasks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/can/canmex</directory>
-        <directory>${MATLAB_ROOT}/toolbox/rtw/rtw</directory>
-        <directory>${MATLAB_ROOT}/toolbox/rtw/targets/shared</directory>
-        <directory>${MATLAB_ROOT}/toolbox/rtw/coder_foundation/tfl</directory>
-        <directory>${MATLAB_ROOT}/toolbox/rtw/coder_foundation/build</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/simtargets</directory>
-        <directory>${MATLAB_ROOT}/toolbox/compiler/compilerdemos</directory>
-        <directory>${MATLAB_ROOT}/toolbox/sl3d/sl3d</directory>
-        <directory>${MATLAB_ROOT}/toolbox/sl3d/sl3ddemos</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/coder/coder</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/tic6000/tic6000demos/dataclasses</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/tic6000/tic6000demos</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/controllib/graphics</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/controllib/graphics/utils</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/controllib/graphics/plotoptions</directory>
-        <directory>${MATLAB_ROOT}/toolbox/compiler</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/dspblks/dspblks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/dspblks/dspmex</directory>
-        <directory>${MATLAB_ROOT}/toolbox/javabuilder/javabuilder</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/tic2000/tic2000demos</directory>
-        <directory>${MATLAB_ROOT}/toolbox/coder/emlcodermex</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/tic5000</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/tic5000/blks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/tic5000/blks/mex</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/tic5000/blks/masks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/sam/m3i</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/operatingsystem/windows/blks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/operatingsystem/windows/blks/masks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/operatingsystem/windows/blks/mex</directory>
-        <directory>${MATLAB_ROOT}/toolbox/fixedpoint/fidemos</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/testmeaslib/general</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/dsp/simulink/dsp</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/adivdsp</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/adivdsp/mdlinfo</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/adivdsp/tfl</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/adivdsp/vdspblks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/adivdsp/rtw</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/eclipseide</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/eclipseide/mdlinfo</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/eclipseide/registry</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/eclipseide/tfl</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/iarew</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/iarew/blks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/iarew/mdlinfo</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/iarew/templates</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/ticcs</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/ticcs/ccsblks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/ticcs/ccslinkblks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/ticcs/ccslinkblks/rtdxsimblks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/ticcs/lic</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/ticcs/mdlinfo</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/ticcs/tfl</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/ticcs/util</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/ticcs/rtw</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/ticcs/envChecker</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/wrworkbench</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/wrworkbench/mdlinfo</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/wrworkbench/registry</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/extensions/wrworkbench/wrworkbenchblks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/foundation/pjtgenerator</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/foundation/pjtgenerator/rtw</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/foundation/pjtgenerator/tgtpref2</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/foundation/pjtgenerator/profiler</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/foundation/pjtgenerator/mdlinfo</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/foundation/pjtgenerator/blks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/foundation/pjtgenerator/blks/masks</directory>
-        <directory>${MATLAB_ROOT}/toolbox/idelink/foundation/pjtgenerator/blks/tlc_c</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/testmeaslib/simulink</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/sigbldr</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/configset</directory>
-        <directory>${MATLAB_ROOT}/toolbox/simulink/simulink/upgradeadvisor</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/system</directory>
-        <directory>${MATLAB_ROOT}/toolbox/coder/codegendemos</directory>
-        <directory>${MATLAB_ROOT}/toolbox/matlab/imagesci</directory>
-        <directory>${MATLAB_ROOT}/toolbox/target/extensions/processor/intelhost/tfl</directory>
-        <directory>${MATLAB_ROOT}/toolbox/coder/coder</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/multimedia</directory>
-        <directory>${MATLAB_ROOT}/toolbox/shared/system/fixedpoint</directory>
-      </path>
-=======
-      <file name="simiam.mlappinstall" location="/home/jdelacroix/Workspace/github/simiam" optional="false">/home/jdelacroix/Workspace/github/simiam/simiam.mlappinstall</file>
-    </build-deliverables>
-    <workflow />
-    <matlab>
-      <root>/home/jdelacroix/Applications/Mathworks/MATLAB/R2012b</root>
->>>>>>> c1cd3c77e424639d56cc1efadf6ce86c546f7367
+      <root>/home/jdelacroix/Applications/MathWorks/MATLAB/R2013a</root>
+      <toolboxes />
     </matlab>
     <platform>
       <unix>true</unix>
@@ -454,11 +131,7 @@ This app is a working demo of a full navigation system for a mobile robot implem
       <vista>false</vista>
       <linux>true</linux>
       <solaris>false</solaris>
-<<<<<<< HEAD
-      <osver>3.5.0-17-generic</osver>
-=======
-      <osver>3.8.0-gentoo-wolverine</osver>
->>>>>>> c1cd3c77e424639d56cc1efadf6ce86c546f7367
+      <osver>3.10.4-gentoo-wolverine</osver>
       <os32>false</os32>
       <os64>true</os64>
       <arch>glnxa64</arch>
