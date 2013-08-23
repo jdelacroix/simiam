@@ -17,7 +17,7 @@ classdef World < handle
 %             obj.robots = mcodekit.list.dl_list(); %struct('robot', {}, 'pose', {});
             obj.robots = simiam.containers.ArrayList(10);
             obj.obstacles = mcodekit.list.dl_list(); %struct('obstacle', {}, 'pose', {});
-            obj.apps = mcodekit.list.dl_list();
+            obj.apps = simiam.containers.ArrayList(10);
             obj.root_path = '';
         end
         
@@ -32,7 +32,7 @@ classdef World < handle
             app = char(app_list.getAttribute('type'));
             
             r = str2func(strcat('simiam.app.', app));
-            obj.apps.append_key(r(root));
+            obj.apps.appendElement(r(root));
             
             robot_list = blueprint.getElementsByTagName('robot');
             
@@ -98,7 +98,8 @@ classdef World < handle
             %            obj.robots.append_key(s);
             
             obj.robots.appendElement(s);          
-            obj.apps.head_.key_.supervisors.appendElement(supervisor);
+            anApp = obj.apps.elementAt(1);
+            anApp.supervisors.appendElement(supervisor);
         end
         
         function add_obstacle(obj, x, y, theta, geometry)
