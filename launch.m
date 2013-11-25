@@ -1,20 +1,18 @@
 function launch()
 
-% Copyright (C) 2013 Georgia Tech Research Corporation
+% Copyright (C) 2012 Jean-Pierre de la Croix
 % see the LICENSE file included with this software
 
+delete(timerfindall);
 clear java;
 clear classes;
 
-if (isdeployed)
-    [path, folder, ~] = fileparts(ctfroot);
-    root_path = fullfile(path, folder);
-else
-    root_path = fileparts(mfilename('fullpath'));
-end
+root_path = fileparts(which(mfilename));
 addpath(genpath(root_path));
 
-app = simiam.ui.AppWindow(root_path, false);
+javaaddpath(fullfile(root_path, 'java'));
+
+app = simiam.ui.AppWindow(root_path);
 app.load_ui();
 
 end
