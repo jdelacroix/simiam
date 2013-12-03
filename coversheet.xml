@@ -1,0 +1,10 @@
+<coversheet>
+    
+    <course identifier="conrob-002" week="1" />
+    
+    <assignment week="1">
+        <part identifier="k3pa0rK4" title="Test Submission 1" test="week1.Part1Test" />
+        <part identifier="RhEHitpm" title="Test Submission 2" test="week1.Part2Test" />
+    </assignment>
+    
+</coversheet>

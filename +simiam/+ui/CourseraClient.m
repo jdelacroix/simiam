@@ -18,6 +18,8 @@ classdef CourseraClient < handle
         submit_button
         
         part_list
+        course_url
+        course_week
     end
     
     methods
@@ -41,32 +43,31 @@ classdef CourseraClient < handle
         
         function populate_assignment(obj)
             
-%             [file, path, ~] = uigetfile('assignment-week-*.xml', 'Pick the XML file for this week''s assignment.')
-            
-            file = 'assignment-week-1.xml';
-            
             % Read in XML file
-            blueprint = xmlread(fullfile(obj.root_url,file));
+            blueprint = xmlread(fullfile(obj.root_url, 'coversheet.xml'));
             
             % Parse XML file for robot configurations
-            part_list_t = blueprint.getElementsByTagName('part');
+            e = blueprint.getElementsByTagName('course').item(0);
+            obj.course_url = ['http://class.coursera.org/' char(e.getAttribute('identifier'))];
+            week_t = str2double(e.getAttribute('week'));
+            
+            assignment = blueprint.getElementsByTagName('assignment').item(week_t-1);
+            obj.course_week = str2double(assignment.getAttribute('week'));
+            
+            part_list_t = assignment.getElementsByTagName('part');
             for k = 0:(part_list_t.getLength-1)
-                part = part_list_t.item(k);
+                part_i = part_list_t.item(k);
                 
-                e = part.getElementsByTagName('identifier').item(0);
-                identifier = char(e.getAttribute('value'));
+                identifier = char(part_i.getAttribute('identifier'));
+                title = char(part_i.getAttribute('title'));
+                test = str2func(['simiam.test.' char(part_i.getAttribute('test')) '.run_test']);
                 
-                e = part.getElementsByTagName('title').item(0);
-                title = char(e.getAttribute('value'));
-                
-                e = part.getElementsByTagName('test').item(0);
-                test = str2func(['simiam.test.' char(e.getAttribute('value')) '.run_test']);
-                
-                part = struct('identifier', identifier, ...
-                              'title', title, ...
-                              'test', test);
+                part_i = struct('identifier', identifier, ...
+                                'title', title, ...
+                                'test', test, ...
+                                'checkbox', 0);
                           
-                obj.part_list.appendElement(part);
+                obj.part_list.appendElement(part_i);
             end
         end
         
@@ -161,6 +162,8 @@ classdef CourseraClient < handle
                 ui_args = {'Style','checkbox', 'String', '', 'BackgroundColor', obj.ui_colors.gray, 'Callback', ''};
                 part_i = uicontrol(ui_parent, ui_args{:});
                 set(part_i, 'Value', 1);
+                part.checkbox = part_i;
+               
                 
 %                 button_string = ['<html><p align="left">' list_items{i} '</p></html>'];
                 button_string = part.title;
@@ -178,8 +181,9 @@ classdef CourseraClient < handle
                 set(findjobj(aButtonLabel), 'Border', []);
                 set(aButtonLabel, 'Enable', 'off');
                 obj.ui_set_button_icon(aButtonLabel, 'ui_status_unknown.png');
+                part.status = aButtonLabel;
                 
-                
+                obj.part_list.replaceElementAt(part, i);
             end
             
             
@@ -213,15 +217,115 @@ classdef CourseraClient < handle
         
         function ui_pressed_submit(obj, src, event)
             
+            % save login and password information
             login = get(obj.login_field, 'String');
             password = get(obj.password_field, 'String');
             save('coursera_login_data.mat', 'login', 'password');
+            
+            for i = 1:length(obj.part_list)
+                part_i = obj.part_list.elementAt(i)
+                if get(part_i.checkbox, 'Value')
+                    
+                    [login, ch, signature, auxstring] = obj.get_challenge_from_coursera(login, part_i.identifier);
+                    if isempty(login) || isempty(ch) || isempty(signature)
+                        % Some error occured, error string in first return element.
+                        fprintf('\n!! Error: %s\n\n', login);
+                        return
+                    end
+                    
+                    % Attempt Submission with Challenge
+                    ch_resp = obj.generate_challenge_response(login, password, ch);
+% 
+                    [result, str] = obj.submit_solution_to_coursera(login, ch_resp, part_i.identifier, ...
+                           obj.evaluate_test_fcn(part_i.test, auxstring), obj.read_fcn_source(part_i.test), signature)
+                       
+                    if (result == 0)
+                        obj.ui_set_button_icon(part_i.status, 'ui_status_ok.png');
+                    else
+                        obj.ui_set_button_icon(part_i.status, 'ui_status_error.png');
+                    end
+% 
+%                     if (~isTest(thisPartId))
+%                       partName = partNames{partId};
+%                     else
+%                       partName = [partNames{partId} ' (test)'];
+%                     end
+% 
+%                     fprintf('\n== [pgm-class] Submitted Assignment %s - Part %d - %s\n', ...
+%                       homework_id(), partId, partName);
+%                     fprintf('== %s\n', strtrim(str));
+                    
+                end
+            end
             
         end
         
         function ui_close(obj, src, event)
             delete(src);
         end
+        
+        %% Coursera-specific functionality (derived from assignment-api-examples.zip)
+%         
+        function [email,ch,signature,auxstring] = get_challenge_from_coursera(obj, login, part_id)
+            challenge_url = [obj.course_url '/assignment/challenge'];
+            str = urlread(challenge_url(), 'post', {'email_address', login, 'assignment_part_sid', part_id, 'response_encoding', 'delim'});
+            
+            str = strtrim(str);
+            r = struct;
+            while(numel(str) > 0)
+                [f, str] = strtok (str, '|');
+                [v, str] = strtok (str, '|');
+                r = setfield(r, f, v);
+            end
+            
+            email = getfield(r, 'email_address');
+            ch = getfield(r, 'challenge_key');
+            signature = getfield(r, 'state');
+            auxstring = getfield(r, 'challenge_aux_data');
+        end
+        
+        function [str] = generate_challenge_response(obj,email, passwd, challenge)
+            str = simiam.util.SecureHashAlgorithm.generate_sha1_hash([challenge passwd]);
+        end
+        
+        function out = evaluate_test_fcn(obj, fcn, aux_string) 
+          out = sprintf('%s', fcn(aux_string));
+        end
+
+        function src = read_fcn_source(obj, filename)
+%             fid = fopen(filename);
+            src = '';
+%             while ~feof(fid)
+%                 line = fgets(fid);
+%                 src = [src line];
+%             end
+        end
+        
+        function [result, str] = submit_solution_to_coursera(obj, email, ch_resp, sid, output, ...
+                source, signature)
+            
+            params = {'assignment_part_sid', sid, ...
+                'email_address', email, ...
+                'submission', simiam.util.EncodingScheme.encode_in_base64(output, ''), ...
+                'submission_aux', simiam.util.EncodingScheme.encode_in_base64(source, ''), ...
+                'challenge_response', ch_resp, ...
+                'state', signature};
+            
+            submit_url = [obj.course_url '/assignment/submit'];
+            str = urlread(submit_url, 'post', params);
+            
+            % Parse str to read for success / failure
+            result = -1;
+            
+            if strcmp(str, 'Fantastic!')
+                result = 0; 
+            else
+                
+            end
+            
+            
+        end
+
         
     end
     

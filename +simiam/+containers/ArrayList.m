@@ -246,6 +246,19 @@ classdef ArrayList < handle
             end
         end
         
+        function replaceElementAt(obj, element, index)
+            %% REPLACEELEMENTAT Replaces the element at the specific index.
+            %   replaceElementAt(element, index) replaces the
+            %   element or elements at the specific index or indicies. An
+            %   error is thrown if the array is empty.
+            
+            assert(obj.Count > 0, ...
+                   'simiam:NotEnoughElementsLeft', ...
+                   'Cannot fetch from an empty array.');
+            obj.validateIndex(index);
+            obj.Array{index} = element;
+        end
+        
         function elementOrElements = allElements(obj)
             assert(obj.Count > 0, ...
                    'simiam:NotEnoughElementsLeft', ...
