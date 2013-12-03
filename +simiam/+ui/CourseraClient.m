@@ -44,7 +44,7 @@ classdef CourseraClient < handle
         function populate_assignment(obj)
             
             % Read in XML file
-            blueprint = xmlread(fullfile(obj.root_url, 'coversheet.xml'));
+            blueprint = xmlread(fullfile(obj.root_url, 'coursera.xml'));
             
             % Parse XML file for robot configurations
             e = blueprint.getElementsByTagName('course').item(0);
