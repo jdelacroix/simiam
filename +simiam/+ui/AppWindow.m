@@ -33,11 +33,14 @@ classdef AppWindow < handle
         time_
         
         root_
+        
+        from_simulink_
+        is_state_crashed_
     end
     
     methods
         
-        function obj = AppWindow(root)
+        function obj = AppWindow(root, from_simulink)
             obj.root_ = root;
             obj.ui_colors_ = struct('gray',  [220 220 220]/255, ...
                                     'green', [ 57 200  67]/255, ...
@@ -57,6 +60,9 @@ classdef AppWindow < handle
             obj.ticks_ = [];
             
             obj.time_ = 0;
+            
+            obj.from_simulink_ = from_simulink;
+            obj.is_state_crashed_ = false;
         end
         
         function load_ui(obj)
@@ -65,17 +71,20 @@ classdef AppWindow < handle
         
         function create_simulator(obj, settings_file)
             world = simiam.simulator.World(obj.view_);
-            world.build_from_file(settings_file, obj.ui_buttons_.hardware_state);
+            world.build_from_file(obj.root_, settings_file, obj.from_simulink_);
             
-            token_k = world.robots.head_;
-            while(~isempty(token_k))
-                robot = token_k.key_.robot;
+%             token_k = world.robots.head_;
+%             while(~isempty(token_k))
+            nRobots = length(world.robots);
+            for k = 1:nRobots
+%                 robot = token_k.key_.robot;
+                robot = world.robots.elementAt(k).robot;
                 set(robot.surfaces.head_.key_.handle_, 'ButtonDownFcn', {@obj.ui_focus_view,robot});
                 set(robot.surfaces.tail_.key_.handle_, 'ButtonDownFcn', {@obj.ui_focus_view,robot});
-                token_k = token_k.next_;
+%                 token_k = token_k.next_;
             end
             
-            obj.simulator_ = simiam.simulator.Simulator(obj, world, 0.066, obj.ui_buttons_.hardware_state);
+            obj.simulator_ = simiam.simulator.Simulator(obj, world, 0.033, obj.from_simulink_);
             obj.simulator_.step([],[]);
         end
         
@@ -117,7 +126,10 @@ classdef AppWindow < handle
             end
             button_string = ['<html><div style="text-align: center"><img src="' icon_url '"/>' ...
                    '<br>Welcome to <b>Sim.I.am</b>, a robot simulator.' ...
-                   '<br>This is <em>Sim the First</em>, your companion for robotics in 4555.' ...
+                   '<br>This is <em>Sim the Second</em>, your companion for control theory and robotics.' ...
+                   '<br>The simulator is maintained by the GRITSLab at' ...
+                   '<br><a href="http://gritslab.gatech.edu/projects/robot-simulator">http://gritslab.gatech.edu/projects/robot-simulator</a>' ...
+                   '</div><br><ol><li>Start the demo by clicking the play button.</li><li>Use the mouse to pan and zoom.</li><li>Double click anywhere on the grid to send the robot to that location.</li><li>Select the robot to follow it</li><li>If your robot crashes, press the rewind button.</li></ol>' ...
                    '</html>'];
             ui_args = {'Style','pushbutton', 'String', button_string, 'ForegroundColor', 'w', 'FontWeight', 'bold', 'BackgroundColor', obj.ui_colors_.gray, 'Callback', @obj.ui_button_start};
             ui_parent = obj.layout_.Cell(2,1);
@@ -131,12 +143,6 @@ classdef AppWindow < handle
             play = uicontrol(ui_parent, ui_args{:});
             obj.ui_set_button_icon(play, 'ui_control_play.png');
             obj.ui_toggle_control(play, true);
-            
-            ui_args = {'Style','togglebutton', 'ForegroundColor', 'w', 'FontWeight', 'bold', 'Callback', @obj.ui_button_hardware};
-            ui_parent = obj.layout_.Cell(4,7);
-            hardware = uicontrol(ui_parent, ui_args{:});
-            obj.ui_set_button_icon(hardware, 'ui_control_hardware.png');
-            obj.ui_toggle_control(hardware, true);
             
             ui_args = {'Style','pushbutton', 'ForegroundColor', 'w', 'FontWeight', 'bold', 'Callback', @obj.ui_reset_simulation};
             ui_parent = obj.layout_.Cell(4,5);
@@ -188,8 +194,7 @@ classdef AppWindow < handle
                          'status', status, ...
                          'time', time, ...
                          'zoom_in', zoom_in, ...
-                         'zoom_out', zoom_out, ...
-                         'hardware', hardware, 'hardware_state', false); 
+                         'zoom_out', zoom_out); 
             obj.ui_update_clock(0);
 
             % Set minimum size for figure
@@ -200,6 +205,13 @@ classdef AppWindow < handle
             jWindow.setMinimumSize(java.awt.Dimension(800, 600));
                               
             Update(obj.layout_);
+            
+            if(obj.from_simulink_)
+                obj.ui_toggle_control(play, false);
+                obj.ui_toggle_control(refresh, false);
+                obj.ui_toggle_control(load, false);
+                obj.ui_button_start([],[]);
+            end
             
         end
         
@@ -244,11 +256,13 @@ classdef AppWindow < handle
         end
         
         function ui_update(obj, dt, is_state_crashed)
-            
+            obj.is_state_crashed_ = is_state_crashed;
             if (is_state_crashed)
                 obj.simulator_.stop();
                 obj.ui_set_button_icon(obj.ui_buttons_.status, 'ui_status_error.png');
-                obj.ui_toggle_control(obj.ui_buttons_.refresh, true);
+                if(~obj.from_simulink_)
+                    obj.ui_toggle_control(obj.ui_buttons_.refresh, true);
+                end
                 obj.ui_toggle_control(obj.ui_buttons_.play, false);
             end
             
@@ -266,11 +280,7 @@ classdef AppWindow < handle
             obj.ui_update_clock(0);
             obj.ui_button_home(src, event);
             obj.ui_button_start(src, event);
-        end
-        
-        function ui_button_hardware(obj, src, event)
-            toggle_value = get(src, 'Value');
-            obj.ui_buttons_.hardware_state = toggle_value;
+            obj.is_state_crashed_ = false;
         end
         
         function ui_button_start(obj, src, event)
@@ -295,7 +305,7 @@ classdef AppWindow < handle
             Update(obj.layout_);            
                     
             % Target Marker
-            obj.target_marker_ = plot(obj.view_, inf, inf, ...
+            obj.target_marker_ = plot(obj.view_, -1, 1, ...
                 'Marker', 'o', ...
                 'MarkerFaceColor', obj.ui_colors_.green, ...
                 'MarkerEdgeColor', obj.ui_colors_.green, ...
@@ -331,10 +341,14 @@ classdef AppWindow < handle
             set(obj.ui_buttons_.play, 'Callback', @obj.ui_button_play);
             
             obj.is_ready_ = true;
-            obj.ui_toggle_control(obj.ui_buttons_.load, true);
+            if(~obj.from_simulink_)
+                obj.ui_toggle_control(obj.ui_buttons_.load, true);
+            else
+                obj.ui_toggle_control(obj.ui_buttons_.play, false);
+            end
+
             obj.ui_toggle_control(obj.ui_buttons_.zoom_in, true);
             obj.ui_toggle_control(obj.ui_buttons_.zoom_out, true);
-            obj.ui_toggle_control(obj.ui_buttons_.hardware, false);
             obj.time_ = 0;
             obj.ui_update_clock(0);
             obj.simulator_.start();
@@ -368,7 +382,10 @@ classdef AppWindow < handle
             end
             button_string = ['<html><div style="text-align: center"><img src="' icon_url '"/>' ...
                              '<br>Welcome to <b>Sim.I.am</b>, a robot simulator.' ...
-                             '<br>This is <em>Sim the First</em>, your companion for robotics in 4555..' ...
+                             '<br>This is <em>Sim the Second</em>, your companion for control theory and robotics.' ...
+                             '<br>The simulator is maintained by the GRITSLab at' ...
+                             '<br><a href="http://gritslab.gatech.edu/projects/robot-simulator">http://gritslab.gatech.edu/projects/robot-simulator</a>' ...
+                             '</div><br><ol><li>Start the demo by clicking the play button.</li><li>Use the mouse to pan and zoom.</li><li>Double click anywhere on the grid to send the robot to that location.</li><li>Select the robot to follow it</li><li>If your robot crashes, press the rewind button.</li></ol>' ...
                              '</html>'];
             ui_args = {'Style','pushbutton', 'String', button_string, 'ForegroundColor', 'w', 'FontWeight', 'bold', 'BackgroundColor', obj.ui_colors_.gray, 'Callback', @obj.ui_button_start};
             ui_parent = obj.layout_.Cell(2,1);
@@ -391,7 +408,6 @@ classdef AppWindow < handle
             obj.ui_buttons_.play_state = false;
             set(obj.ui_buttons_.play, 'Callback', @obj.ui_button_start);
             obj.ui_toggle_control(obj.ui_buttons_.load, false);
-            obj.ui_toggle_control(obj.ui_buttons_.hardware, true);
         end
         
         function ui_focus_view(obj, src, event, robot)
@@ -407,13 +423,16 @@ classdef AppWindow < handle
             
             pose = simiam.ui.Pose2D(0,0,0);
             
-            token_k = obj.simulator_.world.robots.head_;
-            while(~isempty(token_k))
-                if(token_k.key_.robot == robot)
-                    pose = token_k.key_.pose;
+%             token_k = obj.simulator_.world.robots.head_;
+            nRobots = length(obj.simulator_.world);
+            for k = 1:nRobots
+%             while(~isempty(token_k))
+                robot_f = obj.simulator_.world.robots.elementAt(k);
+                if(robot_f.robot == robot)
+                    pose = robot_f.pose;
                     break;
                 end
-                token_k = token_k.next_;
+%                 token_k = token_k.next_;
             end
             
             obj.center_ = pose;
@@ -496,9 +515,10 @@ classdef AppWindow < handle
                     setptr(obj.parent_, 'closedhand');
                     set(obj.parent_, 'WindowButtonMotionFcn', @obj.ui_pan_view);
                 case 'open'
-%                     set(obj.target_marker_, 'XData', obj.click_src_(1));
-%                     set(obj.target_marker_, 'YData', obj.click_src_(2));
-%                     obj.simulator_.world.apps.head_.key_.ui_press_mouse(obj.click_src_);
+                    set(obj.target_marker_, 'XData', obj.click_src_(1));
+                    set(obj.target_marker_, 'YData', obj.click_src_(2));
+                    anApp = obj.simulator_.world.apps.elementAt(1);
+                    anApp.ui_press_mouse(obj.click_src_);
                 otherwise
                     % noop
             end

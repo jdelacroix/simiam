@@ -1,8 +1,8 @@
 <simulation>
     <app type="ControlApp" />
     
-    <robot type="Khepera3">
-        <supervisor type="khepera3.K3Supervisor" />
+    <robot type="QuickBot">
+        <supervisor type="quickbot.QBSupervisor" />
         <pose x="0" y="0" theta="0" />
         <driver ip="192.168.1.212" port="4555" />
         <optitrack ip="192.168.1.125" port="4560" id="12" />
