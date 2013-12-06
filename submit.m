@@ -1,0 +1,1 @@
+clear  classes; s = simiam.ui.CourseraClient(pwd); s.load_ui();

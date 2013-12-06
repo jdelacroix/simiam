@@ -1,4 +1,4 @@
-classdef K3Supervisor < simiam.controller.Supervisor
+classdef QBSupervisor < simiam.controller.Supervisor
 %% SUPERVISOR switches between controllers and handles their inputs/outputs.
 %
 % Properties:
@@ -47,7 +47,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
     methods
     %% METHODS
         
-        function obj = K3Supervisor()
+        function obj = QBSupervisor()
         %% SUPERVISOR Constructor
             obj = obj@simiam.controller.Supervisor();
             
@@ -61,7 +61,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
             obj.controllers{7} = simiam.controller.SlidingMode();
             
             % set the initial controller
-            obj.current_controller = obj.controllers{4};
+            obj.current_controller = obj.controllers{5};
             obj.current_state = 5;
             
             % generate the set of states
@@ -104,7 +104,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
             
             obj.d_prog = 10;
             
-            obj.p = simiam.util.Plotter();
+            obj.p = []; % simiam.util.Plotter();
             obj.current_controller.p = obj.p;
         end
         
@@ -226,7 +226,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
 %             inputs.direction = obj.direction;
                                     
             outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
-            outputs.v = 0; outputs.w = 0;    
+                
             [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
             obj.robot.set_wheel_speeds(vel_r, vel_l);
                         

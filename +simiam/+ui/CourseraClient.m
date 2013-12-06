@@ -172,8 +172,9 @@ classdef CourseraClient < handle
                 aButtonLabel = uicontrol(ui_parent, ui_args{:});
 %                 set(findjobj(aButtonLabel), 'Border', []);
                 set(aButtonLabel, 'Enable', 'inactive');
-                set(aButtonLabel, 'Max', 3);
+                set(aButtonLabel, 'Max', 10);
 %                 set(aButtonLabel, 'HorizontalAlignment', 'left');
+                part.label = aButtonLabel;
                 
                 ui_args = {'Style','pushbutton', 'String', button_string, 'ForegroundColor', 'k', 'FontWeight', 'bold', 'BackgroundColor', obj.ui_colors.gray, 'HorizontalAlignment', 'left'};
                 ui_parent = obj.part_layout.Cell(i,3);
@@ -223,7 +224,14 @@ classdef CourseraClient < handle
             save('coursera_login_data.mat', 'login', 'password');
             
             for i = 1:length(obj.part_list)
-                part_i = obj.part_list.elementAt(i)
+                part_i = obj.part_list.elementAt(i);
+                obj.ui_set_button_icon(part_i.status, 'ui_status_unknown.png');
+                set(part_i.label, 'String', part_i.title);
+            end
+            drawnow;
+            
+            for i = 1:length(obj.part_list)
+                part_i = obj.part_list.elementAt(i);
                 if get(part_i.checkbox, 'Value')
                     
                     [login, ch, signature, auxstring] = obj.get_challenge_from_coursera(login, part_i.identifier);
@@ -235,26 +243,18 @@ classdef CourseraClient < handle
                     
                     % Attempt Submission with Challenge
                     ch_resp = obj.generate_challenge_response(login, password, ch);
-% 
+
                     [result, str] = obj.submit_solution_to_coursera(login, ch_resp, part_i.identifier, ...
-                           obj.evaluate_test_fcn(part_i.test, auxstring), obj.read_fcn_source(part_i.test), signature)
+                           obj.evaluate_test_fcn(part_i.test, auxstring), obj.read_fcn_source(part_i.test), signature);
                        
                     if (result == 0)
                         obj.ui_set_button_icon(part_i.status, 'ui_status_ok.png');
                     else
                         obj.ui_set_button_icon(part_i.status, 'ui_status_error.png');
+%                         fprintf('Feedback: %s\n', str);
+                        label = get(part_i.label, 'String');
+                        set(part_i.label, 'String', sprintf('%s',[label ': <Feedback> ' str]));
                     end
-% 
-%                     if (~isTest(thisPartId))
-%                       partName = partNames{partId};
-%                     else
-%                       partName = [partNames{partId} ' (test)'];
-%                     end
-% 
-%                     fprintf('\n== [pgm-class] Submitted Assignment %s - Part %d - %s\n', ...
-%                       homework_id(), partId, partName);
-%                     fprintf('== %s\n', strtrim(str));
-                    
                 end
             end
             
@@ -289,16 +289,11 @@ classdef CourseraClient < handle
         end
         
         function out = evaluate_test_fcn(obj, fcn, aux_string) 
-          out = sprintf('%s', fcn(aux_string));
+          out = sprintf('%s', fcn(aux_string, obj.root_url));
         end
 
         function src = read_fcn_source(obj, filename)
-%             fid = fopen(filename);
             src = '';
-%             while ~feof(fid)
-%                 line = fgets(fid);
-%                 src = [src line];
-%             end
         end
         
         function [result, str] = submit_solution_to_coursera(obj, email, ch_resp, sid, output, ...
