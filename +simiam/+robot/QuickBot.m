@@ -24,39 +24,110 @@ classdef QuickBot < simiam.robot.Robot
         function obj = QuickBot(parent, pose)
            obj = obj@simiam.robot.Robot(parent, pose);
            
-           % Add surfaces: Khepera3 in top-down 2D view
+           % Add surfaces: QuickBot in top-down 2D view
            
-           qb_base_plate = [  0.0335  0.0334    1;
-                              0.0335  0.0536    1;
-                              0.0429  0.0536    1;
-                              0.0639  0.0334    1;
-                              0.0686  0.0000    1;
-                              0.0639 -0.0334    1;
-                              0.0429 -0.0536    1;
-                              0.0335 -0.0536    1;
-                              0.0335 -0.0334    1;
-                             -0.0465 -0.0334    1;
-                             -0.0465 -0.0534    1;
-                             -0.0815 -0.0534    1;
-                             -0.1112 -0.0387    1;
-                             -0.1112  0.0387    1;
-                             -0.0815  0.0534    1;
-                             -0.0465  0.0534    1;
-                             -0.0465  0.0334    1;  ];
+           qb_base_plate = [%  0.0335  0.0334    1;
+                              0.0335  0.0534    1.3;
+                              0.0429  0.0534    1.3;
+                              0.0639  0.0334    1.3;
+                              0.0686  0.0000    1.3;
+                              0.0639 -0.0334    1.3;
+                              0.0429 -0.0534    1.3;
+                              0.0335 -0.0534    1.3;
+                           %   0.0335 -0.0334    1;
+                           %  -0.0465 -0.0334    1;
+                             -0.0465 -0.0534    1.3;
+                             -0.0815 -0.0534    1.3;
+                             -0.1112 -0.0387    1.3;
+                             -0.1112  0.0387    1.3;
+                             -0.0815  0.0534    1.3;
+                             -0.0465  0.0534    1.3;
+                             %-0.0465  0.0334    1.1;  
+                             ];
+                         
+            qb_bbb =  [ -0.0914 -0.0406 1.4;
+                        -0.0944 -0.0376 1.4;
+                        -0.0944  0.0376 1.4;
+                        -0.0914  0.0406 1.4;
+                        -0.0429  0.0406 1.4;
+                        -0.0399  0.0376 1.4;
+                        -0.0399 -0.0376 1.4;
+                        -0.0429 -0.0406 1.4];
+                    
+            qb_bbb_rail_l = [ -0.0429 -0.0356 1.5;
+                              -0.0429  0.0233 1.5;
+                              -0.0479  0.0233 1.5;
+                              -0.0479 -0.0356 1.5;];
+                          
+            qb_bbb_rail_r = [ -0.0914 -0.0356 1.5;
+                              -0.0914  0.0233 1.5;
+                              -0.0864  0.0233 1.5;
+                              -0.0864 -0.0356 1.5;
+                              ];
+                          
+            qb_bbb_eth = [ -0.0579 0.0436 1.5;
+                           -0.0579 0.0226 1.5;
+                           -0.0739 0.0226 1.5;
+                           -0.0739 0.0436 1.5;];
                        
             qb_left_wheel = [ 0.0254 0.0595    1;
                                0.0254 0.0335    1;
                               -0.0384 0.0335    1;
                               -0.0384 0.0595    1;  ];
+                          
+            qb_left_wheel_ol = [ 0.0254 0.0595    1.5;
+                               0.0254 0.0335    1.5;
+                              -0.0384 0.0335    1.5;
+                              -0.0384 0.0595    1.5;  ];
             
+            qb_right_wheel_ol = [ 0.0254 -0.0595    1.5;
+                              0.0254 -0.0335    1.5;
+                             -0.0384 -0.0335    1.5;
+                             -0.0384 -0.0595    1.5;  ];
+                         
             qb_right_wheel = [ 0.0254 -0.0595    1;
                               0.0254 -0.0335    1;
                              -0.0384 -0.0335    1;
                              -0.0384 -0.0595    1;  ];
+                         
+            qb_ir_1 = [ -0.0732, 0.0534 1.9;
+                        -0.0732, 0.0634 1.9;
+                        -0.0432, 0.0634 1.9;
+                        -0.0432, 0.0534 1.9];
+                    
+            qb_ir_3 = [ 0.0636 -0.0042 1.2;
+                        0.0636  0.0258 1.2;
+                        0.0736  0.0258 1.2;
+                        0.0736 -0.0042 1.2];
+                    
+            qb_ir_5 = [ -0.0732, -0.0534 1.9;
+                        -0.0732, -0.0634 1.9;
+                        -0.0432, -0.0634 1.9;
+                        -0.0432, -0.0534 1.9];
+
+            qb_bbb_usb = [ -0.0824 -0.0418 1.5;
+                           -0.0694 -0.0418 1.5;
+                           -0.0694 -0.0278 1.5;
+                           -0.0824 -0.0278 1.5];
+                        
             
+            obj.add_surface(qb_bbb, [0.2 0.2 0.2]);
+            obj.add_surface(qb_bbb_rail_l, [0 0 0]);
+            obj.add_surface(qb_bbb_rail_r, [0 0 0]);
+            obj.add_surface(qb_bbb_eth, [0.7 0.7 0.7]);
+            obj.add_surface(qb_bbb_usb, [0.7 0.7 0.7]);
+            
+            obj.add_surface(qb_right_wheel, [ 0.15 0.15 0.15 ]);
+            obj.add_surface_with_alpha(qb_right_wheel_ol, [0.15 0.15 0.15], 0.5);
+            obj.add_surface_with_alpha(qb_left_wheel_ol, [0.15 0.15 0.15], 0.5);
+%             obj.add_surface_with_alpha(qb_axle, [0.15 0.15 0.15], 0.5);
+            obj.add_surface(qb_left_wheel, [ 0.15 0.15 0.15 ]);
             obj.add_surface(qb_base_plate, [ 226 0 2 ]/255);
-            obj.add_surface(qb_right_wheel, [ 0.0 0.0 0.0 ]);
-            obj.add_surface(qb_left_wheel, [ 0.0 0.0 0.0 ]);
+            
+            obj.add_surface(qb_ir_1, [0.1 0.1 0.1]);
+            obj.add_surface(qb_ir_3, [0.1 0.1 0.1]);
+            obj.add_surface(qb_ir_5, [0.1 0.1 0.1]);
+            
 
             
             % Add sensors: wheel encoders and IR proximity sensors
@@ -72,33 +143,32 @@ classdef QuickBot < simiam.robot.Robot
             import simiam.robot.QuickBot;
             import simiam.ui.Pose2D;
             
-            ir_pose = Pose2D(-0.038, 0.048, Pose2D.deg2rad(128));
+            ir_pose = Pose2D(-0.0474, 0.0534, Pose2D.deg2rad(90));
+            obj.ir_array(1) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.04, 0.3, Pose2D.deg2rad(6), 'simiam.robot.QuickBot.ir_distance_to_raw');
             
-            obj.ir_array(1) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.0, 0.0, Pose2D.deg2rad(3), 'simiam.robot.Khepera3.ir_distance_to_raw');
+            ir_pose = Pose2D(0.0589, 0.0384, Pose2D.deg2rad(45));
+            obj.ir_array(2) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.04, 0.3, Pose2D.deg2rad(6), 'simiam.robot.QuickBot.ir_distance_to_raw');
             
-            ir_pose = Pose2D(0.019, 0.064, Pose2D.deg2rad(75));
-            obj.ir_array(2) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.00, 0.0, Pose2D.deg2rad(3), 'simiam.robot.Khepera3.ir_distance_to_raw');
+            ir_pose = Pose2D(0.0686, 0.0, Pose2D.deg2rad(0));
+            obj.ir_array(3) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.04, 0.3, Pose2D.deg2rad(6), 'simiam.robot.QuickBot.ir_distance_to_raw');
             
-            ir_pose = Pose2D(0.050, 0.050, Pose2D.deg2rad(42));
-            obj.ir_array(3) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.00, 0.0, Pose2D.deg2rad(3), 'simiam.robot.Khepera3.ir_distance_to_raw');
+            ir_pose = Pose2D(0.0589,  -0.0384, Pose2D.deg2rad(-45));
+            obj.ir_array(4) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.04, 0.3, Pose2D.deg2rad(6), 'simiam.robot.QuickBot.ir_distance_to_raw');
             
-            ir_pose = Pose2D(0.070, 0.017, Pose2D.deg2rad(13));
-            obj.ir_array(4) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.00, 0.0, Pose2D.deg2rad(3), 'simiam.robot.Khepera3.ir_distance_to_raw');
-            
-            ir_pose = Pose2D(0.070, -0.017, Pose2D.deg2rad(-13));
-            obj.ir_array(5) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.00, 0.0, Pose2D.deg2rad(3), 'simiam.robot.Khepera3.ir_distance_to_raw');
+            ir_pose = Pose2D(-0.0690, -0.0534, Pose2D.deg2rad(-90));
+            obj.ir_array(5) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.04, 0.3, Pose2D.deg2rad(6), 'simiam.robot.QuickBot.ir_distance_to_raw');
             
             ir_pose = Pose2D(0.050, -0.050, Pose2D.deg2rad(-42));
-            obj.ir_array(6) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.00, 0.0, Pose2D.deg2rad(3), 'simiam.robot.Khepera3.ir_distance_to_raw');
+            obj.ir_array(6) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.00, 0.0, Pose2D.deg2rad(3), 'simiam.robot.QuickBot.ir_distance_to_raw');
             
             ir_pose = Pose2D(0.019, -0.064, Pose2D.deg2rad(-75));
-            obj.ir_array(7) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.00, 0.0, Pose2D.deg2rad(3), 'simiam.robot.Khepera3.ir_distance_to_raw');
+            obj.ir_array(7) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.00, 0.0, Pose2D.deg2rad(3), 'simiam.robot.QuickBot.ir_distance_to_raw');
             
             ir_pose = Pose2D(-0.038, -0.048, Pose2D.deg2rad(-128));
-            obj.ir_array(8) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.00, 0.0, Pose2D.deg2rad(3), 'simiam.robot.Khepera3.ir_distance_to_raw');
+            obj.ir_array(8) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.00, 0.0, Pose2D.deg2rad(3), 'simiam.robot.QuickBot.ir_distance_to_raw');
             
             ir_pose = Pose2D(-0.048, 0.000, Pose2D.deg2rad(180));
-            obj.ir_array(9) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.00, 0.0, Pose2D.deg2rad(3), 'simiam.robot.Khepera3.ir_distance_to_raw');
+            obj.ir_array(9) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.00, 0.0, Pose2D.deg2rad(3), 'simiam.robot.QuickBot.ir_distance_to_raw');
             
             % Add dynamics: two-wheel differential drive
             obj.dynamics = simiam.robot.dynamics.DifferentialDrive(obj.wheel_radius, obj.wheel_base_length);
