@@ -90,20 +90,31 @@ classdef QuickBot < simiam.robot.Robot
                              -0.0384 -0.0335    1;
                              -0.0384 -0.0595    1;  ];
                          
-            qb_ir_1 = [ -0.0732, 0.0534 1.9;
-                        -0.0732, 0.0634 1.9;
-                        -0.0432, 0.0634 1.9;
-                        -0.0432, 0.0534 1.9];
+            qb_ir_1 = [ -0.0732, 0.0534 1.2;
+                        -0.0732, 0.0634 1.2;
+                        -0.0432, 0.0634 1.2;
+                        -0.0432, 0.0534 1.2];
+                    
+            qb_ir_2 = [ 0.0643 0.0214 1.2;
+                        0.0714 0.0285 1.2;
+                        0.0502 0.0497 1.2;
+                        0.0431 0.0426 1.2];
+                        
                     
             qb_ir_3 = [ 0.0636 -0.0042 1.2;
                         0.0636  0.0258 1.2;
                         0.0736  0.0258 1.2;
                         0.0736 -0.0042 1.2];
                     
-            qb_ir_5 = [ -0.0732, -0.0534 1.9;
-                        -0.0732, -0.0634 1.9;
-                        -0.0432, -0.0634 1.9;
-                        -0.0432, -0.0534 1.9];
+            qb_ir_4 = [ 0.0643 -0.0214 1.2;
+                        0.0714 -0.0285 1.2;
+                        0.0502 -0.0497 1.2;
+                        0.0431 -0.0426 1.2];
+                    
+            qb_ir_5 = [ -0.0732, -0.0534 1.2;
+                        -0.0732, -0.0634 1.2;
+                        -0.0432, -0.0634 1.2;
+                        -0.0432, -0.0534 1.2];
 
             qb_bbb_usb = [ -0.0824 -0.0418 1.5;
                            -0.0694 -0.0418 1.5;
@@ -125,7 +136,9 @@ classdef QuickBot < simiam.robot.Robot
             obj.add_surface(qb_base_plate, [ 226 0 2 ]/255);
             
             obj.add_surface(qb_ir_1, [0.1 0.1 0.1]);
+            obj.add_surface(qb_ir_2, [0.1 0.1 0.1]);
             obj.add_surface(qb_ir_3, [0.1 0.1 0.1]);
+            obj.add_surface(qb_ir_4, [0.1 0.1 0.1]);
             obj.add_surface(qb_ir_5, [0.1 0.1 0.1]);
             
 
@@ -146,13 +159,13 @@ classdef QuickBot < simiam.robot.Robot
             ir_pose = Pose2D(-0.0474, 0.0534, Pose2D.deg2rad(90));
             obj.ir_array(1) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.04, 0.3, Pose2D.deg2rad(6), 'simiam.robot.QuickBot.ir_distance_to_raw');
             
-            ir_pose = Pose2D(0.0589, 0.0384, Pose2D.deg2rad(45));
+            ir_pose = Pose2D(0.0613, 0.0244, Pose2D.deg2rad(45));
             obj.ir_array(2) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.04, 0.3, Pose2D.deg2rad(6), 'simiam.robot.QuickBot.ir_distance_to_raw');
             
-            ir_pose = Pose2D(0.0686, 0.0, Pose2D.deg2rad(0));
+            ir_pose = Pose2D(0.0636, 0.0, Pose2D.deg2rad(0));
             obj.ir_array(3) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.04, 0.3, Pose2D.deg2rad(6), 'simiam.robot.QuickBot.ir_distance_to_raw');
             
-            ir_pose = Pose2D(0.0589,  -0.0384, Pose2D.deg2rad(-45));
+            ir_pose = Pose2D(0.0461,  -0.0396, Pose2D.deg2rad(-45));
             obj.ir_array(4) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.04, 0.3, Pose2D.deg2rad(6), 'simiam.robot.QuickBot.ir_distance_to_raw');
             
             ir_pose = Pose2D(-0.0690, -0.0534, Pose2D.deg2rad(-90));
