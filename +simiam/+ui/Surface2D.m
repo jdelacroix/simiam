@@ -9,6 +9,7 @@ classdef Surface2D < handle
         handle_
         geometric_span_
         edge_set_
+        depth_
     end
     
     properties (Access = private)
@@ -31,6 +32,8 @@ classdef Surface2D < handle
             end
             obj.vertex_set_ = obj.geometry_;
             
+            obj.depth_ = 1;
+            
             % compute the surface's centroid
 %             obj.centroid_ = mean(obj.geometry_(:,1:2));
             n = size(obj.geometry_,1);
@@ -49,8 +52,14 @@ classdef Surface2D < handle
             obj.edge_set_(:,3:4) = obj.geometry_([2:n,1],1:2);
             obj.centroid_ = sum(obj.geometry_(:,1:2),1)/n;
             if(obj.is_drawable_)
-                set(obj.handle_, 'Vertices', obj.geometry_);
+                geometry = obj.geometry_;
+                geometry(:,3) = obj.depth_;
+                set(obj.handle_, 'Vertices', geometry);
             end
+        end
+        
+        function set_surface_depth(obj, depth)
+            obj.depth_ = depth;
         end
         
         function update_geometry(obj, geometry)

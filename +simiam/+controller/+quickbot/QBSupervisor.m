@@ -42,8 +42,8 @@ classdef QBSupervisor < simiam.controller.Supervisor
             obj.controllers{2} = simiam.controller.Stop();
             
             % set the initial controller
-            obj.current_controller = obj.controllers{2};
-            obj.current_state = 2;
+            obj.current_controller = obj.controllers{1};
+            obj.current_state = 1;
             
             % generate the set of states
             for i = 1:length(obj.controllers)
@@ -60,7 +60,7 @@ classdef QBSupervisor < simiam.controller.Supervisor
             obj.v           = 0.1;
             obj.theta_d     = pi/4;
                         
-            obj.p = []; % simiam.util.Plotter();
+            obj.p = simiam.util.Plotter();
             obj.current_controller.p = obj.p;
         end
         

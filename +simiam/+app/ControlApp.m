@@ -30,8 +30,8 @@ classdef ControlApp < handle
         end
         
         function ui_press_mouse(obj, click_src)
-            aLeader = obj.supervisors.elementAt(1);
-            aLeader.goal = click_src;
+%             aLeader = obj.supervisors.elementAt(1);
+%             aLeader.goal = click_src;
         end
     end
     
