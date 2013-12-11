@@ -42,7 +42,8 @@ classdef Simulator < handle
             if(~from_simulink)
                 obj.clock = timer('Period', obj.time_step, ...
                                   'TimerFcn', @obj.step, ...
-                                  'ExecutionMode', 'fixedRate');
+                                  'ExecutionMode', 'fixedRate', ...
+                                  'StartDelay', obj.time_step);
             else
                 obj.clock = [];
             end
@@ -83,11 +84,13 @@ classdef Simulator < handle
             end
 %             fprintf('app: %0.3fs\n', toc(tstart));
             
+%             tstart = tic;
 %             if(~obj.islinked)
                 bool = obj.physics.apply_physics();
 %             else
 %                 bool = false;
 %             end
+%             fprintf('physics: %0.3fs\n', toc(tstart));
             
 %             tstart = tic;
             obj.parent.ui_update(split, bool);
@@ -97,6 +100,7 @@ classdef Simulator < handle
         
         function start(obj)
         %% START Starts the simulation.
+            obj.clock
             if(~obj.from_simulink)
                 start(obj.clock);
             end

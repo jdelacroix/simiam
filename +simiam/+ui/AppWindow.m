@@ -84,7 +84,7 @@ classdef AppWindow < handle
 %                 token_k = token_k.next_;
             end
             
-            obj.simulator_ = simiam.simulator.Simulator(obj, world, 0.033, obj.from_simulink_);
+            obj.simulator_ = simiam.simulator.Simulator(obj, world, 0.05, obj.from_simulink_);
             obj.simulator_.step([],[]);
         end
         
@@ -351,7 +351,9 @@ classdef AppWindow < handle
             obj.ui_toggle_control(obj.ui_buttons_.zoom_out, true);
             obj.time_ = 0;
             obj.ui_update_clock(0);
+            'row'
             obj.simulator_.start();
+            'boat'
         end
         
         function ui_button_home(obj, src, event)
@@ -455,7 +457,7 @@ classdef AppWindow < handle
             if(obj.is_ready_)
                 obj.simulator_.shutdown();
             end
-            delete(src);
+            delete(obj.parent_);
         end
         
         function ui_set_axes(obj)
