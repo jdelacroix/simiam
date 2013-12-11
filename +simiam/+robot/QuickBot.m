@@ -121,25 +121,28 @@ classdef QuickBot < simiam.robot.Robot
                            -0.0694 -0.0278 1.5;
                            -0.0824 -0.0278 1.5];
                         
-            
-            obj.add_surface(qb_bbb, [0.2 0.2 0.2]);
-            obj.add_surface(qb_bbb_rail_l, [0 0 0]);
-            obj.add_surface(qb_bbb_rail_r, [0 0 0]);
-            obj.add_surface(qb_bbb_eth, [0.7 0.7 0.7]);
-            obj.add_surface(qb_bbb_usb, [0.7 0.7 0.7]);
-            
+                       
+            obj.add_surface(qb_base_plate, [ 226 0 2 ]/255);
             obj.add_surface(qb_right_wheel, [ 0.15 0.15 0.15 ]);
             obj.add_surface_with_alpha(qb_right_wheel_ol, [0.15 0.15 0.15], 0.5);
             obj.add_surface_with_alpha(qb_left_wheel_ol, [0.15 0.15 0.15], 0.5);
 %             obj.add_surface_with_alpha(qb_axle, [0.15 0.15 0.15], 0.5);
             obj.add_surface(qb_left_wheel, [ 0.15 0.15 0.15 ]);
-            obj.add_surface(qb_base_plate, [ 226 0 2 ]/255);
             
             obj.add_surface(qb_ir_1, [0.1 0.1 0.1]);
             obj.add_surface(qb_ir_2, [0.1 0.1 0.1]);
             obj.add_surface(qb_ir_3, [0.1 0.1 0.1]);
             obj.add_surface(qb_ir_4, [0.1 0.1 0.1]);
             obj.add_surface(qb_ir_5, [0.1 0.1 0.1]);
+                       
+                       
+            obj.add_surface(qb_bbb, [0.2 0.2 0.2]);
+            obj.add_surface(qb_bbb_rail_l, [0 0 0]);
+            obj.add_surface(qb_bbb_rail_r, [0 0 0]);
+            obj.add_surface(qb_bbb_eth, [0.7 0.7 0.7]);
+            obj.add_surface(qb_bbb_usb, [0.7 0.7 0.7]);
+            
+            
             
 
             

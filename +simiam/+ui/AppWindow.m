@@ -351,9 +351,7 @@ classdef AppWindow < handle
             obj.ui_toggle_control(obj.ui_buttons_.zoom_out, true);
             obj.time_ = 0;
             obj.ui_update_clock(0);
-            'row'
             obj.simulator_.start();
-            'boat'
         end
         
         function ui_button_home(obj, src, event)

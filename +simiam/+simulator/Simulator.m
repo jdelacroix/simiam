@@ -100,7 +100,6 @@ classdef Simulator < handle
         
         function start(obj)
         %% START Starts the simulation.
-            obj.clock
             if(~obj.from_simulink)
                 start(obj.clock);
             end
