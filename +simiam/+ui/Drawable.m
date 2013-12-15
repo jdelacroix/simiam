@@ -22,26 +22,24 @@ classdef Drawable < handle
     
     methods (Access = protected)
         
-        function surface = add_surface_with_alpha(obj, geometry, color, a_channel)
+        function surface = add_surface(obj, geometry, color)
+            surface = obj.add_surface_with_depth(geometry, color, 1);
+        end
+        
+        function surface = add_surface_with_depth(obj, geometry, color, depth)
             surface_g = geometry;
             T = obj.pose.get_transformation_matrix();
+            geometry_t = geometry*T';
+            geometry_t(:,3) = depth;
             surface_h = patch('Parent', obj.parent, ...
-                              'Vertices', geometry*T', ...
+                              'Vertices', geometry_t, ...
                               'Faces', 1:size(geometry,1), ...
                               'FaceColor', 'flat', ...
                               'FaceVertexCData', color);
-            if (a_channel >=0 && a_channel <= 1)
-                set(surface_h, 'LineStyle', '--');
-                set(surface_h, 'FaceColor', 'none');
-            end
-%             surface = struct('geometry', mcodekit.geometry.Surface2D(surface_g), 'handle', surface_h);
             surface = simiam.ui.Surface2D(surface_h, surface_g);
+            surface.set_surface_depth(depth);
             surface.transform_surface(T);
             obj.surfaces.append_key(surface);
-        end
-        
-        function surface = add_surface(obj, geometry, color)
-            surface = obj.add_surface_with_alpha(geometry, color, -1);
         end
         
         function draw_surfaces(obj)
