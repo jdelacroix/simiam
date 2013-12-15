@@ -112,8 +112,6 @@ classdef GoToGoal < simiam.controller.Controller
             obj.e_k_1 = e_k;
             
             % plot
-            obj.p
-            'hi'
             obj.p.plot_2d_ref(dt, atan2(sin(theta),cos(theta)), theta_g, 'r');
             
             % velocity control            
