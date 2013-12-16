@@ -157,7 +157,7 @@ classdef QuickBot < simiam.robot.Robot
             obj.wheel_radius = 0.0319;           % 63.8mm in diameter
             obj.wheel_base_length = 0.09925;     % 99.25mm
             obj.ticks_per_rev = 32;
-            obj.speed_factor = 6.2953e-6;
+            obj.speed_factor = 0;
             
             obj.encoders(1) = simiam.robot.sensor.WheelEncoder('right_wheel', obj.wheel_radius, obj.wheel_base_length, obj.ticks_per_rev);
             obj.encoders(2) = simiam.robot.sensor.WheelEncoder('left_wheel', obj.wheel_radius, obj.wheel_base_length, obj.ticks_per_rev);
