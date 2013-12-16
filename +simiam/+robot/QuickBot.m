@@ -195,6 +195,7 @@ classdef QuickBot < simiam.robot.Robot
         
         
         function pose = update_state(obj, pose, dt)
+            R = obj.wheel_radius;
             
             vel_r = obj.right_wheel_speed;     % mm/s
             vel_l = obj.left_wheel_speed;      % mm/s
@@ -217,7 +218,8 @@ classdef QuickBot < simiam.robot.Robot
         
         function set_wheel_speeds(obj, vel_r, vel_l)
             [vel_r, vel_l] = obj.limit_speeds(vel_r, vel_l);
-                        
+            R = obj.wheel_radius;
+            
             obj.right_wheel_speed = vel_r;
             obj.left_wheel_speed = vel_l;
         end

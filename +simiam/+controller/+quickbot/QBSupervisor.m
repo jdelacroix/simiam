@@ -182,7 +182,7 @@ classdef QBSupervisor < simiam.controller.Supervisor
             theta_new = theta + theta_dt;
             x_new = x + x_dt;
             y_new = y + y_dt;                           
-%             fprintf('Estimated pose (x,y,theta): (%0.3g,%0.3g,%0.3g)\n', x_new, y_new, theta_new);
+            fprintf('Estimated pose (x,y,theta): (%0.3g,%0.3g,%0.3g)\n', x_new, y_new, theta_new);
             
             % Save the wheel encoder ticks for the next estimate
             obj.prev_ticks.right = right_ticks;

@@ -11,6 +11,8 @@ classdef WheelEncoder < handle
         ticks_per_rev
         
         ticks
+        
+        total_distance
     end
     
     methods
@@ -20,6 +22,7 @@ classdef WheelEncoder < handle
             obj.type = type;
             obj.ticks_per_rev = ticks_per_rev;
             obj.ticks = 0;
+            obj.total_distance = 0;
         end
         
         function update_ticks(obj, wheel_velocity, dt)
@@ -32,7 +35,9 @@ classdef WheelEncoder < handle
         
         function ticks = distance_to_ticks(obj, distance)
 %             ticks = ceil((distance*obj.radius*obj.ticks_per_rev)/(2*pi*obj.radius));
-            ticks = ceil((distance*obj.ticks_per_rev)/(2*pi));
+            obj.total_distance = obj.total_distance + distance;
+            ticks = round((obj.total_distance*obj.ticks_per_rev)/(2*pi));
+            obj.total_distance = obj.total_distance - obj.ticks_to_distance(ticks);
         end
         
         function distance = ticks_to_distance(obj, ticks)
