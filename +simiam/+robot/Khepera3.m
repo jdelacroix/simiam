@@ -25,26 +25,26 @@ classdef Khepera3 < simiam.robot.Robot
            obj = obj@simiam.robot.Robot(parent, pose);
            
            % Add surfaces: Khepera3 in top-down 2D view
-           k3_top_plate =  [ -0.031   0.043    1;
-                             -0.031  -0.043    1;
+           k3_top_plate =  [ -0.038   0.043    1;
+                             -0.038  -0.043    1;
                               0.033  -0.043    1;
                               0.052  -0.021    1;
                               0.057       0    1;
                               0.052   0.021    1;
                               0.033   0.043    1];
                           
-           k3_base =  [ -0.024   0.064    1;
-                         0.033   0.064    1;
-                         0.057   0.043    1;
-                         0.074   0.010    1;
-                         0.074  -0.010    1;
-                         0.057  -0.043    1;
-                         0.033  -0.064    1;
-                        -0.025  -0.064    1;
-                        -0.042  -0.043    1;
-                        -0.048  -0.010    1;
-                        -0.048   0.010    1;
-                        -0.042   0.043    1];
+           k3_base =  [ -0.025   0.063    1;
+                         0.030   0.063    1;
+                         0.053   0.043    1;
+                         0.070   0.010    1;
+                         0.070  -0.010    1;
+                         0.053  -0.043    1;
+                         0.030  -0.063    1;
+                        -0.025  -0.063    1;
+                        -0.044  -0.043    1;
+                        -0.052  -0.010    1;
+                        -0.052   0.010    1;
+                        -0.044   0.043    1];
             
             obj.add_surface(k3_base, [ 0.8 0.8 0.8 ]);
             obj.add_surface(k3_top_plate, [ 0.0 0.0 0.0 ]);
@@ -62,31 +62,31 @@ classdef Khepera3 < simiam.robot.Robot
             import simiam.robot.Khepera3;
             import simiam.ui.Pose2D;
             
-            ir_pose = Pose2D(-0.038, 0.048, Pose2D.deg2rad(128));
+            ir_pose = Pose2D(-0.038, 0.049, Pose2D.deg2rad(128));
             obj.ir_array(1) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), 'simiam.robot.Khepera3.ir_distance_to_raw');
             
-            ir_pose = Pose2D(0.019, 0.064, Pose2D.deg2rad(75));
+            ir_pose = Pose2D(0.017, 0.063, Pose2D.deg2rad(75));
             obj.ir_array(2) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), 'simiam.robot.Khepera3.ir_distance_to_raw');
             
-            ir_pose = Pose2D(0.050, 0.050, Pose2D.deg2rad(42));
+            ir_pose = Pose2D(0.051, 0.045, Pose2D.deg2rad(42));
             obj.ir_array(3) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), 'simiam.robot.Khepera3.ir_distance_to_raw');
             
-            ir_pose = Pose2D(0.070, 0.017, Pose2D.deg2rad(13));
+            ir_pose = Pose2D(0.067, 0.015, Pose2D.deg2rad(13));
             obj.ir_array(4) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), 'simiam.robot.Khepera3.ir_distance_to_raw');
             
-            ir_pose = Pose2D(0.070, -0.017, Pose2D.deg2rad(-13));
+            ir_pose = Pose2D(0.067, -0.015, Pose2D.deg2rad(-13));
             obj.ir_array(5) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), 'simiam.robot.Khepera3.ir_distance_to_raw');
             
-            ir_pose = Pose2D(0.050, -0.050, Pose2D.deg2rad(-42));
+            ir_pose = Pose2D(0.051, -0.045, Pose2D.deg2rad(-42));
             obj.ir_array(6) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), 'simiam.robot.Khepera3.ir_distance_to_raw');
             
-            ir_pose = Pose2D(0.019, -0.064, Pose2D.deg2rad(-75));
+            ir_pose = Pose2D(0.017, -0.063, Pose2D.deg2rad(-75));
             obj.ir_array(7) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), 'simiam.robot.Khepera3.ir_distance_to_raw');
             
-            ir_pose = Pose2D(-0.038, -0.048, Pose2D.deg2rad(-128));
+            ir_pose = Pose2D(-0.038, -0.049, Pose2D.deg2rad(-128));
             obj.ir_array(8) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), 'simiam.robot.Khepera3.ir_distance_to_raw');
             
-            ir_pose = Pose2D(-0.048, 0.000, Pose2D.deg2rad(180));
+            ir_pose = Pose2D(-0.052, 0.000, Pose2D.deg2rad(180));
             obj.ir_array(9) = ProximitySensor(parent, 'IR', pose, ir_pose, 0.02, 0.2, Pose2D.deg2rad(20), 'simiam.robot.Khepera3.ir_distance_to_raw');
             
             % Add dynamics: two-wheel differential drive
