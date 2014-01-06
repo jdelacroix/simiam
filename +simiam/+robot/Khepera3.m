@@ -50,10 +50,10 @@ classdef Khepera3 < simiam.robot.Robot
             obj.add_surface(k3_top_plate, [ 0.0 0.0 0.0 ]);
             
             % Add sensors: wheel encoders and IR proximity sensors
-            obj.wheel_radius = 0.021;           % 42mm
-            obj.wheel_base_length = 0.0885;     % 88.5mm
-            obj.ticks_per_rev = 2765;
-            obj.speed_factor = 6.2953e-6;
+            obj.wheel_radius = 0.0205;              % 41mm
+            obj.wheel_base_length = 0.08841;        % 88.41mm
+            obj.ticks_per_rev = 2764;               % 4198 if firmware >=3.0
+            obj.speed_factor = 1/144.01/1000;       % 218.72 if firmware >=3.0
             
             obj.encoders(1) = simiam.robot.sensor.WheelEncoder('right_wheel', obj.wheel_radius, obj.wheel_base_length, obj.ticks_per_rev);
             obj.encoders(2) = simiam.robot.sensor.WheelEncoder('left_wheel', obj.wheel_radius, obj.wheel_base_length, obj.ticks_per_rev);
@@ -141,10 +141,19 @@ classdef Khepera3 < simiam.robot.Robot
         
         function [vel_r, vel_l] = limit_speeds(obj, vel_r, vel_l)
             % actuator hardware limits
-            [v,w] = obj.dynamics.diff_to_uni(vel_r, vel_l);
-            v = max(min(v,0.314),-0.3148);
-            w = max(min(w,2.276),-2.2763);
-            [vel_r, vel_l] = obj.dynamics.uni_to_diff(v,w);
+            
+            %[v,w] = obj.dynamics.diff_to_uni(vel_r, vel_l);
+%             v = max(min(v,0.314),-0.3148);
+%             w = max(min(w,2.276),-2.2763);
+%             [vel_r, vel_l] = obj.dynamics.uni_to_diff(v,w);
+
+            sf = obj.speed_factor;
+            R = obj.wheel_radius;
+            
+            max_vel = 48000*(sf/R);
+            
+            vel_r = max(min(vel_r, max_vel), -max_vel);
+            vel_l = max(min(vel_l, max_vel), -max_vel);
         end
     end
     
