@@ -64,7 +64,6 @@ classdef Simulator < handle
             end
 
             split = obj.time_step;
-
 %             fprintf('***TIMING***\nsimulator split: %0.3fs, %0.3fHz\n', split, 1/split);
             
 %             tstart = tic;
