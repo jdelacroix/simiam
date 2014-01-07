@@ -12,6 +12,8 @@ classdef ProximitySensor < simiam.ui.Drawable
         location    % placement location on robot
         
         map         % if sensor is not natively [m], convert to [raw]
+        
+        noise_model
     end
     
     properties (Access = private)
@@ -45,17 +47,30 @@ classdef ProximitySensor < simiam.ui.Drawable
             obj.max_range = r_max;
             obj.min_range = r_min;
             
-            if ((nargin-7) == 1)
-                obj.map = str2func(varargin{1});
-            else
-                obj.map = str2func('simiam.robot.sensor.ProximitySensor.identity_map');
+            switch(length(varargin))
+                case 0 
+                    obj.map = str2func('simiam.robot.sensor.ProximitySensor.identity_map');
+                case 1 
+                    if (isa(varargin{1}, 'simiam.robot.sensor.noise.NoiseModel'))
+                        obj.map = str2func('simiam.robot.sensor.ProximitySensor.identity_map');
+                        obj.noise_model = varargin{1};
+                    else
+                        obj.map = str2func(varargin{1});
+                        obj.noise_model = simiam.robot.sensor.noise.GaussianNoise(0,0);
+                    end
+                case 2
+                    if (isa(varargin{1}, 'simiam.robot.sensor.noise.NoiseModel'))
+                        obj.map = str2func(varargin{2});
+                        obj.noise_model = varargin{1};
+                    else
+                        obj.map = str2func(varargin{1});
+                        obj.noise_model = varargin{2};
+                    end
             end
         end
                
         function update_range(obj, distance)
-            variance = 0.005;
-            noise = -variance+2*variance*rand();
-            obj.range = obj.limit_to_sensor(distance+noise);
+            obj.range = obj.limit_to_sensor(obj.noise_model.apply_noise(distance));
             
             r1 = distance*tan(obj.spread/4);
             r2 = distance*tan(obj.spread/2);
