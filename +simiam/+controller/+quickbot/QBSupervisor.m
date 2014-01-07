@@ -25,7 +25,9 @@ classdef QBSupervisor < simiam.controller.Supervisor
     
         prev_ticks          % Previous tick count on the left and right wheels
         v
-        theta_d
+        goal
+        
+        d_stop
 
         p
     end
@@ -38,7 +40,7 @@ classdef QBSupervisor < simiam.controller.Supervisor
             obj = obj@simiam.controller.Supervisor();
             
             % initialize the controllers
-            obj.controllers{1} = simiam.controller.GoToAngle();
+            obj.controllers{1} = simiam.controller.GoToGoal();
             obj.controllers{2} = simiam.controller.Stop();
             
             % set the initial controller
@@ -58,7 +60,9 @@ classdef QBSupervisor < simiam.controller.Supervisor
             obj.prev_ticks = struct('left', 0, 'right', 0);
             
             obj.v           = 0.1;
-            obj.theta_d     = pi/4;
+            obj.goal        = [-1,1];
+            
+            obj.d_stop      = 0.05;
                         
             obj.p = []; %simiam.util.Plotter();
             obj.current_controller.p = obj.p;
@@ -73,7 +77,12 @@ classdef QBSupervisor < simiam.controller.Supervisor
         
             inputs = obj.controllers{1}.inputs; 
             inputs.v = obj.v;
-            inputs.theta_d = obj.theta_d;
+            inputs.x_g = obj.goal(1);
+            inputs.y_g = obj.goal(2);
+            
+            if (obj.check_event('at_goal'))
+                obj.switch_to_state('stop');
+            end
                                     
             outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
                 

@@ -62,7 +62,9 @@ classdef Simulator < handle
             else
                 split = max(obj.time_step,get(obj.clock, 'InstantPeriod'));
             end
+
             split = obj.time_step;
+
 %             fprintf('***TIMING***\nsimulator split: %0.3fs, %0.3fHz\n', split, 1/split);
             
 %             tstart = tic;
@@ -72,6 +74,7 @@ classdef Simulator < handle
                 robot_s.supervisor.execute(split);
                 [x, y, theta] = robot_s.robot.update_state(robot_s.pose, split).unpack();
                 robot_s.pose.set_pose([x, y, theta]);
+                fprintf('current_pose: (%0.3f,%0.3f,%0.3f)\n', x, y, theta);
             end
 %             fprintf('controls: %0.3fs\n', toc(tstart));
             
