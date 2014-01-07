@@ -65,7 +65,7 @@ classdef QBSupervisor < simiam.controller.Supervisor
             
             obj.d_stop      = 0.05;
                         
-            obj.p = simiam.util.Plotter();
+            obj.p = []; %simiam.util.Plotter();
             obj.current_controller.p = obj.p;
         end
         
