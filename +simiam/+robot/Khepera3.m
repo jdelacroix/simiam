@@ -52,8 +52,16 @@ classdef Khepera3 < simiam.robot.Robot
             % Add sensors: wheel encoders and IR proximity sensors
             obj.wheel_radius = 0.0205;              % 41mm
             obj.wheel_base_length = 0.08841;        % 88.41mm
-            obj.ticks_per_rev = 2764;               % 4198 if firmware >=3.0
-            obj.speed_factor = 1/144.01/1000;       % 218.72 if firmware >=3.0
+            
+            obj.firmware_3_0_plus = false;
+            
+            if (obj.firmware_3_0_plus)
+                obj.ticks_per_rev = 4198;
+                obj.speed_factor = 1/218.72/1000;
+            else
+                obj.ticks_per_rev = 2764;               
+                obj.speed_factor = 1/144.01/1000;       
+            end
             
             obj.encoders(1) = simiam.robot.sensor.WheelEncoder('right_wheel', obj.wheel_radius, obj.wheel_base_length, obj.ticks_per_rev);
             obj.encoders(2) = simiam.robot.sensor.WheelEncoder('left_wheel', obj.wheel_radius, obj.wheel_base_length, obj.ticks_per_rev);
