@@ -42,10 +42,11 @@ classdef QBSupervisor < simiam.controller.Supervisor
             % initialize the controllers
             obj.controllers{1} = simiam.controller.GoToGoal();
             obj.controllers{2} = simiam.controller.Stop();
+            obj.controllers{3} = simiam.controller.AvoidObstacles();
             
             % set the initial controller
-            obj.current_controller = obj.controllers{1};
-            obj.current_state = 1;
+            obj.current_controller = obj.controllers{3};
+            obj.current_state = 3;
             
             % generate the set of states
             for i = 1:length(obj.controllers)
