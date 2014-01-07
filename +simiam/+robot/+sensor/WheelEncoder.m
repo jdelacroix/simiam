@@ -36,7 +36,7 @@ classdef WheelEncoder < handle
         function ticks = distance_to_ticks(obj, distance)
 %             ticks = ceil((distance*obj.radius*obj.ticks_per_rev)/(2*pi*obj.radius));
             obj.total_distance = obj.total_distance + distance;
-            ticks = ceil((obj.total_distance*obj.ticks_per_rev)/(2*pi));
+            ticks = round((obj.total_distance*obj.ticks_per_rev)/(2*pi));
             obj.total_distance = obj.total_distance - obj.ticks_to_distance(ticks);
         end
         
