@@ -13,6 +13,8 @@ classdef Khepera3 < simiam.robot.Robot
         ir_array = simiam.robot.sensor.ProximitySensor.empty(1,0);
         
         dynamics
+        
+        firmware_3_0_plus
     end
     
     properties (SetAccess = private)
