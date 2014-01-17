@@ -154,9 +154,9 @@ classdef QuickBot < simiam.robot.Robot
 
             
             % Add sensors: wheel encoders and IR proximity sensors
-            obj.wheel_radius = 0.0319;           % 63.8mm in diameter
+            obj.wheel_radius = 0.0325;           % 65.0mm in diameter
             obj.wheel_base_length = 0.09925;     % 99.25mm
-            obj.ticks_per_rev = 32;
+            obj.ticks_per_rev = 16;
             obj.speed_factor = 0;
             
             obj.encoders(1) = simiam.robot.sensor.WheelEncoder('right_wheel', obj.wheel_radius, obj.wheel_base_length, obj.ticks_per_rev);
