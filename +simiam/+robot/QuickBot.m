@@ -190,7 +190,9 @@ classdef QuickBot < simiam.robot.Robot
         
         function ir_distances = get_ir_distances(obj)
             ir_array_values = obj.ir_array.get_range();
-            ir_distances = 0.02-log(ir_array_values/3960)/30;
+            ir_voltages = ir_array_values/500;
+            coeff = [-0.0182 0.1689 -0.6270 1.1876 -1.2130 0.6301];
+            ir_distances = polyval(coeff, ir_voltages);
         end
         
         
@@ -236,11 +238,8 @@ classdef QuickBot < simiam.robot.Robot
     methods (Static)
         function raw = ir_distance_to_raw(varargin)
             distance = cell2mat(varargin);
-            if(distance < 0.02)
-                raw = 3960;
-            else
-                raw = ceil(3960*exp(-30*(distance-0.02)));
-            end
+            coeff = [-5.3245, 5.4518, -2.2089, 0.4511, -0.0491, 0.0027]*10^6;
+            raw = min(max(round(polyval(coeff, distance)), 200), 1375);
         end
     end
     
