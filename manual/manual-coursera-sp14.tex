@@ -165,7 +165,7 @@ The speed of the QuickBot can be set in the following way assuming that the \tex
  obj.robot.set_speeds(vel_r, vel_l);
 \end{verbatim}
 
-The maximum angular wheel velocity for the QuickBot is approximately ?. The maximum angular wheel velocities correspond to a maximum linear and angular velocity of ?. It is important to note that if the QuickBot is controlled ot move at maximum linear velocity, it is not possible to achieve any angular velocity, because the angular velocity of the wheel will have been maximized. Therefore, there exists a tradeoff between the linear and angular velocity of the QuickBot: \textit{the faster the robot should turn, the slower it has to move forward}.
+The maximum angular wheel velocity for the QuickBot is approximately 80 RPM or 8.37 rad/s. It is important to note that if the QuickBot is controlled ot move at maximum linear velocity, it is not possible to achieve any angular velocity, because the angular velocity of the wheel will have been maximized. Therefore, there exists a tradeoff between the linear and angular velocity of the QuickBot: \textit{the faster the robot should turn, the slower it has to move forward}.
 
 \subsection{Wheel Encoders}
 
@@ -188,16 +188,28 @@ For more information about odometry, see Section \ref{}.
 Start the simulator with the \texttt{launch} command in MATLAB from the command window. It is important that this command is executed inside the unzipped folder (but not inside any of its subdirectories).
 
 \begin{figure}[h]
- \centering
-%  \includegraphics[scale=0.35]{simiam.png}
- \caption{Simulator}
- \label{fig:k3_sim}
+  \centering
+  \begin{subfigure}{0.45\textwidth}
+    \includegraphics[width=\textwidth]{images/simiam-quickbot.png}
+    \caption{Simulator}
+    \label{fig:simulator}
+  \end{subfigure}
+  $\qquad$
+  \begin{subfigure}{0.4\textwidth}
+    \includegraphics[width=\textwidth]{images/simiam-submit.png}
+    \caption{Submission screen}
+    \label{fig:submission}
+  \end{subfigure}
+  \caption{\texttt{launch} starts the simulator, while \texttt{submit} brings up the submission tool.}
+  \label{fig:screens}
 \end{figure}
 
-Figure \ref{fig:k3_sim} is a screenshot of the graphical user interface (GUI) of the simulator. The GUI can be controlled by the bottom row of buttons (or their equivalent keyboard shortcuts). The first button is the \textit{Home} button \texttt{[h]} and returns you to the home screen. The second button is the \textit{Rewind} button and resets the simulation. The third button is the \textit{Play} button \texttt{[p]}, which can be used to play and pause the simulation. The set of \textit{Zoom} buttons \texttt{[[,]]} or the mouse scroll wheel allows you to zoom in and out to get a better view of the simulation. The set of \textit{Pan} buttons \texttt{[left,right,up,down]} can be used to pan around the environment, or alternatively, Clicking, holding, and moving the mouse allows you to pan too. \textit{Track} button \texttt{[c]} can be used to toggle between a fixed camera view and a view that tracks the movement of the robot. You can also simply click on a robot to follow it.
+Figure \ref{fig:simulator} is a screenshot of the graphical user interface (GUI) of the simulator. The GUI can be controlled by the bottom row of buttons. The first button is the \textit{Home} button and returns you to the home screen. The second button is the \textit{Rewind} button and resets the simulation. The third button is the \textit{Play} button, which can be used to play and pause the simulation. The set of \textit{Zoom} buttons or the mouse scroll wheel allows you to zoom in and out to get a better view of the simulation. Clicking, holding, and moving the mouse allows you to pan around the environment. You can click on a robot to follow it as it moves through the environment.
+
+Figure \ref{fig:submission} is a screenshot of the submission screen. Each assignment can be submitted to Coursera for automatic grading and feedback. Start the submission tool by typing \texttt{submit} into the MATLAB command window. Use your login and password from the \href{https://class.coursera.org/conrob-002/assignment/list}{\textit{Assignments}} page. Your Coursera login and password will \textbf{not} work. Select which parts of the assignments in the list you would like to submit, then click \textit{Submit to Coursera for Grading}. You will receive feedback, either a green checkmark for pass, or a red checkmark for fail. If you receive a red checkmark, check the MATLAB command window for a helpful message.
 
 \newpage
-\section{Programming Exercises}
+\section{Programming Assignments}
 
 The following sections serve as a tutorial for getting through the simulator portions of the programming exercises. Places where you need to either edit or add code is marked off by a set of comments. For example,
 
