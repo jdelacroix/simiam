@@ -104,8 +104,8 @@ classdef CourseraClient < handle
             ui_args = {'Style','pushbutton', 'String', button_string, 'ForegroundColor', 'k', 'FontWeight', 'bold', 'BackgroundColor', obj.ui_colors.gray, 'Callback', ''};
             ui_parent = obj.layout.Cell(2,1);
             aButtonLabel = uicontrol(ui_parent, ui_args{:});
-            set(findjobj(aButtonLabel), 'Border', []);
-            set(aButtonLabel, 'Enable', 'off');
+            set(findjobj(aButtonLabel), 'BorderPainted', 0);
+            set(aButtonLabel, 'Enable', 'inactive');
             
             ui_args = {'Style','edit', 'String', '', 'ForegroundColor', 'k', 'FontWeight', 'normal', 'BackgroundColor', obj.ui_colors.white, 'Callback', ''};
             ui_parent = obj.layout.Cell(2,2);
@@ -115,8 +115,8 @@ classdef CourseraClient < handle
             ui_args = {'Style','pushbutton', 'String', button_string, 'ForegroundColor', 'k', 'FontWeight', 'bold', 'BackgroundColor', obj.ui_colors.gray, 'Callback', ''};
             ui_parent = obj.layout.Cell(3,1);
             aButtonLabel = uicontrol(ui_parent, ui_args{:});
-            set(findjobj(aButtonLabel), 'Border', []);
-            set(aButtonLabel, 'Enable', 'off');
+            set(aButtonLabel, 'Enable', 'inactive');
+            set(findjobj(aButtonLabel), 'BorderPainted', 0);
             
             ui_args = {'Style','edit', 'String', '', 'ForegroundColor', 'k', 'FontWeight', 'normal', 'BackgroundColor', obj.ui_colors.white, 'Callback', ''};
             ui_parent = obj.layout.Cell(3,2);
@@ -132,15 +132,15 @@ classdef CourseraClient < handle
             ui_args = {'Style','pushbutton', 'String', button_string, 'ForegroundColor', 'k', 'FontWeight', 'bold', 'BackgroundColor', obj.ui_colors.gray, 'Callback', ''};
             ui_parent = obj.layout.Cell(1,1);
             aButtonLabel = uicontrol(ui_parent, ui_args{:});
-            set(findjobj(aButtonLabel), 'Border', []);
-            set(aButtonLabel, 'Enable', 'off');
+            set(findjobj(aButtonLabel), 'BorderPainted', 0);
+            set(aButtonLabel, 'Enable', 'inactive');
             
             button_string = '<html>Remember to use your submission login and password!</html>';
             ui_args = {'Style','pushbutton', 'String', button_string, 'ForegroundColor', 'k', 'FontWeight', 'bold', 'BackgroundColor', obj.ui_colors.gray, 'Callback', ''};
             ui_parent = obj.layout.Cell(1,2);
             aButtonLabel = uicontrol(ui_parent, ui_args{:});
-            set(findjobj(aButtonLabel), 'Border', []);
-            set(aButtonLabel, 'Enable', 'off');
+            set(findjobj(aButtonLabel), 'BorderPainted', 0);
+            set(aButtonLabel, 'Enable', 'inactive');
             
             
             
@@ -170,7 +170,7 @@ classdef CourseraClient < handle
                 ui_args = {'Style','edit', 'String', button_string, 'ForegroundColor', 'k', 'FontWeight', 'bold', 'BackgroundColor', obj.ui_colors.gray, 'HorizontalAlignment', 'left'};
                 ui_parent = obj.part_layout.Cell(i,2);
                 aButtonLabel = uicontrol(ui_parent, ui_args{:});
-%                 set(findjobj(aButtonLabel), 'Border', []);
+%                 set(findjobj(aButtonLabel), 'BorderPainted', 0);
                 set(aButtonLabel, 'Enable', 'inactive');
                 set(aButtonLabel, 'Max', 10);
 %                 set(aButtonLabel, 'HorizontalAlignment', 'left');
@@ -179,8 +179,8 @@ classdef CourseraClient < handle
                 ui_args = {'Style','pushbutton', 'String', button_string, 'ForegroundColor', 'k', 'FontWeight', 'bold', 'BackgroundColor', obj.ui_colors.gray, 'HorizontalAlignment', 'left'};
                 ui_parent = obj.part_layout.Cell(i,3);
                 aButtonLabel = uicontrol(ui_parent, ui_args{:});
-                set(findjobj(aButtonLabel), 'Border', []);
-                set(aButtonLabel, 'Enable', 'off');
+                set(findjobj(aButtonLabel), 'BorderPainted', 0);
+                set(aButtonLabel, 'Enable', 'inactive');
                 obj.ui_set_button_icon(aButtonLabel, 'ui_status_unknown.png');
                 part.status = aButtonLabel;
                 

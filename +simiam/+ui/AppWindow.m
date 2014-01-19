@@ -134,8 +134,8 @@ classdef AppWindow < handle
             ui_args = {'Style','pushbutton', 'String', button_string, 'ForegroundColor', 'w', 'FontWeight', 'bold', 'BackgroundColor', obj.ui_colors_.gray, 'Callback', @obj.ui_button_start};
             ui_parent = obj.layout_.Cell(2,1);
             obj.logo_ = uicontrol(ui_parent, ui_args{:});
-            set(obj.logo_, 'Enable', 'off');
-            set(findjobj(obj.logo_), 'Border', []);
+            set(obj.logo_, 'Enable', 'inactive');
+            set(findjobj(obj.logo_), 'BorderPainted', 0);
             set(obj.logo_, 'BackgroundColor', [96 184 206]/255);
             
             ui_args = {'Style','pushbutton', 'ForegroundColor', 'w', 'FontWeight', 'bold', 'Callback', @obj.ui_button_start};
@@ -172,20 +172,20 @@ classdef AppWindow < handle
             ui_args = {'Style', 'pushbutton', 'BackgroundColor', obj.ui_colors_.gray};
             ui_parent = obj.layout_.Cell(1,9);
             status = uicontrol(ui_parent, ui_args{:});
-            set(status, 'Enable', 'off');
-            set(findjobj(status), 'Border', []);
+            set(status, 'Enable', 'inactive');
+            set(findjobj(status), 'BorderPainted', 0);
             obj.ui_set_button_icon(status, 'ui_status_ok.png');
             
             ui_args = {'Style', 'pushbutton', 'BackgroundColor', obj.ui_colors_.gray};
             ui_parent = obj.layout_.Cell(1,10);
             clock = uicontrol(ui_parent, ui_args{:});
-            set(clock, 'Enable', 'off');
-            set(findjobj(clock), 'Border', []);
+            set(clock, 'Enable', 'inactive');
+            set(findjobj(clock), 'BorderPainted', 0);
             obj.ui_set_button_icon(clock, 'ui_status_clock.png');
             
             ui_args = {'Style', 'togglebutton', 'BackgroundColor', obj.ui_colors_.gray};
             time = uicontrol(obj.layout_.Cell(1,11), ui_args{:});
-            set(findjobj(time), 'Border', []);
+            set(findjobj(time), 'BorderPainted', 0);
             set(time, 'Value', true);
 
             obj.ui_buttons_ = struct('play', play, 'play_state', false, ...
@@ -233,7 +233,7 @@ classdef AppWindow < handle
                 set(ui_control_button, 'Enable', 'on');
                 set(ui_control_button, 'BackgroundColor', obj.ui_colors_.dgray);
             else
-                set(ui_control_button, 'Enable', 'off');
+                set(ui_control_button, 'Enable', 'inactive');
                 set(ui_control_button, 'BackgroundColor', obj.ui_colors_.lgray);
             end
         end
@@ -390,8 +390,8 @@ classdef AppWindow < handle
             ui_args = {'Style','pushbutton', 'String', button_string, 'ForegroundColor', 'w', 'FontWeight', 'bold', 'BackgroundColor', obj.ui_colors_.gray, 'Callback', @obj.ui_button_start};
             ui_parent = obj.layout_.Cell(2,1);
             obj.logo_ = uicontrol(ui_parent, ui_args{:});
-            set(obj.logo_, 'Enable', 'off');
-            set(findjobj(obj.logo_), 'Border', []);
+            set(obj.logo_, 'Enable', 'inactive');
+            set(findjobj(obj.logo_), 'BorderPainted', 0);
             set(obj.logo_, 'BackgroundColor', [96 184 206]/255);
             
             ui_parent_size = get(ui_parent, 'Position');

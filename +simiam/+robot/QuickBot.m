@@ -189,9 +189,10 @@ classdef QuickBot < simiam.robot.Robot
         end
         
         function ir_distances = get_ir_distances(obj)
+            % FIX conversion between IR raw and distances, SEE WEEK 2
             ir_array_values = obj.ir_array.get_range();
-            ir_voltages = ir_array_values/500;
-            coeff = [-0.0182 0.1689 -0.6270 1.1876 -1.2130 0.6301];
+            ir_voltages = ir_array_values;
+            coeff = [];
             ir_distances = polyval(coeff, ir_voltages);
         end
         
@@ -227,11 +228,12 @@ classdef QuickBot < simiam.robot.Robot
         end
         
         function [vel_r, vel_l] = limit_speeds(obj, vel_r, vel_l)
-            % actuator hardware limits
-            [v,w] = obj.dynamics.diff_to_uni(vel_r, vel_l);
-            v = max(min(v,0.314),-0.3148);
-            w = max(min(w,2.276),-2.2763);
-            [vel_r, vel_l] = obj.dynamics.uni_to_diff(v,w);
+            % actuator hardware limits            
+            max_rpm = 80;
+            max_vel = max_rpm*2*pi/60;
+            
+            vel_r = max(min(vel_r, max_vel), -max_vel);
+            vel_l = max(min(vel_l, max_vel), -max_vel);
         end
     end
     
