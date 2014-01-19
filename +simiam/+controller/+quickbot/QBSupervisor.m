@@ -21,8 +21,7 @@ classdef QBSupervisor < simiam.controller.Supervisor
         eventsd
         
         current_state
-    
-    
+
         prev_ticks          % Previous tick count on the left and right wheels
         v
         goal
@@ -40,13 +39,11 @@ classdef QBSupervisor < simiam.controller.Supervisor
             obj = obj@simiam.controller.Supervisor();
             
             % initialize the controllers
-            obj.controllers{1} = simiam.controller.GoToGoal();
-            obj.controllers{2} = simiam.controller.Stop();
-            obj.controllers{3} = simiam.controller.AvoidObstacles();
+            obj.controllers{1} = simiam.controller.Stop();
             
             % set the initial controller
-            obj.current_controller = obj.controllers{3};
-            obj.current_state = 3;
+            obj.current_controller = obj.controllers{1};
+            obj.current_state = 1;
             
             % generate the set of states
             for i = 1:length(obj.controllers)
@@ -60,11 +57,11 @@ classdef QBSupervisor < simiam.controller.Supervisor
                                
             obj.prev_ticks = struct('left', 0, 'right', 0);
             
-            obj.v           = 0.1;
-            obj.goal        = [-1,1];
+            obj.v           = 0.0;
+            obj.goal        = [0,0];
             
-            obj.d_stop      = 0.05;
-                        
+            obj.d_stop      = 0.05; % 5cm
+            
             obj.p = []; %simiam.util.Plotter();
             obj.current_controller.p = obj.p;
         end
@@ -181,13 +178,11 @@ classdef QBSupervisor < simiam.controller.Supervisor
             L = obj.robot.wheel_base_length;
             m_per_tick = (2*pi*R)/obj.robot.encoders(1).ticks_per_rev;
             
-            d_right = (right_ticks-prev_right_ticks)*m_per_tick;
-            d_left = (left_ticks-prev_left_ticks)*m_per_tick;
-            d_center = (d_right + d_left)/2;
+            % MISSING ODOMETRY IMPLEMENTATION, SEE WEEK 2
             
-            x_dt = d_center*cos(theta);
-            y_dt = d_center*sin(theta);
-            theta_dt = (d_right - d_left)/L;
+            x_dt = 0;
+            y_dt = 0;
+            theta_dt = 0;
             
             theta_new = theta + theta_dt;
             x_new = x + x_dt;
