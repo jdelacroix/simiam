@@ -231,4 +231,75 @@ This week's exercises will help you learn about MATLAB and robot simulator:
 \item Familiarize yourself with the simulator by reading this manual and downloading the robot simulator posted on the \href{https://class.coursera.org/conrob-002/wiki/ProgrammingAssignments}{\textit{Programming Assignments}} section on the Coursera page.
 \end{enumerate}
 
+\subsection{Week 2}
+Start by downloading the robot simulator for this week from the \href{https://github.com/jdelacroix/simiam/tags}{Week 2 programming assignment}. Before you can design and test controllers in the simulator, you will need to implement three components of the simulator:
+
+\begin{enumerate}
+ \item Implement the transformation from unicycle dynamics to differential drive dynamics, i.e. convert from $(v,\omega)$ to the right and left \textbf{angular} wheel speeds $(v_r,v_l)$.
+ 
+ In the simulator, $(v,\omega)$ corresponds to the variables \texttt{v} and \texttt{w}, while $(v_r,v_l)$ correspond to the variables \texttt{vel\_r} and \texttt{vel\_l}. The function used by the controllers to convert from unicycle dynamics to differential drive dynamics is located in \texttt{+simiam/+robot/+dynamics/DifferentialDrive.m}. The function is named \texttt{uni\_to\_diff}, and inside of this function you will need to define \texttt{vel\_r} ($v_r$) and \texttt{vel\_l} ($v_l$) in terms of \texttt{v}, \texttt{w}, \texttt{R}, and \texttt{L}. \texttt{R} is the radius of a wheel, and \texttt{L} is the distance separating the two wheels. Make sure to refer to Section \ref{diffdrive} on ``Differential Wheel Drive'' for the dynamics.
+ 
+ \item Implement odometry for the robot, such that as the robot moves around, its pose $(x,y,\theta)$ is estimated based on how far each of the wheels have turned. Assume that the robot starts at (0,0,0).
+ 
+ The tutorial located at \url{www.orcboard.org/wiki/images/1/1c/OdometryTutorial.pdf} covers how odometry is computed. The general idea behind odometry is to use wheel encoders to measure the distance the wheels have turned over a small period of time, and use this information to approximate the change in pose of the robot.
+
+ The pose of the robot is composed of its position $(x,y)$ and its orientation $\theta$ on a 2 dimensional plane (\textbf{note}: the video lecture may refer to robot's orientation as $\phi$). The currently estimated pose is stored in the variable \texttt{state\_estimate}, which bundles \texttt{x} ($x$), \texttt{y} ($y$), and \texttt{theta} ($\theta$). The robot updates the estimate of its pose by calling the \texttt{update\_odometry} function, which is located in \texttt{+simiam/+controller/+quickbot/QBSupervisor.m}. This function is called every \texttt{dt} seconds, where \texttt{dt} is $0.033$s (or a little more if the simulation is running slower).
+ \begin{verbatim}  
+  % Get wheel encoder ticks from the robot
+  right_ticks = obj.robot.encoders(1).ticks;
+  left_ticks = obj.robot.encoders(2).ticks;
+
+  % Recall the wheel encoder ticks from the last estimate
+  prev_right_ticks = obj.prev_ticks.right;
+  prev_left_ticks = obj.prev_ticks.left;
+
+  % Previous estimate 
+  [x, y, theta] = obj.state_estimate.unpack();
+
+  % Compute odometry here
+  R = obj.robot.wheel_radius;
+  L = obj.robot.wheel_base_length;
+  m_per_tick = (2*pi*R)/obj.robot.encoders(1).ticks_per_rev;\end{verbatim}
+  The above code is already provided so that you have all of the information needed to estimate the change in pose of the robot. \texttt{right\_ticks} and \texttt{left\_ticks} are the accumulated wheel encoder ticks of the right and left wheel. \texttt{prev\_right\_ticks} and \texttt{prev\_left\_ticks} are the wheel encoder ticks of the right and left wheel saved during the last call to \texttt{update\_odometry}. \texttt{R} is the radius of each wheel, and \texttt{L} is the distance separating the two wheels. \texttt{m\_per\_tick} is a constant that tells you how many meters a wheel covers with each tick of the wheel encoder. So, if you were to multiply \texttt{m\_per\_tick} by (\texttt{right\_ticks}-\texttt{prev\_right\_ticks}), you would get the distance travelled by the right wheel since the last estimate.
+  
+  Once you have computed the change in $(x,y,\theta)$ (let us denote the changes as \texttt{x\_dt}, \texttt{y\_dt}, and \texttt{theta\_dt}) , you need to update the estimate of the pose:
+  \begin{verbatim}
+    theta_new = theta + theta_d;
+    x_new = x + x_dt;
+    y_new = y + y_dt;\end{verbatim}
+ 
+ \item Read the "IR Range Sensors" section in the manual and take note of the table in Figure \ref{fig:ir-adc}, which maps distances (in meters) to raw IR values. Implement code that converts raw IR values to distances (in meters).
+ 
+ To retrieve the distances (in meters) measured by the IR proximity sensor, you will need to implement a conversion from the raw IR values to distances in the \texttt{get\_ir\_distances} function located in \texttt{+simiam/+robot/Quickbot.m}.
+ \begin{verbatim}
+  function ir_distances = get_ir_distances(obj)
+      ir_array_values = obj.ir_array.get_range();
+      ir_voltages = ir_array_values;
+      coeff = [];
+      ir_distances = polyval(coeff, ir_voltages);
+  end\end{verbatim}
+  The variable \texttt{ir\_array\_values} is an array of the IR raw values. Divide this array by $500$ to compute the \texttt{ir\_voltages} array. The \texttt{coeff} should be the coefficients returned by
+  \begin{verbatim}
+    coeff = polyfit(ir_voltages_from_table, ir_distances_from_table, 5);\end{verbatim}
+where the first input argument is an array of IR voltages from the table in Figure \ref{fig:ir-adc} and the second argument is an array of the corresponding distances from the table in Figure \ref{fig:ir-adc}. The third argument specifies that we will use a fifth-order polynomial to fit to the data. Instead of running this fit every time, execute the polyfit once in the MATLAB command line, and enter them manually on the third line, i.e. \texttt{coeff = [ ... ];}. If the coefficients are properly computed, then the last line will use polyval to convert from IR voltages to distances using a fifth-order polynomial using the coefficients in \texttt{coeff}. 
+ 
+\end{enumerate}
+
+\subsubsection*{How to test it all}
+
+To test your code, the simulator will is set to run a single P-regulator that will steer the robot to a particular angle (denoted $\theta_d$ or, in code, \texttt{theta\_d}). This P-regulator is implemented in \texttt{+simiam/+controller/} \texttt{GoToAngle.m}. If you want to change the linear velocity of the robot, or the angle to which it steers, edit the following two lines in \texttt{+simiam/+controller/+quickbot/QBSupervisor.m}
+ \begin{verbatim}
+  obj.theta_d = pi/4;
+  obj.v = 0.1; %m/s\end{verbatim}
+\begin{enumerate}
+  \item To test the transformation from unicycle to differential drive, first set \texttt{obj.theta\_d=0}. The robot should drive straight forward. Now, set \texttt{obj.theta\_d} to positive or negative $\frac{\pi}{4}$. If positive, the robot should start off by turning to its left, if negative it should start off by turning to its right. \textbf{Note}: If you haven't implemented odometry yet, the robot will just keep on turning in that direction.
+  \item To test the odometry, first make sure that the transformation from unicycle to differential drive works correctly. If so, set \texttt{obj.theta\_d} to some value, for example $\frac{\pi}{4}$, and the robot's P-regulator should steer the robot to that angle. You may also want to uncomment the \texttt{fprintf} statement in the \texttt{update\_odometry} function to print out the current estimate position to see if it make sense. Remember, the robot starts at $(x,y,\theta)=(0,0,0)$.
+  \item To test the IR raw to distances conversion, edit \texttt{+simiam/+controller/}\texttt{GoToAngle.m} and uncomment the following section:
+  \begin{verbatim}
+  % for i=1:numel(ir_distances)
+  %   fprintf('IR %d: %0.3fm\n', i, ir_distances(i));
+  % end\end{verbatim}
+  This \texttt{for} loop will print out the IR distances. If there are no obstacles (for example, walls) around the robot, these values should be close (if not equal to) $0.3$m. Once the robot gets within range of a wall, these values should decrease for some of the IR sensors (depending on which ones can sense the obstacle). \texttt{Note:} The robot will eventually collide with the wall, because we have not designed an obstacle avoidance controller yet!
+\end{enumerate}
+
 \end{document}
