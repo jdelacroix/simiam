@@ -36,6 +36,24 @@ classdef QuickBotDriver < handle
             end
         end
         
+        function terminate(obj)
+            if strcmp(get(obj.socket, 'Status'), 'closed')
+                fprintf('Terminate network connection to robot.\n');
+                fopen(obj.socket);
+
+                command = '$END*\n';
+                fprintf(obj.socket, command);
+                [reply, count] = fscanf(obj.socket);
+
+                if (count > 0) % && strcmp(reply, sprintf('Hello from QuickBot\n')))
+                    fprintf('Network connection is terminated.\n');
+                    obj.is_connected = false;
+                else
+                    fprintf('Network connection failed to terminate.\n');
+                end
+            end
+        end
+        
         function set_speeds(obj, vel_l, vel_r)
             if obj.is_connected
                 command = ['$PWM=' num2str(vel_l) ',' num2str(vel_r) '*\n'];
@@ -78,17 +96,27 @@ classdef QuickBotDriver < handle
                     reply_1 = regexp(reply,'\[-?([0-9]*|nan),', 'match');
                     reply_1 = regexprep(reply_1, '[\[,]', '');
                     
+                    reply_1
+                    
                     reply_2 = regexp(reply,', (-?[0-9]*|nan)', 'match');
                     reply_2 = regexprep(reply_2, '[, \]]', '');
+                    
+                    reply_2
                     
                     reply_3 = regexp(reply,', (-?[0-9]*|nan)', 'match');
                     reply_3 = regexprep(reply_3, '[, \]]', '');
                     
+                    reply_3
+                    
                     reply_4 = regexp(reply,', (-?[0-9]*|nan)', 'match');
                     reply_4 = regexprep(reply_4, '[, \]]', '');
                     
+                    reply_4
+                    
                     reply_5 = regexp(reply,', (-?[0-9]*|nan)\]', 'match');
                     reply_5 = regexprep(reply_5, '[, \]]', '');
+                    
+                    reply_5
                     
                     ir_voltages = [reply_1; reply_2; reply_3; reply_4; reply_5];
                 else
