@@ -14,7 +14,7 @@ function submit()
     end
     addpath(genpath(root_path));
 
-    s = simiam.ui.CourseraClient(pwd);
+    s = simiam.ui.CourseraClient(root_path);
     s.load_ui();
 
 end
