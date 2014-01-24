@@ -307,7 +307,7 @@ classdef CourseraClient < handle
                 'state', signature};
             
             submit_url = [obj.course_url '/assignment/submit'];
-            str = urlread(submit_url, 'post', params);
+            [str, status] = urlread(submit_url, 'post', params);
             
             % Parse str to read for success / failure
             result = -1;

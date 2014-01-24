@@ -56,7 +56,7 @@ classdef ProximitySensor < simiam.ui.Drawable
                         obj.noise_model = varargin{1};
                     else
                         obj.map = str2func(varargin{1});
-                        obj.noise_model = simiam.robot.sensor.noise.GaussianNoise(0,0);
+                        obj.noise_model = simiam.robot.sensor.noise.GaussianNoise(0,0.0);
                     end
                 case 2
                     if (isa(varargin{1}, 'simiam.robot.sensor.noise.NoiseModel'))

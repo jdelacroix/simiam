@@ -21,7 +21,7 @@ classdef World < handle
             obj.root_path = '';
         end
         
-        function build_from_file(obj, root, file, from_simulink)
+        function build_from_file(obj, root, file, origin)
             
             % Read in XML file
             blueprint = xmlread(file);
@@ -34,7 +34,7 @@ classdef World < handle
             r = str2func(strcat('simiam.app.', app));
             obj.apps.appendElement(r(root));
             
-            if(~from_simulink)
+            if(strcmp(origin, 'launcher') || strcmp(origin, 'testing'))
             
                 robot_list = blueprint.getElementsByTagName('robot');
 

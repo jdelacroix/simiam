@@ -191,8 +191,14 @@ classdef QuickBot < simiam.robot.Robot
         function ir_distances = get_ir_distances(obj)
             % FIX conversion between IR raw and distances, SEE WEEK 2
             ir_array_values = obj.ir_array.get_range();
+            
+            %% START CODE BLOCK %%
+            
             ir_voltages = ir_array_values;
-            coeff = [];
+            coeff = [0 0 0 0 0];
+            
+            %% END CODE BLOCK %%
+            
             ir_distances = polyval(coeff, ir_voltages);
         end
         

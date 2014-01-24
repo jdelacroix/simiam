@@ -34,13 +34,16 @@ classdef AppWindow < handle
         
         root_
         
-        from_simulink_
         is_state_crashed_
+        
+        origin_
     end
     
     methods
         
-        function obj = AppWindow(root, from_simulink)
+        function obj = AppWindow(root, origin)
+            
+            
             obj.root_ = root;
             obj.ui_colors_ = struct('gray',  [220 220 220]/255, ...
                                     'green', [ 57 200  67]/255, ...
@@ -61,7 +64,7 @@ classdef AppWindow < handle
             
             obj.time_ = 0;
             
-            obj.from_simulink_ = from_simulink;
+            obj.origin_ = origin;
             obj.is_state_crashed_ = false;
         end
         
@@ -71,21 +74,17 @@ classdef AppWindow < handle
         
         function create_simulator(obj, settings_file)
             world = simiam.simulator.World(obj.view_);
-            world.build_from_file(obj.root_, settings_file, obj.from_simulink_);
+            world.build_from_file(obj.root_, settings_file, obj.origin_);
             
-%             token_k = world.robots.head_;
-%             while(~isempty(token_k))
             nRobots = length(world.robots);
             for k = 1:nRobots
-%                 robot = token_k.key_.robot;
                 robot = world.robots.elementAt(k).robot;
                 set(robot.surfaces.head_.key_.handle_, 'ButtonDownFcn', {@obj.ui_focus_view,robot});
                 set(robot.surfaces.tail_.key_.handle_, 'ButtonDownFcn', {@obj.ui_focus_view,robot});
-%                 token_k = token_k.next_;
             end
             
-            obj.simulator_ = simiam.simulator.Simulator(obj, world, 0.05, obj.from_simulink_);
-            obj.simulator_.step([],[]);
+            obj.simulator_ = simiam.simulator.Simulator(obj, world, 0.05, obj.origin_);
+            obj.ui_update(0, obj.simulator_.physics.apply_physics());
         end
         
         function create_layout(obj)
@@ -115,7 +114,6 @@ classdef AppWindow < handle
             set(obj.layout_.Container, 'BackgroundColor', obj.ui_colors_.gray);
             MergeCells(obj.layout_, [2 3], [1 11]);            
             Update(obj.layout_);
-
             
             % Create UI buttons
             icon_file = fullfile(obj.root_, 'resources/splash/simiam_splash.png');
@@ -206,7 +204,7 @@ classdef AppWindow < handle
                               
             Update(obj.layout_);
             
-            if(obj.from_simulink_)
+            if(strcmp(obj.origin_, 'simulink') || strcmp(obj.origin_, 'testing'))
                 obj.ui_toggle_control(play, false);
                 obj.ui_toggle_control(refresh, false);
                 obj.ui_toggle_control(load, false);
@@ -260,7 +258,7 @@ classdef AppWindow < handle
             if (is_state_crashed)
                 obj.simulator_.stop();
                 obj.ui_set_button_icon(obj.ui_buttons_.status, 'ui_status_error.png');
-                if(~obj.from_simulink_)
+                if strcmp(obj.origin_, 'launcher')
                     obj.ui_toggle_control(obj.ui_buttons_.refresh, true);
                 end
                 obj.ui_toggle_control(obj.ui_buttons_.play, false);
@@ -284,14 +282,6 @@ classdef AppWindow < handle
         end
         
         function ui_button_start(obj, src, event)
-%             [filename, pathname] = uigetfile({'*.xml', 'XML file'}, 'Load a world for the simulator.');
-%             if (isequal(filename, 0) || isequal(pathname, 0))
-% %                 delete(obj.parent_);
-%                 warning('No file was selected.');
-%                 return
-%             end          
-%             simiam.ui.AppWindow().load_ui(fullfile(pathname, filename));
-%             delete(obj.parent_);
 
             % Create ui main view
             delete(obj.logo_);
@@ -341,7 +331,7 @@ classdef AppWindow < handle
             set(obj.ui_buttons_.play, 'Callback', @obj.ui_button_play);
             
             obj.is_ready_ = true;
-            if(~obj.from_simulink_)
+            if strcmp(obj.origin_, 'launcher')
                 obj.ui_toggle_control(obj.ui_buttons_.load, true);
             else
                 obj.ui_toggle_control(obj.ui_buttons_.play, false);

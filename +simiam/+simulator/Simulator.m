@@ -25,13 +25,13 @@ classdef Simulator < handle
         world           % A virtual world for the simulator
         physics
         
-        from_simulink
+        origin
     end
     
     methods
         %% METHODS
         
-        function obj = Simulator(parent, world, time_step, from_simulink)
+        function obj = Simulator(parent, world, time_step, origin)
         %% SIMULATOR Constructor
         %   obj = Simulator(parent, time_step) is the default constructor
         %   that sets the graphics handle and the time step for the
@@ -39,7 +39,7 @@ classdef Simulator < handle
         
             obj.parent = parent;
             obj.time_step = time_step;
-            if(~from_simulink)
+            if(strcmp(origin, 'launcher'))
                 obj.clock = timer('Period', obj.time_step, ...
                                   'TimerFcn', @obj.step, ...
                                   'ExecutionMode', 'fixedRate', ...
@@ -49,36 +49,38 @@ classdef Simulator < handle
             end
             obj.world = world;
             obj.physics = simiam.simulator.Physics(world);
-            obj.from_simulink = from_simulink;
+            obj.origin = origin;
         end
         
         function step(obj, src, event)
         %% STEP Executes one time step of the simulation.
         %   step(obj, src, event) is the timer callback which is executed
         %   once every time_step seconds.
-            
-            if(obj.from_simulink)
-                split = obj.time_step;
-            else
-                split = max(obj.time_step,get(obj.clock, 'InstantPeriod'));
-            end
+        
+%             if(strcmp(obj.origin, 'launcher'))
+%                 split = obj.time_step;
+%             else
+%                 split = max(obj.time_step,get(obj.clock, 'InstantPeriod'));
+%             end
 
             split = obj.time_step;
-%             fprintf('***TIMING***\nsimulator split: %0.3fs, %0.3fHz\n', split, 1/split);
+            fprintf('***TIMING***\nsimulator split: %0.3fs, %0.3fHz\n', split, 1/split);
             
 %             tstart = tic;
             nRobots = length(obj.world.robots);
             for k = 1:nRobots
                 robot_s = obj.world.robots.elementAt(k);
-                robot_s.supervisor.execute(split);
+                
                 [x, y, theta] = robot_s.robot.update_state(robot_s.pose, split).unpack();
                 robot_s.pose.set_pose([x, y, theta]);
                 fprintf('current_pose: (%0.3f,%0.3f,%0.3f)\n', x, y, theta);
+                
+                robot_s.supervisor.execute(split);
             end
 %             fprintf('controls: %0.3fs\n', toc(tstart));
             
 %             tstart = tic;
-            if obj.from_simulink
+            if strcmp(obj.origin, 'simulink')
                 % skip
             else
                 anApp = obj.world.apps.elementAt(1);
@@ -102,20 +104,20 @@ classdef Simulator < handle
         
         function start(obj)
         %% START Starts the simulation.
-            if(~obj.from_simulink)
+            if strcmp(obj.origin, 'launcher');
                 start(obj.clock);
             end
         end
         
         function stop(obj)
         %% STOP Stops the simulation.
-            if(~obj.from_simulink)
+            if strcmp(obj.origin, 'launcher')
                 stop(obj.clock);
             end
         end
         
         function shutdown(obj)
-            if(~obj.from_simulink)
+            if strcmp(obj.origin, 'launcher')
                 obj.stop();
                 delete(obj.clock);
             end

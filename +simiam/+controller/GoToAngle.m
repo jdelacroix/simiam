@@ -65,7 +65,7 @@ classdef GoToAngle < simiam.controller.Controller
             w = obj.Kp*e_k;
             
             % plot
-            obj.p.plot_2d_ref(dt, atan2(sin(theta),cos(theta)), theta_d, 'g');
+%             obj.p.plot_2d_ref(dt, atan2(sin(theta),cos(theta)), theta_d, 'g');
             
             % print IR measured distances
             ir_distances = robot.get_ir_distances();
