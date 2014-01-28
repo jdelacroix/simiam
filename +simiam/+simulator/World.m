@@ -52,6 +52,14 @@ classdef World < handle
                    theta = str2double(pose.getAttribute('theta'));         
 
                    obj.add_robot(type, spv, x, y, theta);
+                   
+                   driver = robot.getElementsByTagName('driver').item(0);
+                   if(~isempty(driver) && strcmp(origin, 'hardware'))
+                       hostname = char(driver.getAttribute('ip'));
+                       port = str2double(driver.getAttribute('port'));
+                       r.add_hardware_link(hostname,port);
+                       r.open_hardware_link();
+                   end
                 end
             end
             

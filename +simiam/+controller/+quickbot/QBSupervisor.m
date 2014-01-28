@@ -172,9 +172,15 @@ classdef QBSupervisor < simiam.controller.Supervisor
             
             %% START CODE BLOCK %%
             
-            x_dt = 0;
-            y_dt = 0;
-            theta_dt = 0;
+            d_right = (right_ticks-prev_right_ticks)*m_per_tick;
+            d_left = (left_ticks-prev_left_ticks)*m_per_tick;
+            
+            d_center = (d_right + d_left)/2;
+            phi = (d_right - d_left)/L;
+            
+            x_dt = d_center*cos(theta);
+            y_dt = d_center*sin(theta);
+            theta_dt = phi;
             
             %% END CODE BLOCK %%
             

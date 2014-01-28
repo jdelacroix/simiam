@@ -25,6 +25,17 @@ classdef Robot < simiam.ui.Drawable
             obj.supervisor = supervisor;
             supervisor.attach_robot(obj);
         end
+        
+        % Hardware connectivty related functions        
+        function open_hardware_link(obj)
+            obj.driver.init();
+            obj.islinked = true;
+        end
+        
+        function close_hardware_link(obj)
+            obj.islinked = false;
+            obj.driver.close();
+        end
     end
     
 end

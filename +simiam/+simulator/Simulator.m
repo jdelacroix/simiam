@@ -113,12 +113,18 @@ classdef Simulator < handle
         %% STOP Stops the simulation.
             if strcmp(obj.origin, 'launcher')
                 stop(obj.clock);
+            elseif strcmp(obj.origin, 'hardware');
+                nRobots = length(obj.world.robots);
+                for k = 1:nRobots
+                    robot_s = obj.world.robots.elementAt(k);
+                    robot_s.robot.close_hardware_link();
+                end
             end
         end
         
         function shutdown(obj)
+            obj.stop();
             if strcmp(obj.origin, 'launcher')
-                obj.stop();
                 delete(obj.clock);
             end
         end

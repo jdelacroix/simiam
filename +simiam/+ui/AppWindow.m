@@ -73,6 +73,10 @@ classdef AppWindow < handle
         end
         
         function create_simulator(obj, settings_file)
+            if (strcmp(obj.origin_, 'launcher') && obj.ui_buttons_.hardware_state)
+                obj.origin_ = 'hardware';
+            end
+            
             world = simiam.simulator.World(obj.view_);
             world.build_from_file(obj.root_, settings_file, obj.origin_);
             
@@ -83,7 +87,7 @@ classdef AppWindow < handle
                 set(robot.surfaces.tail_.key_.handle_, 'ButtonDownFcn', {@obj.ui_focus_view,robot});
             end
             
-            obj.simulator_ = simiam.simulator.Simulator(obj, world, 0.05, obj.origin_);
+            obj.simulator_ = simiam.simulator.Simulator(obj, world, 0.25, obj.origin_);
             obj.ui_update(0, obj.simulator_.physics.apply_physics());
         end
         
@@ -166,6 +170,11 @@ classdef AppWindow < handle
             obj.ui_set_button_icon(zoom_out, 'ui_control_zoom_out.png');
             obj.ui_toggle_control(zoom_out, false);
             
+            ui_args = {'Style','togglebutton', 'ForegroundColor', 'w', 'FontWeight', 'bold', 'Callback', @obj.ui_button_hardware};
+            ui_parent = obj.layout_.Cell(4,7);
+            hardware = uicontrol(ui_parent, ui_args{:});
+            obj.ui_set_button_icon(hardware, 'ui_control_hardware.png');
+            obj.ui_toggle_control(hardware, true);           
             
             ui_args = {'Style', 'pushbutton', 'BackgroundColor', obj.ui_colors_.gray};
             ui_parent = obj.layout_.Cell(1,9);
@@ -185,14 +194,17 @@ classdef AppWindow < handle
             time = uicontrol(obj.layout_.Cell(1,11), ui_args{:});
             set(findjobj(time), 'BorderPainted', 0);
             set(time, 'Value', true);
+            
+            
 
             obj.ui_buttons_ = struct('play', play, 'play_state', false, ...
-                         'refresh', refresh, ...
-                         'load', load, ...
-                         'status', status, ...
-                         'time', time, ...
-                         'zoom_in', zoom_in, ...
-                         'zoom_out', zoom_out); 
+                                     'refresh', refresh, ...
+                                     'load', load, ...
+                                     'status', status, ...
+                                     'time', time, ...
+                                     'zoom_in', zoom_in, ...
+                                     'zoom_out', zoom_out, ...
+                                     'hardware', hardware, 'hardware_state', false); 
             obj.ui_update_clock(0);
 
             % Set minimum size for figure
@@ -279,6 +291,11 @@ classdef AppWindow < handle
             obj.ui_button_home(src, event);
             obj.ui_button_start(src, event);
             obj.is_state_crashed_ = false;
+        end
+        
+        function ui_button_hardware(obj, src, event)
+            toggle_value = get(src, 'Value');
+            obj.ui_buttons_.hardware_state = toggle_value;
         end
         
         function ui_button_start(obj, src, event)

@@ -13,6 +13,7 @@ classdef QuickBot < simiam.robot.Robot
         ir_array = simiam.robot.sensor.ProximitySensor.empty(1,0);
         
         dynamics
+        prev_ticks
     end
     
     properties (SetAccess = private)
@@ -186,6 +187,8 @@ classdef QuickBot < simiam.robot.Robot
             
             obj.right_wheel_speed = 0;
             obj.left_wheel_speed = 0;
+            
+            obj.prev_ticks = struct('left', 0, 'right', 0);
         end
         
         function ir_distances = get_ir_distances(obj)
@@ -194,12 +197,68 @@ classdef QuickBot < simiam.robot.Robot
             
             %% START CODE BLOCK %%
             
-            ir_voltages = ir_array_values;
-            coeff = [0 0 0 0 0];
+            ir_voltages = ir_array_values./500;
+            coeff = [-0.0182 0.1690 -0.6264 1.1853 -1.2104 0.6293];
             
             %% END CODE BLOCK %%
             
             ir_distances = polyval(coeff, ir_voltages);
+        end
+        
+        % Hardware connectivty related functions
+        function add_hardware_link(obj, hostname, port)
+            obj.driver = simiam.robot.driver.QuickBotDriver(hostname, port);
+        end
+        
+        function pose = update_state_from_hardware(obj, pose, dt)
+            encoder_ticks = obj.driver.get_encoder_ticks();
+            
+            if (~isempty(encoder_ticks))
+                obj.encoders(2).ticks = encoder_ticks(1);
+                obj.encoders(1).ticks = encoder_ticks(2);
+            end
+
+            ir_raw_values = obj.driver.get_ir_raw_values();
+            
+            if (~isempty(ir_raw_values))
+                ir_voltages = ir_raw_values/500;
+                coeff = [-0.0182 0.1690 -0.6264 1.1853 -1.2104 0.6293];
+                ir_distances = polyval(coeff, ir_voltages);
+                
+                for i = 1:numel(obj.ir_array)
+                    obj.ir_array.update_range(ir_distances(i));
+                end
+            end
+                
+            obj.driver.set_speed(obj.right_wheel_speed, obj.left_wheel_speed);
+        end
+        
+        function pose_k_1 = update_pose_from_hardware(obj, pose)
+            right_ticks = obj.encoders(1).ticks;
+            left_ticks = obj.encoders(2).ticks;
+            
+            prev_right_ticks = obj.prev_ticks.right;
+            prev_left_ticks = obj.prev_ticks.left;
+            
+            obj.prev_ticks.right = right_ticks;
+            obj.prev_ticks.left = left_ticks;
+            
+            [x, y, theta] = pose.unpack();
+                        
+            m_per_tick = (2*pi*obj.wheel_radius)/obj.encoders(1).ticks_per_rev;
+            
+            d_right = (right_ticks-prev_right_ticks)*m_per_tick;
+            d_left = (left_ticks-prev_left_ticks)*m_per_tick;
+            
+            d_center = (d_right + d_left)/2;
+            phi = (d_right - d_left)/obj.wheel_base_length;
+            
+            theta_new = theta + phi;
+            x_new = x + d_center*cos(theta);
+            y_new = y + d_center*sin(theta);
+                                       
+            % Update your estimate of (x,y,theta)
+            pose_k_1 = simiam.ui.Pose2D(x_new, y_new, theta_new);
         end
         
         
