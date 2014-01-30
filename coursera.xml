@@ -15,6 +15,7 @@
     <assignment week="3">
         <part identifier="pKyj9jyA" title="Arriving at the goal location" test="week3.Part1Test" />
         <part identifier="2aZEky7h" title="Tuning the PID gains for performance" test="week3.Part2Test" />
+        <part identifier="BlIrXfQO" title="Reshaping the output for the hardware" test="week3.Part3Test" />
     </assignment>
     
 </coversheet>
