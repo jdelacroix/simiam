@@ -14,9 +14,8 @@ classdef World < handle
     methods
         function obj = World(parent)
             obj.parent = parent;
-%             obj.robots = mcodekit.list.dl_list(); %struct('robot', {}, 'pose', {});
             obj.robots = simiam.containers.ArrayList(10);
-            obj.obstacles = mcodekit.list.dl_list(); %struct('obstacle', {}, 'pose', {});
+            obj.obstacles = mcodekit.list.dl_list();
             obj.apps = simiam.containers.ArrayList(10);
             obj.root_path = '';
         end
@@ -34,7 +33,7 @@ classdef World < handle
             r = str2func(strcat('simiam.app.', app));
             obj.apps.appendElement(r(root));
             
-            if(strcmp(origin, 'launcher') || strcmp(origin, 'testing'))
+            if(strcmp(origin, 'launcher') || strcmp(origin, 'testing') || strcmp(origin, 'hardware'))
             
                 robot_list = blueprint.getElementsByTagName('robot');
 
@@ -51,7 +50,7 @@ classdef World < handle
                    y = str2double(pose.getAttribute('y'));
                    theta = str2double(pose.getAttribute('theta'));         
 
-                   obj.add_robot(type, spv, x, y, theta);
+                   r = obj.add_robot(type, spv, x, y, theta);
                    
                    driver = robot.getElementsByTagName('driver').item(0);
                    if(~isempty(driver) && strcmp(origin, 'hardware'))

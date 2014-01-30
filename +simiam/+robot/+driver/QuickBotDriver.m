@@ -30,13 +30,14 @@ classdef QuickBotDriver < handle
                 if (count > 0 && strcmp(reply, sprintf('Hello from QuickBot\n')))
                     fprintf('Network connection is live.\n');
                     obj.is_connected = true;
+                    obj.reset();
                 else
                     fprintf('Network connection failed.\n');
                 end
             end
         end
         
-        function set_speeds(obj, vel_l, vel_r)
+        function set_speeds(obj, vel_r, vel_l)
             if obj.is_connected
                 command = ['$PWM=' num2str(vel_l) ',' num2str(vel_r) '*\n'];
                 fprintf(obj.socket, command);
@@ -44,9 +45,8 @@ classdef QuickBotDriver < handle
         end
         
         function reset(obj)
-            if strcmp(get(obj.socket, 'Status'), 'closed')
+            if strcmp(get(obj.socket, 'Status'), 'open')
                 fprintf('Reset state of the QuickBot.\n');
-                fopen(obj.socket);
 
                 command = '$RESET*\n';
                 fprintf(obj.socket, command);
@@ -124,6 +124,7 @@ classdef QuickBotDriver < handle
         
         function obj = close(obj)
             if strcmp(get(obj.socket, 'Status'), 'open')
+                obj.set_speeds(0,0);
                 fprintf('Closing network connection to robot.\n');
                 fclose(obj.socket);
                 obj.is_connected = false;

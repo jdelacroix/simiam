@@ -4,7 +4,7 @@
     <robot type="QuickBot">
         <supervisor type="quickbot.QBSupervisor" />
         <pose x="0" y="0" theta="0" />
-        <driver ip="192.168.7.2" port="5005" />
+        <driver ip="192.168.1.101" port="5005" />
     </robot>
     
     <obstacle>

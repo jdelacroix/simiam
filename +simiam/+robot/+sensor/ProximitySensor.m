@@ -70,7 +70,8 @@ classdef ProximitySensor < simiam.ui.Drawable
         end
                
         function update_range(obj, distance)
-            obj.range = obj.limit_to_sensor(obj.noise_model.apply_noise(distance));
+            obj.range = obj.limit_to_sensor(obj.noise_model.apply_noise(distance));            
+            distance = obj.range;
             
             r1 = distance*tan(obj.spread/4);
             r2 = distance*tan(obj.spread/2);

@@ -194,12 +194,11 @@ classdef QuickBot < simiam.robot.Robot
         end
         
         function ir_distances = get_ir_distances(obj)
-            % FIX conversion between IR raw and distances, SEE WEEK 2
             ir_array_values = obj.ir_array.get_range();
             
             %% START CODE BLOCK %%
             
-            ir_voltages = ir_array_values./500;
+            ir_voltages = ir_array_values*3/1000;
             coeff = [-0.0182 0.1690 -0.6264 1.1853 -1.2104 0.6293];
             
             %% END CODE BLOCK %%
@@ -212,27 +211,39 @@ classdef QuickBot < simiam.robot.Robot
             obj.driver = simiam.robot.driver.QuickBotDriver(hostname, port);
         end
         
-        function pose = update_state_from_hardware(obj, pose, dt)
+        function pose_new = update_state_from_hardware(obj, pose, dt)
+            
+            tstart = tic;
             encoder_ticks = obj.driver.get_encoder_ticks();
             
             if (~isempty(encoder_ticks))
                 obj.encoders(2).ticks = encoder_ticks(1);
                 obj.encoders(1).ticks = encoder_ticks(2);
             end
-
+            
             ir_raw_values = obj.driver.get_ir_raw_values();
+            fprintf('TIMIING HARDWARE: %0.3fs\n', toc(tstart));
             
             if (~isempty(ir_raw_values))
-                ir_voltages = ir_raw_values/500;
+                ir_voltages = ir_raw_values*3/1000;
                 coeff = [-0.0182 0.1690 -0.6264 1.1853 -1.2104 0.6293];
                 ir_distances = polyval(coeff, ir_voltages);
                 
                 for i = 1:numel(obj.ir_array)
-                    obj.ir_array.update_range(ir_distances(i));
+                    obj.ir_array(i).update_range(ir_distances(i));
                 end
             end
-                
-            obj.driver.set_speed(obj.right_wheel_speed, obj.left_wheel_speed);
+            
+%             obj.driver.set_speeds(obj.right_wheel_speed, obj.left_wheel_speed);
+            obj.driver.set_speeds(65,50);
+            
+            pose_new = obj.update_pose_from_hardware(pose);
+            
+            obj.update_pose(pose_new);
+            
+            for k=1:length(obj.ir_array)
+                obj.ir_array(k).update_pose(pose_new);
+            end
         end
         
         function pose_k_1 = update_pose_from_hardware(obj, pose)
@@ -305,7 +316,8 @@ classdef QuickBot < simiam.robot.Robot
         function raw = ir_distance_to_raw(varargin)
             distance = cell2mat(varargin);
             coeff = [-5.3245, 5.4518, -2.2089, 0.4511, -0.0491, 0.0027]*10^6;
-            raw = min(max(round(polyval(coeff, distance)), 200), 1375);
+            voltages = min(max(round(polyval(coeff, distance)), 200), 1375);
+            raw = voltages*1000/3;
         end
     end
     
