@@ -234,8 +234,18 @@ classdef QuickBot < simiam.robot.Robot
                 end
             end
             
-%             obj.driver.set_speeds(obj.right_wheel_speed, obj.left_wheel_speed);
-            obj.driver.set_speeds(65,50);
+            right_rps = obj.right_wheel_speed/(2*pi);
+            left_rps = obj.left_wheel_speed/(2*pi);
+            
+            beta = [0.0425, -0.9504];
+            
+            right_pwm = sign(right_rps)*(abs(right_rps)-beta(2))/beta(1);
+            left_pwm = sign(left_rps)*(abs(left_rps)-beta(2))/beta(1);
+
+            right_pwm = max(min(round(right_pwm), 100), -100);
+            left_pwm = max(min(round(left_pwm), 100), -100);
+            
+            obj.driver.set_speeds(right_pwm, left_pwm);
             
             pose_new = obj.update_pose_from_hardware(pose);
             

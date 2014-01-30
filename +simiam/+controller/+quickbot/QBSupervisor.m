@@ -65,7 +65,7 @@ classdef QBSupervisor < simiam.controller.Supervisor
             
             obj.theta_d     = pi/4;
             obj.v           = 0.1;
-            obj.goal        = [-1, 1];
+            obj.goal        = [1, 0];
             obj.d_stop      = 0.05;
             
             obj.p = simiam.util.Plotter();
