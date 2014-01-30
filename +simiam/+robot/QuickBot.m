@@ -7,7 +7,7 @@ classdef QuickBot < simiam.robot.Robot
         wheel_radius
         wheel_base_length
         ticks_per_rev
-        speed_factor
+        max_vel
         
         encoders = simiam.robot.sensor.WheelEncoder.empty(1,0);
         ir_array = simiam.robot.sensor.ProximitySensor.empty(1,0);
@@ -158,7 +158,9 @@ classdef QuickBot < simiam.robot.Robot
             obj.wheel_radius = 0.0325;           % 65.0mm in diameter
             obj.wheel_base_length = 0.09925;     % 99.25mm
             obj.ticks_per_rev = 16;
-            obj.speed_factor = 0;
+            
+            max_rpm = 80;
+            obj.max_vel = max_rpm*2*pi/60;
             
             obj.encoders(1) = simiam.robot.sensor.WheelEncoder('right_wheel', obj.wheel_radius, obj.wheel_base_length, obj.ticks_per_rev);
             obj.encoders(2) = simiam.robot.sensor.WheelEncoder('left_wheel', obj.wheel_radius, obj.wheel_base_length, obj.ticks_per_rev);
@@ -294,11 +296,8 @@ classdef QuickBot < simiam.robot.Robot
         
         function [vel_r, vel_l] = limit_speeds(obj, vel_r, vel_l)
             % actuator hardware limits            
-            max_rpm = 80;
-            max_vel = max_rpm*2*pi/60;
-            
-            vel_r = max(min(vel_r, max_vel), -max_vel);
-            vel_l = max(min(vel_l, max_vel), -max_vel);
+            vel_r = max(min(vel_r, obj.max_vel), -obj.max_vel);
+            vel_l = max(min(vel_l, obj.max_vel), -obj.max_vel);
         end
     end
     

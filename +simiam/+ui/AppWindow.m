@@ -87,7 +87,7 @@ classdef AppWindow < handle
                 set(robot.surfaces.tail_.key_.handle_, 'ButtonDownFcn', {@obj.ui_focus_view,robot});
             end
             
-            obj.simulator_ = simiam.simulator.Simulator(obj, world, 0.25, obj.origin_);
+            obj.simulator_ = simiam.simulator.Simulator(obj, world, 0.05, obj.origin_);
             obj.ui_update(0, obj.simulator_.physics.apply_physics());
         end
         

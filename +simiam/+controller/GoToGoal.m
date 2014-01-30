@@ -40,16 +40,16 @@ classdef GoToGoal < simiam.controller.Controller
             obj = obj@simiam.controller.Controller('go_to_goal');
             
             % initialize memory banks
-            obj.Kp = 5;
-            obj.Ki = 0.01;
-            obj.Kd = 0.1;
+            obj.Kp = 1;
+            obj.Ki = 1;
+            obj.Kd = 0;
                         
             % errors
             obj.E_k = 0;
             obj.e_k_1 = 0;
             
             % plot support
-            obj.p = [];     % simiam.util.Plotter();
+            obj.p = [];
         end
         
         function outputs = execute(obj, robot, state_estimate, inputs, dt)
@@ -113,9 +113,6 @@ classdef GoToGoal < simiam.controller.Controller
             
             % plot
             obj.p.plot_2d_ref(dt, atan2(sin(theta),cos(theta)), theta_g, 'r');
-            
-            % velocity control            
-            v =  0.25/(log(abs(w)+2)+1); % = inputs.v;
             
             outputs = obj.outputs;  % make a copy of the output struct
             outputs.v = v;
