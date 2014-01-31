@@ -94,20 +94,20 @@ You will have access to the array of five IR sensors that encompass the QuickBot
        \hline
        Distance (m) & Voltage (V) & ADC Out\\
        \hline
-       0.04 & 2.750 & 1375 \\
-       0.05 & 2.350 & 1175 \\
-       0.06 & 2.050 & 1025 \\
-       0.07 & 1.750 & 875 \\
-       0.08 & 1.550 & 775 \\
-       0.09 & 1.400 & 700 \\
-       0.10 & 1.275 & 637 \\
-       0.12 & 1.075 & 537 \\
-       0.14 & 0.925 & 462 \\
-       0.16 & 0.805 & 402 \\
-       0.18 & 0.725 & 362 \\
-       0.20 & 0.650 & 325 \\
-       0.25 & 0.500 & 250 \\
-       0.30 & 0.400 & 200 \\
+       0.04 & 2.750 & 917 \\
+       0.05 & 2.350 & 783 \\
+       0.06 & 2.050 & 683 \\
+       0.07 & 1.750 & 583 \\
+       0.08 & 1.550 & 517 \\
+       0.09 & 1.400 & 467 \\
+       0.10 & 1.275 & 425 \\
+       0.12 & 1.075 & 358 \\
+       0.14 & 0.925 & 308 \\
+       0.16 & 0.805 & 268 \\
+       0.18 & 0.725 & 242 \\
+       0.20 & 0.650 & 217 \\
+       0.25 & 0.500 & 167 \\
+       0.30 & 0.400 & 133 \\
        \hline
     \end{tabular}
   \end{center}
@@ -130,10 +130,10 @@ Any controller can access the IR array through the \texttt{robot} object that is
 It is assumed that the function \texttt{get\_ir\_distances} properly converts from the ADC output to an analog output voltage, and then from the analog output voltage to a distance in meters. The conversion from ADC output to analog output voltage is simply,
 
 \begin{equation*}
-  V_{\text{ADC}} = \frac{1000\cdot V_{\text{analog}}}{2} = 500\cdot V_{\text{analog}}
+  V_{\text{ADC}} = \left\lfloor\frac{1000\cdot V_{\text{analog}}}{3}\right\rceil
 \end{equation*}
 
-Converting from the the analog output voltage to a distance is a little bit more complicated, because a) the relationships between analog output voltage and distance is not linear, and b) the look-up table provides a coarse sample of points on the curve in Figure \ref{fig:ir-volts-meters}. MATLAB has a \texttt{polyfit} function to fit a curve to the values in the look-up table, and a \texttt{polyval} function to interpolate a point on that fitted curve. The combination of the these two functions can be use to approximate a distance based on the analog output voltage. For more information, see Section \ref{}.
+Converting from the the analog output voltage to a distance is a little bit more complicated, because a) the relationships between analog output voltage and distance is not linear, and b) the look-up table provides a coarse sample of points on the curve in Figure \ref{fig:ir-volts-meters}. MATLAB has a \texttt{polyfit} function to fit a curve to the values in the look-up table, and a \texttt{polyval} function to interpolate a point on that fitted curve. The combination of the these two functions can be use to approximate a distance based on the analog output voltage. For more information, see Section \ref{sec:week-2}.
 
 It is important to note that the IR proximity sensor on the actual QuickBot will be influenced by ambient lighting and other sources of interference. For example, under different ambient lighting conditions, the same analog output voltage may correspond to different distances of an object from the IR proximity sensor. This effect of ambient lighting (and other sources of noise) is \textbf{not} modelled in the simulator, but will be apparent on the actual hardware.
 
@@ -180,7 +180,7 @@ Each of the wheels is outfitted with a wheel encoder that increments or decremen
  fprintf('The left wheel has a tick count of %d\n', robot.encoders(2).state);
 \end{verbatim}
 
-For more information about odometry, see Section \ref{}.
+For more information about odometry, see Section \ref{sec:week-2}.
 
 \newpage
 \section{Simulator}
@@ -232,7 +232,8 @@ This week's exercises will help you learn about MATLAB and robot simulator:
 \end{enumerate}
 
 \subsection{Week 2}
-Start by downloading the robot simulator for this week from the \href{https://github.com/jdelacroix/simiam/tags}{Week 2 programming assignment}. Before you can design and test controllers in the simulator, you will need to implement three components of the simulator:
+\label{sec:week-2}
+Start by downloading the robot simulator for this week from the \href{https://class.coursera.org/conrob-002/assignment/view?assignment_id=5}{Week 2 programming assignment}. Before you can design and test controllers in the simulator, you will need to implement three components of the simulator:
 
 \begin{enumerate}
  \item Implement the transformation from unicycle dynamics to differential drive dynamics, i.e. convert from $(v,\omega)$ to the right and left \textbf{angular} wheel speeds $(v_r,v_l)$.
@@ -300,6 +301,56 @@ To test your code, the simulator will is set to run a single P-regulator that wi
   %   fprintf('IR %d: %0.3fm\n', i, ir_distances(i));
   % end\end{verbatim}
   This \texttt{for} loop will print out the IR distances. If there are no obstacles (for example, walls) around the robot, these values should be close (if not equal to) $0.3$m. Once the robot gets within range of a wall, these values should decrease for some of the IR sensors (depending on which ones can sense the obstacle). \texttt{Note:} The robot will eventually collide with the wall, because we have not designed an obstacle avoidance controller yet!
+\end{enumerate}
+
+\subsection{Week 3}
+
+Start by downloading the new robot simulator for this week from the \href{}{Week 3 programming assignment}. This week you will be implementing the different parts of a PID regulator that steers the robot successfully to some goal location. This is known as the go-to-goal behavior:
+
+\begin{enumerate}
+ \item Calculate the heading (angle), $\theta_g$, to the goal location $(x_g,y_g)$. Let $u$ be the vector from the robot located at $(x,y)$ to the goal located at $(x_g,y_g)$, then $\theta_g$ is the angle $u$ makes with the $x$-axis (positive $\theta_g$ is in the counterclockwise direction).
+
+All parts of the PID regulator will be implemented in the file \texttt{+simiam/+controller/GoToGoal.m}. Take note that each of the three parts is commented to help you figure out where to code each part. The vector $u$ can be expressed in terms of its $x$-component, $u_x$, and its $y$-component, $u_y$. $u_x$ should be assigned to \texttt{u\_x} and $u_y$ to \texttt{u\_y} in the code. Use these two components and the \texttt{atan2} function to compute the angle to the goal, $\theta_g$ (\texttt{theta\_g} in the code).
+
+
+ \item Calculate the error between $\theta_g$ and the current heading of the robot, $\theta$.
+ 
+ The error \texttt{e\_k} should represent the error between the heading to the goal \texttt{theta\_g} and the current heading of the robot \texttt{theta}. Make sure to use \texttt{atan2} and/or other functions to keep the error between $[-\pi,\pi]$.
+ 
+ \item Calculate the proportional, integral, and derivative terms for the PID regulator that steers the robot to the goal.
+ 
+ As before, the robot will drive at a constant linear velocity \texttt{v}, but it is up to the PID regulator to steer the robot to the goal, i.e compute the correct angular velocity \texttt{w}. The PID regulator needs three parts implemented:
+ 
+  \begin{enumerate}[(i)]
+    \item The first part is the proportional term \texttt{e\_P}. It is simply the current error \texttt{e\_k}. \texttt{e\_P} is multiplied by the proportional gain \texttt{obj.Kp} when computing \texttt{w}.
+    \item The second part is the integral term \texttt{e\_I}. The integral needs to be approximated in discrete time using the total accumulated error \texttt{obj.E\_k}, the current error \texttt{e\_k}, and the time step \texttt{dt}. \texttt{e\_I} is multiplied by the integral gain \texttt{obj.Ki} when computing \texttt{w}, and is also saved as \texttt{obj.E\_k} for the next time step.
+    \item The third part is the derivative term \texttt{e\_D}. The derivative needs to be approximated in discrete time using the current error \texttt{e\_k}, the previous error \texttt{obj.e\_k\_1}, and the the time step \texttt{dt}. \texttt{e\_D} is multiplied by the derivative gain \texttt{obj.Kd} when computing \texttt{w}, and the current error \texttt{e\_k} is saved as the previous error \texttt{obj.e\_k\_1} for the next time step.
+  \end{enumerate}
+\end{enumerate}
+
+\subsection*{How to test it all}
+
+To test your code, the simulator is set up to use the PID regulator in \texttt{GoToGoal.m} to drive the robot to a goal location and stop. If you want to change the linear velocity of the robot, the goal location, or the distance from the goal the robot will stop, then edit the following three lines in \texttt{+simiam/+controller/} \texttt{+khepera3/K3Supervisor.m}.
+  \begin{verbatim}
+    obj.goal = [-1,0.5];
+    obj.v = 0.1;
+    obj.d_stop = 0.02;\end{verbatim}
+Make sure the goal is located inside the walls, i.e. the $x$ and $y$ coordinates of the goal should be in the range $[-1,1]$. Otherwise the robot will crash into a wall on its way to the goal!
+
+\begin{enumerate}
+  \item To test the heading to the goal, set the goal location to \texttt{obj.goal = [1,1]}. \texttt{theta\_g} should be approximately $\frac{\pi}{4} \approx 0.785$ initially, and as the robot moves forward (since $v=0.1$ and $\omega=0$) \texttt{theta\_g} should increase. Check it using a \texttt{fprintf} statment or the plot that pops up. \texttt{theta\_g} corresponds to the red dashed line (i.e., it is the reference signal for the PID regulator).
+  \item Test this part with the implementation of the third part.
+  \item To test the third part, run the simulator and check if the robot drives to the goal location and stops. In the plot, the blue solid line (\texttt{theta}) should match up with the red dashed line (\texttt{theta\_g}). You may also use \texttt{fprintf} statements to verify that the robot stops within \texttt{obj.d\_stop} meters of the goal location.
+\end{enumerate}
+
+\subsection*{How to migrate your solutions from last week.}
+
+Here are a few pointers to help you migrate your own solutions from last week to this week's simulator code. You only need to pay attention to this section if you want to use your own solutions, otherwise you can use what is provided for this week and skip this section.
+
+\begin{enumerate}
+ \item You may overwrite \texttt{+simiam/+robot/+dynamics/DifferentialDrive.m} with your own version from last week.
+ \item You should not overwrite \texttt{+simiam/+robot/QuickBot.m} with your own version from last week.
+ \item You should not overwrite \texttt{+simiam/+controller/+khepera3/K3Supervisor.m}! However, to use your own solution to the odometry, you can replace the provided \texttt{update\_odometry} function in \texttt{K3Supervisor.m} with your own version from last week.
 \end{enumerate}
 
 \end{document}
