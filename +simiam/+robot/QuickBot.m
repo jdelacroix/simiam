@@ -159,7 +159,7 @@ classdef QuickBot < simiam.robot.Robot
             obj.wheel_base_length = 0.09925;     % 99.25mm
             obj.ticks_per_rev = 16;
             
-            max_rpm = 190;
+            max_rpm = 80;
             obj.max_vel = max_rpm*2*pi/60;
             
             obj.encoders(1) = simiam.robot.sensor.WheelEncoder('right_wheel', obj.wheel_radius, obj.wheel_base_length, obj.ticks_per_rev);
@@ -324,10 +324,19 @@ classdef QuickBot < simiam.robot.Robot
     
     methods (Static)
         function raw = ir_distance_to_raw(varargin)
-            distance = cell2mat(varargin);
-            coeff = [-5.3245, 5.4518, -2.2089, 0.4511, -0.0491, 0.0027]*10^6;
-            voltages = min(max(round(polyval(coeff, distance)), 200), 1375);
-            raw = voltages*1000/3;
+            distances = cell2mat(varargin);
+            nSensors = numel(distances);
+            
+%             coeff = [-10749        10994      -4448.1       906.57      -98.411       5.4958];
+            coeff = [-10749.324, 10994.428, -4448.079, 906.570, -98.411, 5.496];
+            
+            voltages = zeros(nSensors, 1);
+            for i = 1:nSensors
+                voltages(i) = polyval(coeff, distances(i));
+                fprintf('%0.3f, %0.3f\n', distances(i), voltages(i));
+            end
+                
+            raw = min(max(round(voltages*1000/3), 133), 917);
         end
     end
     

@@ -46,10 +46,12 @@ classdef QBSupervisor < simiam.controller.Supervisor
             obj.controllers{1} = simiam.controller.Stop();
             obj.controllers{2} = simiam.controller.GoToAngle();
             obj.controllers{3} = simiam.controller.GoToGoal();
+            obj.controllers{4} = simiam.controller.AvoidObstacles();
+            obj.controllers{5} = simiam.controller.AvoidFrontImpact();
             
             % set the initial controller
-            obj.current_controller = obj.controllers{3};
-            obj.current_state = 3;
+            obj.current_controller = obj.controllers{5};
+            obj.current_state = 5;
             
             % generate the set of states
             for i = 1:length(obj.controllers)
@@ -64,7 +66,7 @@ classdef QBSupervisor < simiam.controller.Supervisor
             obj.prev_ticks = struct('left', 0, 'right', 0);
             
             obj.theta_d     = pi/4;
-            obj.v           = 0.4;
+            obj.v           = 0.2;
             obj.goal        = [0.5, 0];
             obj.d_stop      = 0.05;
             
@@ -79,14 +81,12 @@ classdef QBSupervisor < simiam.controller.Supervisor
         %
         %   See also controller/execute
         
-            inputs = obj.controllers{3}.inputs; 
+            inputs = obj.controllers{4}.inputs; 
             inputs.v = obj.v;
-            inputs.x_g = obj.goal(1);
-            inputs.y_g = obj.goal(2);
             
-            if obj.check_event('at_goal')
-                obj.switch_to_state('stop');
-            end
+%             if obj.check_event('at_goal')
+%                 obj.switch_to_state('stop');
+%             end
             
             outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
                 
@@ -107,10 +107,6 @@ classdef QBSupervisor < simiam.controller.Supervisor
             
             % Test distance from goal
             if norm([x - obj.goal(1); y - obj.goal(2)]) < obj.d_stop
-                rc = true;
-            end
-            
-            if abs(x-obj.goal(1)) < obj.d_stop
                 rc = true;
             end
         end
