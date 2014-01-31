@@ -64,8 +64,8 @@ classdef QBSupervisor < simiam.controller.Supervisor
             obj.prev_ticks = struct('left', 0, 'right', 0);
             
             obj.theta_d     = pi/4;
-            obj.v           = 0.1;
-            obj.goal        = [1, 0];
+            obj.v           = 0.4;
+            obj.goal        = [0.5, 0];
             obj.d_stop      = 0.05;
             
             obj.p = simiam.util.Plotter();
@@ -109,6 +109,10 @@ classdef QBSupervisor < simiam.controller.Supervisor
             if norm([x - obj.goal(1); y - obj.goal(2)]) < obj.d_stop
                 rc = true;
             end
+            
+            if abs(x-obj.goal(1)) < obj.d_stop
+                rc = true;
+            end
         end
         
         %% Output shaping
@@ -140,6 +144,8 @@ classdef QBSupervisor < simiam.controller.Supervisor
                 vel_r = vel_r_d;
                 vel_l = vel_l_d;
             end
+            
+            
         end
         
         

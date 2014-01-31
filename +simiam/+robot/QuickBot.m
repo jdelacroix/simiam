@@ -159,7 +159,7 @@ classdef QuickBot < simiam.robot.Robot
             obj.wheel_base_length = 0.09925;     % 99.25mm
             obj.ticks_per_rev = 16;
             
-            max_rpm = 80;
+            max_rpm = 190;
             obj.max_vel = max_rpm*2*pi/60;
             
             obj.encoders(1) = simiam.robot.sensor.WheelEncoder('right_wheel', obj.wheel_radius, obj.wheel_base_length, obj.ticks_per_rev);

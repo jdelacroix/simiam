@@ -40,7 +40,7 @@ classdef GoToGoal < simiam.controller.Controller
             obj = obj@simiam.controller.Controller('go_to_goal');
             
             % initialize memory banks
-            obj.Kp = 2;
+            obj.Kp = 5;
             obj.Ki = 0.01;
             obj.Kd = 0.01;
                         
@@ -116,7 +116,7 @@ classdef GoToGoal < simiam.controller.Controller
             
             outputs = obj.outputs;  % make a copy of the output struct
             outputs.v = v;
-            outputs.w = w;
+            outputs.w = 0;
         end
         
     end
