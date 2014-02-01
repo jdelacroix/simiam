@@ -377,11 +377,11 @@ Figure \ref{fig:pid-undershoot} demonstrates undershoot, which could be fixed by
 
 \subsection*{How to test it all}
 
-To test your code, the simulator is set up to use the PID regulator in \texttt{GoToGoal.m} to drive the robot to a goal location and stop. If you want to change the linear velocity of the robot, the goal location, or the distance from the goal the robot will stop, then edit the following three lines in \texttt{+simiam/+controller/} \texttt{+khepera3/K3Supervisor.m}.
+To test your code, the simulator is set up to use the PID regulator in \texttt{GoToGoal.m} to drive the robot to a goal location and stop. If you want to change the linear velocity of the robot, the goal location, or the distance from the goal the robot will stop, then edit the following three lines in \texttt{+simiam/+controller/} \texttt{+quickbot/QBSupervisor.m}.
   \begin{verbatim}
-    obj.goal = [-1,0.5];
-    obj.v = 0.1;
-    obj.d_stop = 0.02;\end{verbatim}
+    obj.goal = [-1,1];
+    obj.v = 0.2;
+    obj.d_stop = 0.05;\end{verbatim}
 Make sure the goal is located inside the walls, i.e. the $x$ and $y$ coordinates of the goal should be in the range $[-1,1]$. Otherwise the robot will crash into a wall on its way to the goal!
 
 \begin{enumerate}
