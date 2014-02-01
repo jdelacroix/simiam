@@ -324,10 +324,18 @@ classdef QuickBot < simiam.robot.Robot
     
     methods (Static)
         function raw = ir_distance_to_raw(varargin)
-            distance = cell2mat(varargin);
-            coeff = [-5.3245, 5.4518, -2.2089, 0.4511, -0.0491, 0.0027]*10^6;
-            voltages = min(max(round(polyval(coeff, distance)), 200), 1375);
-            raw = voltages*1000/3;
+            distances = cell2mat(varargin);
+            nSensors = numel(distances);
+            
+            coeff = [-10749.324, 10994.428, -4448.079, 906.570, -98.411, 5.496];
+            
+            voltages = zeros(nSensors, 1);
+            for i = 1:nSensors
+                voltages(i) = polyval(coeff, distances(i));
+                fprintf('%0.3f, %0.3f\n', distances(i), voltages(i));
+            end
+                
+            raw = min(max(round(voltages*1000/3), 133), 917);
         end
     end
     
