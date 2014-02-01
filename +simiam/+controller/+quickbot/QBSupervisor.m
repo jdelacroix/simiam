@@ -64,8 +64,8 @@ classdef QBSupervisor < simiam.controller.Supervisor
             obj.prev_ticks = struct('left', 0, 'right', 0);
             
             obj.theta_d     = pi/4;
-            obj.v           = 0.4;
-            obj.goal        = [0.5, 0];
+            obj.v           = 0.2;
+            obj.goal        = [-1, 1];
             obj.d_stop      = 0.05;
             
             obj.p = simiam.util.Plotter();
@@ -109,10 +109,6 @@ classdef QBSupervisor < simiam.controller.Supervisor
             if norm([x - obj.goal(1); y - obj.goal(2)]) < obj.d_stop
                 rc = true;
             end
-            
-            if abs(x-obj.goal(1)) < obj.d_stop
-                rc = true;
-            end
         end
         
         %% Output shaping
@@ -128,24 +124,30 @@ classdef QBSupervisor < simiam.controller.Supervisor
             
             % 2. Compute desired vel_r, vel_l needed to ensure w
             [vel_r_d, vel_l_d] = obj.robot.dynamics.uni_to_diff(v,w);
-            
+                        
             % 3. Find the max and min vel_r/vel_l
             vel_rl_max = max(vel_r_d, vel_l_d);
             vel_rl_min = min(vel_r_d, vel_l_d);
             
             % 4. Shift vel_r and vel_l if they exceed max/min vel
+            
+            %% START CODE BLOCK %%
+            
             if (vel_rl_max > obj.robot.max_vel)
-                vel_r = vel_r_d - (vel_rl_max-obj.robot.max_vel);
-                vel_l = vel_l_d - (vel_rl_max-obj.robot.max_vel);
+                vel_r = vel_r_d - 0;
+                vel_l = vel_l_d - 0;
             elseif (vel_rl_min < -obj.robot.max_vel)
-                vel_r = vel_r_d + (-obj.robot.max_vel-vel_rl_min);
-                vel_l = vel_l_d + (-obj.robot.max_vel-vel_rl_min);
+                vel_r = vel_r_d - 0;
+                vel_l = vel_l_d - 0;
             else
                 vel_r = vel_r_d;
                 vel_l = vel_l_d;
             end
             
+            %% END CODE BLOCK %%
             
+            % 5. Limit to hardware
+            [vel_r, vel_l] = obj.robot.limit_speeds(vel_r, vel_l);
         end
         
         

@@ -25,22 +25,27 @@ classdef Part1Test < simiam.test.PartTest
             robot_s = app.simulator_.world.robots.elementAt(1);
             robot_s.supervisor.v = v;
             robot_s.supervisor.goal = [x_g, y_g];
-            
+
             timeS = 30;
             nSteps = timeS/app.simulator_.time_step;
+            arrival = false;
             for i = 1:nSteps
                 app.simulator_.step([],[]);
 %                 pause(app.simulator_.time_step);
-                if (robot_s.supervisor.check_event('at_goal'))
+                [x, y, theta] = robot_s.pose.unpack();
+                if (norm([x - x_g; y - y_g]) < 0.05)
+                    arrival = true;
+                    break;
+                elseif app.is_state_crashed_
                     break;
                 end
             end
             
-            
+            fprintf('Test: (x_g,y_g)=(%0.3f,%0.3f); Result (x,y)=(%0.3f,%0.3f)\n', x_g, y_g, x, y);
             
             % Export percent error between actual and estimated pose
             
-            result = sprintf('%d', robot_s.supervisor.check_event('at_goal'))
+            result = sprintf('%d', arrival);
             
             app.ui_close();
         end

@@ -31,7 +31,8 @@ classdef Part2Test < simiam.test.PartTest
             for i = 1:nSteps
                 app.simulator_.step([],[]);
 %                 pause(app.simulator_.time_step);
-                if (robot_s.supervisor.check_event('at_goal'))
+                [x, y, theta] = robot_s.pose.unpack();
+                if ((norm([x - x_g; y - y_g]) < 0.05) || app.is_state_crashed_)
                     break;
                 end
             end
@@ -41,6 +42,8 @@ classdef Part2Test < simiam.test.PartTest
             r = robot_s.supervisor.p.r;
             
             result = simiam.test.week3.Part2Test.process_data(t, app.simulator_.time_step, r, y);
+            
+            fprintf('Test: (x_g,y_g)=(%0.3f,%0.3f); Result: (settle time, percent overshoot)=(%s)\n', x_g, y_g, result);
             
             app.ui_close();
         end
@@ -67,12 +70,16 @@ classdef Part2Test < simiam.test.PartTest
             
             fprintf('settle time: %0.3fs\n', settle_time_k*dt);
             
-            [max_y, i] = max(y);
-            po = abs(r(i)-max_y)/r(i);
+            [min_y, i] = min(y);
+            po = abs(r(i)-min_y)/r(i);
             
-            fprintf('percent overshoot: %0.3f\n', po);
+            if isnan(po)
+                po = 1.000;
+            end
             
-            result = sprintf('%0.3f,%0.3f', settle_time_k*dt, po);
+            fprintf('percent overshoot: %0.3f\n', abs(po));
+            
+            result = sprintf('%0.3f,%0.3f', settle_time_k*dt, abs(po));
         end
     end
     

@@ -20,23 +20,16 @@ classdef Part3Test < simiam.test.PartTest
             app.load_ui();
             
             robot_s = app.simulator_.world.robots.elementAt(1);
-            
+
             [vel_r, vel_l] = robot_s.supervisor.ensure_w(robot_s.robot, v, w);
             [v_s, w_s] = robot_s.robot.dynamics.diff_to_uni(vel_r, vel_l);
-            
-%             [vel_r_us, vel_l_us] = robot_s.robot.dynamics.uni_to_diff(v, w);
-%             [vel_r_us, vel_l_us] = robot_s.robot.limit_speeds(vel_r_us, vel_l_us);
-%             [v_us, w_us] = robot_s.robot.dynamics.diff_to_uni(vel_r_us, vel_l_us);
-            
-            w
-            w_s
-%             w_us
-%             v_us
-            
+
             p_error = (w-w_s)/w;
             
-            result = sprintf('%0.3f', p_error);
+            fprintf('Test: (v,w)=(%0.3f,%0.3f); Result: (v,w)=(%0.3f,%0.3f)\n', v, w, v_s, w_s);
             
+            result = sprintf('%0.3f', abs(p_error));
+            close(get(robot_s.supervisor.p.a, 'Parent'));
             app.ui_close();
         end
     end

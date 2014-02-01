@@ -40,9 +40,9 @@ classdef GoToGoal < simiam.controller.Controller
             obj = obj@simiam.controller.Controller('go_to_goal');
             
             % initialize memory banks
-            obj.Kp = 5;
-            obj.Ki = 0.01;
-            obj.Kd = 0.01;
+            obj.Kp = 0;
+            obj.Ki = 0;
+            obj.Kd = 0;
                         
             % errors
             obj.E_k = 0;
@@ -71,39 +71,41 @@ classdef GoToGoal < simiam.controller.Controller
             % Compute the v,w that will get you to the goal
             v = inputs.v;
             
+            %% START CODE BLOCK %%
+            
             % 1. Calculate the heading (angle) to the goal.
             
             % distance between goal and robot in x-direction
-            u_x = x_g-x;     
+            u_x = 0;     
                 
             % distance between goal and robot in y-direction
-            u_y = y_g-y;
+            u_y = 0;
                 
             % angle from robot to goal. Hint: use ATAN2, u_x, u_y here.
-            theta_g = atan2(u_y,u_x);
+            theta_g = 0;
             
             % 2. Calculate the heading error.
             
             % error between the goal angle and robot's angle
             % Hint: Use ATAN2 to make sure this stays in [-pi,pi].
-            e_k = theta_g-theta;
-            e_k = atan2(sin(e_k),cos(e_k));
-            
+            e_k = 0;            
                 
             % 3. Calculate PID for the steering angle 
             
             % error for the proportional term
-            e_P = e_k;
+            e_P = 0;
             
             % error for the integral term. Hint: Approximate the integral using
             % the accumulated error, obj.E_k, and the error for
             % this time step, e_k.
-            e_I = obj.E_k + e_k*dt;
+            e_I = 0;
                      
             % error for the derivative term. Hint: Approximate the derivative
             % using the previous error, obj.e_k_1, and the
             % error for this time step, e_k.
-            e_D = (e_k-obj.e_k_1)/dt;    
+            e_D = 0;    
+            
+            %% END CODE BLOCK %%
                   
             w = obj.Kp*e_P + obj.Ki*e_I + obj.Kd*e_D;
             
@@ -116,7 +118,7 @@ classdef GoToGoal < simiam.controller.Controller
             
             outputs = obj.outputs;  % make a copy of the output struct
             outputs.v = v;
-            outputs.w = 0;
+            outputs.w = w;
         end
         
     end
