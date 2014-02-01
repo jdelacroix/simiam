@@ -356,7 +356,7 @@ Figure \ref{fig:pid-undershoot} demonstrates undershoot, which could be fixed by
 \end{figure}
 
   
-  \item Ensure that the robot steers with an angular velocity $\omega$, even if the combination of $v$ and $\omega$ exceeds the maximum angular velocity of the robot.
+  \item Ensure that the robot steers with an angular velocity $\omega$, even if the combination of $v$ and $\omega$ exceeds the maximum angular velocity of the robot's motors.
   
   This week we'll tackle the first of two limitations of the motors on the QuickBot. The first limitation is that the robot's motors have a maximum angular velocity, and the second limitation is that the motors stall at low speeds. We will discuss the latter limitation in a later week and focus our attention on the first limitation. Suppose that we pick a linear velocity $v$ that requires the motors to spin at $90\%$ power. Then, we want to change $\omega$ from $0$ to some value that requires $20\%$ more power from the right motor, and $20\%$ less power from the left motor. This is not an issue for the left motor, but the right motor cannot turn at a capacity greater than $100\%$. The results is that the robot cannot turn with the $\omega$ specified by our controller.
   
