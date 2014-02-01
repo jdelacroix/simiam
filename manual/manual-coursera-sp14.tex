@@ -326,6 +326,53 @@ All parts of the PID regulator will be implemented in the file \texttt{+simiam/+
     \item The second part is the integral term \texttt{e\_I}. The integral needs to be approximated in discrete time using the total accumulated error \texttt{obj.E\_k}, the current error \texttt{e\_k}, and the time step \texttt{dt}. \texttt{e\_I} is multiplied by the integral gain \texttt{obj.Ki} when computing \texttt{w}, and is also saved as \texttt{obj.E\_k} for the next time step.
     \item The third part is the derivative term \texttt{e\_D}. The derivative needs to be approximated in discrete time using the current error \texttt{e\_k}, the previous error \texttt{obj.e\_k\_1}, and the the time step \texttt{dt}. \texttt{e\_D} is multiplied by the derivative gain \texttt{obj.Kd} when computing \texttt{w}, and the current error \texttt{e\_k} is saved as the previous error \texttt{obj.e\_k\_1} for the next time step.
   \end{enumerate}
+  
+  Now, you need to tune your PID gains to get a fast settle time ($\theta$ matches $\theta_g$ within $10\%$ in three seconds or less) and there should be little overshoot (maximum $\theta$ should not increase beyond $10\%$ of the reference value $\theta_g$). What you don't want to see are the following two graphs when the robot tries to reach goal location $(x_g,y_g)=(0,-1)$:
+  
+\begin{figure}[h]
+  \centering
+  \begin{subfigure}{0.45\textwidth}
+    \includegraphics[width=\textwidth]{images/week-3-pid-overshoot.png}
+    \caption{Overshoot}
+    \label{fig:pid-overshoot}
+  \end{subfigure}
+  $\qquad$
+  \begin{subfigure}{0.45\textwidth}
+    \includegraphics[width=\textwidth]{images/week-3-pid-undershoot.png}
+    \caption{Undershoot (slow settle time)}
+    \label{fig:pid-undershoot}
+  \end{subfigure}
+  \caption{PID gains were picked poorly, which lead to overshoot and poor settling times.}
+  \label{fig:screens}
+\end{figure}
+
+Figure \ref{fig:pid-undershoot} demonstrates undershoot, which could be fixed by increasing the proportional gain or adding some integral gain for better tracking. Picking better gains leads to the graph in Figure \ref{fig:pid-normal}.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.5\textwidth]{images/week-3-pid-normal.png}
+  \caption{Faster settle time and good tracking with little overshoot.}
+  \label{fig:pid-normal}
+\end{figure}
+
+  
+  \item Ensure that the robot steers with an angular velocity $\omega$, even if the combination of $v$ and $\omega$ exceeds the maximum angular velocity of the robot.
+  
+  This week we'll tackle the first of two limitations of the motors on the QuickBot. The first limitation is that the robot's motors have a maximum angular velocity, and the second limitation is that the motors stall at low speeds. We will discuss the latter limitation in a later week and focus our attention on the first limitation. Suppose that we pick a linear velocity $v$ that requires the motors to spin at $90\%$ power. Then, we want to change $\omega$ from $0$ to some value that requires $20\%$ more power from the right motor, and $20\%$ less power from the left motor. This is not an issue for the left motor, but the right motor cannot turn at a capacity greater than $100\%$. The results is that the robot cannot turn with the $\omega$ specified by our controller.
+  
+  Since our PID controllers focus more on steering than on controlling the linear velocity, we want to prioritize $\omega$ over $v$ in situations, where we cannot satisfy $\omega$ with the motors. In fact, we will simply reduce $v$ until we have sufficient headroom to achieve $\omega$ with the robot. The function \texttt{ensure\_w} in \texttt{+simiam/+controller/+supervisor/QBSupervisor.m} is designed ensure that $\omega$ is achieved even if the original combination of $v$ and $\omega$ exceeds the maximum $v_r$ and $v_l$.
+  
+  Complete \texttt{ensure\_w}. Suppose $v_{r,d}$ and $v_{l,d}$ are the angular wheel velocities needed to achieve $\omega$. Then \texttt{vel\_rl\_max} is $\max(v_{r,d},v_{l,d})$ and \texttt{vel\_rl\_min} is $\min(v_{r,d},v_{l,d})$. A motor's maximum forward angular velocity is \texttt{obj.robot.max\_vel} (or $\text{vel}_{\max}$). So, for example, the equation that represents the \texttt{if/else} statement for the right motors is:
+  \begin{equation*}
+    v_r= 
+\begin{cases}
+    v_{r,d} - (\max(v_{r,d},v_{l,d})-vel_{\max})& \text{if } \max(v_{r,d},v_{l,d}) > vel_{\max}\\
+    v_{r,d} - (\max(v_{r,d},v_{l,d})+vel_{\max})& \text{if } \min(v_{r,d},v_{l,d}) < -vel_{\max}\\
+    v_{r,d},              & \text{otherwise},
+\end{cases}
+  \end{equation*}
+  which defines the appropriate $v_r$ (or \texttt{vel\_r}) needed to achieve $\omega$. This equation also applies to computing a new $v_l$. The results of \texttt{ensures\_w} is that if $v$ and $\omega$ are so large that $v_r$ and/or $v_l$ exceed $\text{vel}_{\max}$, then $v$ is scaled back to ensure $\omega$ is achieved (Note: $\omega$ is precapped at the beginnging of \texttt{ensure\_w} to the maximum $\omega$ possible if the robot is stationary).
+  
 \end{enumerate}
 
 \subsection*{How to test it all}
@@ -341,6 +388,7 @@ Make sure the goal is located inside the walls, i.e. the $x$ and $y$ coordinates
   \item To test the heading to the goal, set the goal location to \texttt{obj.goal = [1,1]}. \texttt{theta\_g} should be approximately $\frac{\pi}{4} \approx 0.785$ initially, and as the robot moves forward (since $v=0.1$ and $\omega=0$) \texttt{theta\_g} should increase. Check it using a \texttt{fprintf} statment or the plot that pops up. \texttt{theta\_g} corresponds to the red dashed line (i.e., it is the reference signal for the PID regulator).
   \item Test this part with the implementation of the third part.
   \item To test the third part, run the simulator and check if the robot drives to the goal location and stops. In the plot, the blue solid line (\texttt{theta}) should match up with the red dashed line (\texttt{theta\_g}). You may also use \texttt{fprintf} statements to verify that the robot stops within \texttt{obj.d\_stop} meters of the goal location.
+  \item To test the fourth part, set \texttt{obj.v=10}. If the robot does not turn with $v=10$, then $\omega$ is not ensured by \texttt{ensure\_w}. This function should scale back $v$, such that it is possible for the robot to turn with the $\omega$ output by the controller. Add \texttt{fprintf} statements to check $v$ and $\omega$ before and after \texttt{ensure\_w}.
 \end{enumerate}
 
 \subsection*{How to migrate your solutions from last week.}
@@ -349,8 +397,8 @@ Here are a few pointers to help you migrate your own solutions from last week to
 
 \begin{enumerate}
  \item You may overwrite \texttt{+simiam/+robot/+dynamics/DifferentialDrive.m} with your own version from last week.
- \item You should not overwrite \texttt{+simiam/+robot/QuickBot.m} with your own version from last week.
- \item You should not overwrite \texttt{+simiam/+controller/+khepera3/K3Supervisor.m}! However, to use your own solution to the odometry, you can replace the provided \texttt{update\_odometry} function in \texttt{K3Supervisor.m} with your own version from last week.
+ \item You should not overwrite \texttt{+simiam/+robot/QuickBot.m} with your own version from last week! Many changes were made to this file for this week.
+ \item You should not overwrite \texttt{+simiam/+controller/+quickbot/QBSupervisor.m}! However, to use your own solution to the odometry, you can replace the provided \texttt{update\_odometry} function in \texttt{K3Supervisor.m} with your own version from last week.
 \end{enumerate}
 
 \end{document}
