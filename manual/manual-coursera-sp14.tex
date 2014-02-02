@@ -367,7 +367,7 @@ Figure \ref{fig:pid-undershoot} demonstrates undershoot, which could be fixed by
     v_r= 
 \begin{cases}
     v_{r,d} - (\max(v_{r,d},v_{l,d})-vel_{\max})& \text{if } \max(v_{r,d},v_{l,d}) > vel_{\max}\\
-    v_{r,d} - (\max(v_{r,d},v_{l,d})+vel_{\max})& \text{if } \min(v_{r,d},v_{l,d}) < -vel_{\max}\\
+    v_{r,d} - (\min(v_{r,d},v_{l,d})+vel_{\max})& \text{if } \min(v_{r,d},v_{l,d}) < -vel_{\max}\\
     v_{r,d},              & \text{otherwise},
 \end{cases}
   \end{equation*}
