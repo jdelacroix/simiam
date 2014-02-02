@@ -367,7 +367,7 @@ Figure \ref{fig:pid-undershoot} demonstrates undershoot, which could be fixed by
     v_r= 
 \begin{cases}
     v_{r,d} - (\max(v_{r,d},v_{l,d})-vel_{\max})& \text{if } \max(v_{r,d},v_{l,d}) > vel_{\max}\\
-    v_{r,d} - (\max(v_{r,d},v_{l,d})+vel_{\max})& \text{if } \min(v_{r,d},v_{l,d}) < -vel_{\max}\\
+    v_{r,d} - (\min(v_{r,d},v_{l,d})+vel_{\max})& \text{if } \min(v_{r,d},v_{l,d}) < -vel_{\max}\\
     v_{r,d},              & \text{otherwise},
 \end{cases}
   \end{equation*}
@@ -388,7 +388,13 @@ Make sure the goal is located inside the walls, i.e. the $x$ and $y$ coordinates
   \item To test the heading to the goal, set the goal location to \texttt{obj.goal = [1,1]}. \texttt{theta\_g} should be approximately $\frac{\pi}{4} \approx 0.785$ initially, and as the robot moves forward (since $v=0.1$ and $\omega=0$) \texttt{theta\_g} should increase. Check it using a \texttt{fprintf} statment or the plot that pops up. \texttt{theta\_g} corresponds to the red dashed line (i.e., it is the reference signal for the PID regulator).
   \item Test this part with the implementation of the third part.
   \item To test the third part, run the simulator and check if the robot drives to the goal location and stops. In the plot, the blue solid line (\texttt{theta}) should match up with the red dashed line (\texttt{theta\_g}). You may also use \texttt{fprintf} statements to verify that the robot stops within \texttt{obj.d\_stop} meters of the goal location.
-  \item To test the fourth part, set \texttt{obj.v=10}. If the robot does not turn with $v=10$, then $\omega$ is not ensured by \texttt{ensure\_w}. This function should scale back $v$, such that it is possible for the robot to turn with the $\omega$ output by the controller. Add \texttt{fprintf} statements to check $v$ and $\omega$ before and after \texttt{ensure\_w}.
+  \item To test the fourth part, set \texttt{obj.v=10}. Then add the following two lines of code after the call to \texttt{ensure\_w} in the \texttt{execute} function of \texttt{QBSupervisor.m}.
+  \begin{verbatim}
+    [v_limited, w_limited] = obj.robot.dynamics.diff_to_uni(vel_r, vel_l);
+    fprintf('(v,w) = (%0.3f,%0.3f), (v_limited,w_limited) = (%0.3f, %0.3f)\n', ...
+                                      outputs.v, outputs.w, v_limited, w_limited);
+  \end{verbatim}
+   If $\omega\neq\omega_{\text{limited}}$, then $\omega$ is not ensured by \texttt{ensure\_w}. This function should scale back $v$, such that it is possible for the robot to turn with the $\omega$ output by the controller (unless $|\omega|>5.48$ rad/s).
 \end{enumerate}
 
 \subsection*{How to migrate your solutions from last week.}
