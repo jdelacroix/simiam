@@ -28,6 +28,8 @@ classdef QBSupervisor < simiam.controller.Supervisor
         theta_d
         goal
         d_stop
+        d_at_obs
+        d_unsafe
         
         p
         
@@ -47,7 +49,7 @@ classdef QBSupervisor < simiam.controller.Supervisor
             obj.controllers{2} = simiam.controller.GoToAngle();
             obj.controllers{3} = simiam.controller.GoToGoal();
             obj.controllers{4} = simiam.controller.AvoidObstacles();
-            obj.controllers{5} = simiam.controller.AvoidFrontImpact();
+            obj.controllers{5} = simiam.controller.AOandGTG();
             
             % set the initial controller
             obj.current_controller = obj.controllers{5};
@@ -60,15 +62,26 @@ classdef QBSupervisor < simiam.controller.Supervisor
             end
             
             % define the set of eventsd
-            obj.eventsd{1} = struct('event', 'at_goal', ...
+            obj.eventsd{1} = struct('event', 'at_obstacle', ...
+                                   'callback', @at_obstacle);
+            
+            obj.eventsd{2} = struct('event', 'at_goal', ...
                                    'callback', @at_goal);
+            
+            obj.eventsd{3} = struct('event', 'obstacle_cleared', ...
+                                    'callback', @obstacle_cleared);
+                                
+            obj.eventsd{4} = struct('event', 'unsafe', ...
+                                    'callback', @unsafe);
                                
             obj.prev_ticks = struct('left', 0, 'right', 0);
             
             obj.theta_d     = pi/4;
             obj.v           = 0.2;
-            obj.goal        = [0.5, 0];
+            obj.goal        = [-1, 1];
             obj.d_stop      = 0.05;
+            obj.d_at_obs    = 0.15;                
+            obj.d_unsafe    = 0.05;
             
             obj.p = simiam.util.Plotter();
             obj.current_controller.p = obj.p;
@@ -81,19 +94,22 @@ classdef QBSupervisor < simiam.controller.Supervisor
         %
         %   See also controller/execute
         
-            inputs = obj.controllers{4}.inputs; 
+            obj.update_odometry();
+        
+            inputs = obj.controllers{5}.inputs; 
             inputs.v = obj.v;
+            inputs.x_g = obj.goal(1);
+            inputs.y_g = obj.goal(2);
             
-%             if obj.check_event('at_goal')
-%                 obj.switch_to_state('stop');
-%             end
+            if obj.check_event('at_goal')
+                obj.switch_to_state('stop');
+            end
             
             outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
                 
             [vel_r, vel_l] = obj.ensure_w(obj.robot, outputs.v, outputs.w);
             obj.robot.set_wheel_speeds(vel_r, vel_l);
                         
-            obj.update_odometry();
 
 %             [x, y, theta] = obj.state_estimate.unpack();
 %             fprintf('current_pose: (%0.3f,%0.3f,%0.3f)\n', x, y, theta);
@@ -110,6 +126,38 @@ classdef QBSupervisor < simiam.controller.Supervisor
                 rc = true;
             end
         end
+        
+        function rc = at_obstacle(obj, state, robot)
+            ir_distances = obj.robot.get_ir_distances();
+            rc = false;                                     % Assume initially that the robot is clear of obstacle
+            
+            % Loop through and test the sensors (only the front set)
+            if any(ir_distances(1:5) < obj.d_at_obs)
+                rc = true;
+            end
+        end
+        
+        function rc = unsafe(obj, state, robot)
+            ir_distances = obj.robot.get_ir_distances();              
+            rc = false;             % Assume initially that the robot is clear of obstacle
+            
+            % Loop through and test the sensors (only the front set)
+            if any(ir_distances(1:5) < obj.d_unsafe)
+                    rc = true;
+            end
+        end
+        
+        function rc = obstacle_cleared(obj, state, robot)
+            ir_distances = obj.robot.get_ir_distances();
+            rc = false;              % Assume initially that the robot is clear of obstacle
+            
+            % Loop through and test the sensors (only front set)
+            if all(ir_distances(1:5) > obj.d_at_obs)
+                rc = true;
+            end
+        end
+        
+        
         
         %% Output shaping
         
