@@ -115,7 +115,7 @@ classdef AvoidObstacles < simiam.controller.Controller
             set(obj.s_net, 'YData', ir_distances_rf(2,:));
 
             % velocity control
-            outputs.v = 0;
+            outputs.v = v;
             outputs.w = w;
         end
         
