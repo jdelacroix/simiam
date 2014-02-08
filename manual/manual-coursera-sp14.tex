@@ -71,7 +71,7 @@ The mobile robot you will be working with in the programming exercises is the Qu
     \caption{Actual QuickBot}
     \label{fig:actual-quickbot}
   \end{subfigure}
-  \caption{The QuickBot mobile robot in and outside of the simulator.}\label{fig:animals}
+  \caption{The QuickBot mobile robot in and outside of the simulator.}
   \label{fig:quickbot}
 \end{figure}
 
@@ -114,7 +114,7 @@ You will have access to the array of five IR sensors that encompass the QuickBot
     \caption{A look-up table for interpolating a distance (m) from the analog (and digital) output voltages.}
     \label{fig:ir-adc}
   \end{subfigure}
-  \caption{A graph and a table illustrating the relationship between the distance of an object within the field of view of an infrared proximity sensor and the analog (and digital) ouptut voltage of the sensor.}\label{fig:animals}
+  \caption{A graph and a table illustrating the relationship between the distance of an object within the field of view of an infrared proximity sensor and the analog (and digital) ouptut voltage of the sensor.}
   \label{fig:quickbot}
 \end{figure}
 
@@ -405,6 +405,101 @@ Here are a few pointers to help you migrate your own solutions from last week to
  \item You may overwrite \texttt{+simiam/+robot/+dynamics/DifferentialDrive.m} with your own version from last week.
  \item You should not overwrite \texttt{+simiam/+robot/QuickBot.m} with your own version from last week! Many changes were made to this file for this week.
  \item You should not overwrite \texttt{+simiam/+controller/+quickbot/QBSupervisor.m}! However, to use your own solution to the odometry, you can replace the provided \texttt{update\_odometry} function in \texttt{K3Supervisor.m} with your own version from last week.
+\end{enumerate}
+
+\subsection{Week 4}
+
+Start by downloading the new robot simulator for this week from the Week 4 programming assignment. This week you will be implementing the different parts of a controller that steers the robot successfully away from obstacles to avoid a collision. This is known as the avoid-obstacles behavior. The IR sensors allow us to measure the distance to obstacles in the environment, but we need to compute the points in the world to which these distances correspond.
+\begin{figure}[h]
+ \centering
+ \includegraphics[scale=0.5]{images/week-4-ir-points.png}
+ \caption{IR range to point transformation.}
+  \label{fig:week4irpoints}
+\end{figure}
+Figure \ref{fig:week4irpoints} illustrates these points with a black cross. The strategy for obstacle avoidance that we will use is as follows:
+
+\begin{enumerate}
+  \item Transform the IR distances to points in the world.
+  \item Compute a vector to each point from the robot, $u_1,u_2,\ldots,u_9$.
+  \item Weigh each vector according to their importance, $\alpha_1u_1,\alpha_2u_2,\ldots,\alpha_9u_9$. For example, the front and side sensors are typically more important for obstacle avoidance while moving forward.
+  \item Sum the weighted vectors to form a single vector, $u_{ao}=\alpha_1u_1+\ldots+\alpha_9u_9$.
+  \item Use this vector to compute a heading and steer the robot to this angle.
+\end{enumerate}
+
+This strategy will steer the robot in a direction with the most free space (i.e., it is a direction \textit{away} from obstacles). For this strategy to work, you will need to implement three crucial parts of the strategy for the obstacle avoidance behavior:
+
+\begin{enumerate}
+  \item Transform the IR distance (which you converted from the raw IR values in Week 2) measured by each sensor to a point in the reference frame of the robot.
+  
+  A point $p_i$ that is measured to be $d_i$ meters away by sensor $i$ can be written as the vector (coordinate) $v_i=\begin{bmatrix}d_i \\ 0\end{bmatrix}$ in the reference frame of sensor $i$. We first need to transform this point to be in the reference frame of the robot. To do this transformation, we need to use the pose (location and orientation) of the sensor in the reference frame of the robot: $(x_{s_i},y_{s_i},\theta_{s_i})$ or in code, \texttt{(x\_s,y\_s,theta\_s)}. The transformation is defined as:
+  
+  \begin{equation*}
+    v'_i = R(x_{s_i},y_{s_i},\theta_{s_i})\begin{bmatrix}v_i \\ 1\end{bmatrix},
+  \end{equation*}
+  where $R$ is known as the transformation matrix that applies a translation by $(x,y)$ and a rotation by $\theta$:
+  \begin{equation*}
+    R(x,y,\theta) = \begin{bmatrix}\cos(\theta) & -\sin(\theta) & x \\ 
+                                   \sin(\theta) &  \cos(\theta) & y \\
+                                             0 &            0 & 1\end{bmatrix},
+  \end{equation*}
+  which you need to implement in the function \texttt{obj.get\_transformation\_matrix}.
+  
+  In \texttt{+simiam/+controller/+AvoidObstacles.m}, implement the transformation in the \texttt{apply\_sensor} \texttt{\_geometry} function. The objective is to store the transformed points in \texttt{ir\_distances\_rf}, such that this matrix has $v'_1$ as its first column, $v'_2$ as its second column, and so on.
+  
+  \item Transform the point in the robot's reference frame to the world's reference frame.
+  
+  A second transformation is needed to determine where a point $p_i$ is located in the world that is measured by sensor $i$. We need to use the pose of the robot, $(x,y,\theta)$, to transform the robot from the robot's reference frame to the world's reference frame. This transformation is defined as:
+  
+  \begin{equation*}
+    v''_i = R(x,y,\theta)v'_i
+  \end{equation*}
+  
+  In \texttt{+simiam/+controller/+AvoidObstacles.m}, implement this transformation in the \texttt{apply\_sensor} \texttt{\_geometry} function. The objective is to store the transformed points in \texttt{ir\_distances\_wf}, such that this matrix has $v''_1$ as its first column, $v''_2$ as its second column, and so on. This matrix now contains the coordinates of the points illustrated in Figure \ref{fig:week4irpoints} by the black crosses. Note how these points \textit{approximately} correspond to the distances measured by each sensor (Note: \textit{approximately}, because of how we converted from raw IR values to meters in Week 2).
+  
+  \item Use the set of transformed points to compute a vector that points away from the obstacle. The robot will steer in the direction of this vector and successfully avoid the obstacle.
+  
+  In the function \texttt{execute} implement parts 2.-4. of the obstacle avoidance strategy.
+  \begin{enumerate}[(i)]
+    \item Compute a vector $u_i$ to each point (corresponding to a particular sensor) from the robot. Use a point's coordinate from \texttt{ir\_distances\_wf} and the robot's location (\texttt{x},\texttt{y}) for this computation.
+    \item Pick a weight $\alpha_i$ for each vector according to how important you think a particular sensor is for obstacle avoidance. For example, if you were to multiply the vector from the robot to point $i$ (corresponding to sensor $i$) by a small value (e.g., $0.1$), then sensor $i$ will not impact obstacle avoidance significantly. Set the weights in \texttt{sensor\_gains}. \textbf{Note}: Make sure to that the weights are symmetric with respect to the left and right sides of the robot. Without any obstacles around, the robot should only steer slightly right (due to a small asymmetry in the how the IR sensors are mounted on the robot).
+    \item Sum up the weighted vectors, $\alpha_iu_i$, into a single vector $u_{ao}$.
+    \item Use $u_o$ and the pose of the robot to compute a heading that steers the robot away from obstacles (i.e., in a direction with free space, because the vectors that correspond to directions with large IR distances will contribute the most to $u_{ao}$).    
+  \end{enumerate} 
+\end{enumerate}
+
+\subsection*{QuickBot Motor Limitations}
+
+Last week we implemented a function, \texttt{ensure\_w}, which was responsible for respecting $\omega$ from the controller as best as possible by scaling $v$ if necessary. This implementation assumed that it was possible to control the angular velocity in the range $[-\text{vel}_{\max},\text{vel}_{\max}]$. This range reflected the fact that the motors on the QuickBot have a maximum rotational speed. However, it is also true that the motors have a minimum speed before the robot starts moving. If not enough power is applied to the motors, the angular velocity of a wheel remains at $0$. Once enough power is applied, the wheels spin at a speed $\text{vel}_{\min}$.
+
+The \texttt{ensure\_w} function has been updated this week to take this limitation into account. For example, small $(v,\omega)$ may not be achievable on the QuickBot, so \texttt{ensure\_w} scales up $v$ to make $\omega$ possible. Similarily, if $(v,\omega)$ are both large, \texttt{ensure\_w} scales down $v$ to ensure $\omega$ (as was the case last week). You can uncomment the two \texttt{fprintf} statements to see $(v,\omega)$ before and after.
+
+There is nothing that needs to be added or implemented for this week in \texttt{ensure\_w}, but you may find it interesting how one deals with physical limitations on a mobile robot, like the QuickBot. This particular approach has an interesting consequence, which is that if $v>0$, then $v_r$ and $v_l$ are both positive (and vice versa, if $v<0$). Therefore, we often have to increase or decrease $v$ significantly to ensure $\omega$ even if it were better to make small adjustments to both $\omega$ and $v$. As with most of the components in these programming assignments, there are alternative designs with their own advantages and disadvantages. Feel free to share your designs with everyone on the discussion forums!
+
+\subsection*{How to test it all}
+
+To test your code, the simulator is set up to use load the \texttt{AvoidObstacles.m} controller to drive the robot around the environment without colliding with any of the walls. If you want to change the linear velocity of the robot, then edit the following line in \texttt{+simiam/+controller/}\texttt{+quickbot/QBSupervisor.m}.
+  \begin{verbatim}
+    obj.v = 0.2;\end{verbatim}
+
+Here are some tips on how to test the three parts:
+
+\begin{enumerate}
+  \item Test the first part with the second part.
+  \item Once you have implemented the second part, one black cross should match up with each sensor as shown in Figure \ref{fig:week4irpoints}. The robot should drive forward and collide with the wall. The blue line indicates the direction that the robot is currently heading ($\theta$).
+  \item Once you have implemented the third part, the robot should be able to successfully navigate the world without colliding with the walls (obstacles). If no obstacles are in range of the sensors, the red line (representing $u_o$) should just point forward (i.e., in the direction the robot is driving). In the presence of obstacles, the red line should point away from the obstacles in the direction of free space.
+\end{enumerate}
+
+You can also tune the parameters of the PID regulator for $\omega$ by editing \texttt{obj.Kp}, \texttt{obj.Ki}, and \texttt{obj.Kd} in \texttt{AvoidObstacles.m}. The PID regulator should steer the robot in the direction of $u_o$, so you should see that the blue line tracks the red line. \textbf{Note:} The red and blue lines (as well as, the black crosses) will likely deviate from their positions on the robot. The reason is that they are drawn with information derived from the odometry of the robot. The odometry of the robot accumulates error over time as the robot drives around the world. This odometric drift can be seen when information based on odometry is visualized via the lines and crosses. 
+
+\subsection*{How to migrate your solutions from last week}
+
+Here are a few pointers to help you migrate your own solutions from last week to this week's simulator code. You only need to pay attention to this section if you want to use your own solutions, otherwise you can use what is provided for this week and skip this section.
+
+\begin{enumerate}
+ \item You may overwrite the same files as listed for Week 3.
+ \item You may overwrite \texttt{+simiam/+controller/GoToGoal.m} with your own version from last week.
+ \item You should not overwrite \texttt{+simiam/+controller/+quickbot/QBSupervisor.m}! However, to use your own solution to the odometry, you can replace the provided \texttt{update\_odometry} function in \texttt{QBSupervisor.m} with your own version from last week.
+ \item You may replace the PID regulator in \texttt{+simiam/+controller/AvoidObstacles.m} with your own version from the previous week (i.e., use the PID code from \texttt{GoToGoal.m}).
 \end{enumerate}
 
 \end{document}
