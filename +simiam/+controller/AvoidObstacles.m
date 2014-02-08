@@ -17,6 +17,11 @@ classdef AvoidObstacles < simiam.controller.Controller
         % plot support
         p
         
+        % IR plot support
+        u_arrow
+        u_arrow_r
+        s_net
+        
         % sensor geometry
         calibrated
         sensor_placement
@@ -33,7 +38,7 @@ classdef AvoidObstacles < simiam.controller.Controller
             obj = obj@simiam.controller.Controller('avoid_obstacles');            
             obj.calibrated = false;
             
-            obj.Kp = 2;
+            obj.Kp = 4;
             obj.Ki = 0.01;
             obj.Kd = 0.1;
             
@@ -48,6 +53,15 @@ classdef AvoidObstacles < simiam.controller.Controller
             % Compute the placement of the sensors
             if(~obj.calibrated)
                 obj.set_sensor_geometry(robot);
+                
+                % Temporoary plot support
+                hold(robot.parent, 'on');
+                obj.u_arrow_r = plot(robot.parent, [0 0], [0 0], 'b-x', 'LineWidth', 2);
+                obj.u_arrow = plot(robot.parent, [0 0], [0 0], 'r--x', 'LineWidth', 2);
+                obj.s_net = plot(robot.parent, zeros(1,5), zeros(1,5), 'kx', 'MarkerSize', 8);
+                set(obj.u_arrow_r, 'ZData', ones(1,2));
+                set(obj.u_arrow, 'ZData', ones(1,2));
+                set(obj.s_net, 'ZData', ones(1,5));
             end
             
             % Unpack state estimate
@@ -63,7 +77,7 @@ classdef AvoidObstacles < simiam.controller.Controller
             % Compute the heading vector
             
             n_sensors = length(robot.ir_array);
-            sensor_gains = [1 2 3 2 1];
+            sensor_gains = [3 2 1 2 3];
             u_i = (ir_distances_rf-repmat([x;y],1,n_sensors))*diag(sensor_gains);
             u_ao = sum(u_i,2);
             
@@ -89,8 +103,16 @@ classdef AvoidObstacles < simiam.controller.Controller
             
 %             fprintf('(v,w) = (%0.4g,%0.4g)\n', v,w);
             
+            % Temporary plot support
+            u_n = u_ao/(4*norm(u_ao));
+            set(obj.u_arrow, 'XData', [x x+u_n(1)]);
+            set(obj.u_arrow, 'YData', [y y+u_n(2)]);
+            set(obj.u_arrow_r, 'XData', [x x+0.25*cos(theta)]);
+            set(obj.u_arrow_r, 'YData', [y y+0.25*sin(theta)]);
+            set(obj.s_net, 'XData', ir_distances_rf(1,:));
+            set(obj.s_net, 'YData', ir_distances_rf(2,:));
+
             % velocity control
-            
             outputs.v = v;
             outputs.w = w;
         end
