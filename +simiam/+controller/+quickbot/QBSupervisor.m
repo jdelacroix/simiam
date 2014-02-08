@@ -158,8 +158,8 @@ classdef QBSupervisor < simiam.controller.Supervisor
             else
                 % Robot is stationary, so we can either not rotate, or
                 % rotate with some minimum/maximum angular velocity
-                w_min = R/L(2*vel_min);
-                w_max = R/L(2*vel_max);
+                w_min = R/L*(2*vel_min);
+                w_max = R/L*(2*vel_max);
                 
                 if abs(w) > w_min
                     w = sign(w)*max(min(abs(w), w_max), w_min);

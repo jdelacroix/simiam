@@ -160,6 +160,8 @@ classdef QuickBot < simiam.robot.Robot
             obj.wheel_base_length = 0.09925;     % 99.25mm
             obj.ticks_per_rev = 16;
             
+            % Adjust these MAX/MIN RPM values for your QuickBot and surface
+            
             max_rpm = 130;
             obj.max_vel = max_rpm*2*pi/60;
             

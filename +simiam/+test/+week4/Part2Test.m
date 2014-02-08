@@ -26,11 +26,17 @@ classdef Part2Test < simiam.test.PartTest
             robot_s = app.simulator_.world.robots.elementAt(1);
             robot_s.supervisor.v = inputs.v;
             
+            hasMoved = false;
             timeS = 60;
             nSteps = timeS/app.simulator_.time_step;
             for i = 1:nSteps
                 app.simulator_.step([],[]);
 %                 pause(app.simulator_.time_step);
+                [x,y,theta] = robot_s.pose.unpack();
+                if norm([x;y]) > 0
+                    hasMoved = true;
+                end
+
                 if (app.is_state_crashed_)
                     break;
                 end
@@ -40,7 +46,7 @@ classdef Part2Test < simiam.test.PartTest
             
             % Export percent error between actual and estimated pose
             
-            result = sprintf('%d', app.is_state_crashed_);
+            result = sprintf('%d', (app.is_state_crashed_ || ~hasMoved));
             
             app.ui_close();
         end

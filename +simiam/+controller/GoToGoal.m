@@ -116,7 +116,7 @@ classdef GoToGoal < simiam.controller.Controller
             
             outputs = obj.outputs;  % make a copy of the output struct
             outputs.v = v;
-            outputs.w = 0;
+            outputs.w = w;
         end
         
     end
