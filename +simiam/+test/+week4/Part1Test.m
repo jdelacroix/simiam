@@ -10,13 +10,13 @@ classdef Part1Test < simiam.test.PartTest
         
         function result = run_test(input, root_path)
             
-            x = cell2mat(regexp(input, 'x=[0-9]*.[0-9]*;', 'match'));
+            x = cell2mat(regexp(input, 'x=-?[0-9]*.[0-9]*;', 'match'));
             x = str2double(x(3:end-1));
             
-            y = cell2mat(regexp(input, 'y=[0-9]*.[0-9]*;', 'match'));
+            y = cell2mat(regexp(input, 'y=-?[0-9]*.[0-9]*;', 'match'));
             y = str2double(y(3:end-1));
             
-            theta = cell2mat(regexp(input, 'theta=[0-9]*.[0-9]*;', 'match'));
+            theta = cell2mat(regexp(input, 'theta=-?[0-9]*.[0-9]*;', 'match'));
             theta = str2double(theta(7:end-1));
             
             dist_1 = cell2mat(regexp(input, 'dist_1=[0-9]*.[0-9]*;', 'match'));
