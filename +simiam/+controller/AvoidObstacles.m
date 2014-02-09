@@ -134,7 +134,7 @@ classdef AvoidObstacles < simiam.controller.Controller
                 y_s = obj.sensor_placement(2,i);
                 theta_s = obj.sensor_placement(3,i);
                 
-                R = obj.get_transformation_matrix(x_s,y_s,theta_s);
+                R = obj.get_transformation_matrix(0,0,0);
                 ir_distances_rf(:,i) = zeros(3,1);
             end
             
@@ -142,7 +142,7 @@ classdef AvoidObstacles < simiam.controller.Controller
             
             [x,y,theta] = state_estimate.unpack();
             
-            R = obj.get_transformation_matrix(x,y,theta);
+            R = obj.get_transformation_matrix(0,0,0);
             ir_distances_wf = zeros(3,5);
             
             %% END CODE BLOCK %%
