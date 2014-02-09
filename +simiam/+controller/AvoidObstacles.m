@@ -101,7 +101,7 @@ classdef AvoidObstacles < simiam.controller.Controller
             obj.e_k_1 = e_k;
                         
             % plot
-            obj.p.plot_2d_ref(dt, atan2(sin(theta),cos(theta)), theta_o, 'g');
+            obj.p.plot_2d_ref(dt, atan2(sin(theta),cos(theta)), theta_ao, 'g');
             
 %             fprintf('(v,w) = (%0.4g,%0.4g)\n', v,w);
             
