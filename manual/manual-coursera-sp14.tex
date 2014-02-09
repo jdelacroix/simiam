@@ -133,6 +133,8 @@ It is assumed that the function \texttt{get\_ir\_distances} properly converts fr
   V_{\text{ADC}} = \left\lfloor\frac{1000\cdot V_{\text{analog}}}{3}\right\rceil
 \end{equation*}
 
+\textbf{NOTE: For Week 2, the simulator uses a different voltage divider on the ADC; therefore, $V_{\text{ADC}}= V_{\text{analog}}*1000/2$. This has been fixed in subsequent weeks!}
+
 Converting from the the analog output voltage to a distance is a little bit more complicated, because a) the relationships between analog output voltage and distance is not linear, and b) the look-up table provides a coarse sample of points on the curve in Figure \ref{fig:ir-volts-meters}. MATLAB has a \texttt{polyfit} function to fit a curve to the values in the look-up table, and a \texttt{polyval} function to interpolate a point on that fitted curve. The combination of the these two functions can be use to approximate a distance based on the analog output voltage. For more information, see Section \ref{sec:week-2}.
 
 It is important to note that the IR proximity sensor on the actual QuickBot will be influenced by ambient lighting and other sources of interference. For example, under different ambient lighting conditions, the same analog output voltage may correspond to different distances of an object from the IR proximity sensor. This effect of ambient lighting (and other sources of noise) is \textbf{not} modelled in the simulator, but will be apparent on the actual hardware.
