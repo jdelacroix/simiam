@@ -39,7 +39,7 @@ classdef Simulator < handle
         
             obj.parent = parent;
             obj.time_step = time_step;
-            if(strcmp(origin, 'launcher'))
+            if(strcmp(origin, 'launcher') || strcmp(origin, 'hardware'))
                 obj.clock = timer('Period', obj.time_step, ...
                                   'TimerFcn', @obj.step, ...
                                   'ExecutionMode', 'fixedRate', ...
@@ -71,7 +71,12 @@ classdef Simulator < handle
             for k = 1:nRobots
                 robot_s = obj.world.robots.elementAt(k);
                 
-                [x, y, theta] = robot_s.robot.update_state(robot_s.pose, split).unpack();
+                if (strcmp(obj.origin, 'hardware'))
+                    pose_k_1 = robot_s.robot.update_state_from_hardware(robot_s.pose, split);
+                    [x, y, theta] = pose_k_1.unpack();
+                else
+                    [x, y, theta] = robot_s.robot.update_state(robot_s.pose, split).unpack();
+                end
                 robot_s.pose.set_pose([x, y, theta]);
                 fprintf('current_pose: (%0.3f,%0.3f,%0.3f)\n', x, y, theta);
                 
@@ -90,7 +95,11 @@ classdef Simulator < handle
             
 %             tstart = tic;
 %             if(~obj.islinked)
+            if (strcmp(obj.origin, 'launcher') || strcmp(obj.origin, 'testing'))
                 bool = obj.physics.apply_physics();
+            else
+                bool = false;
+            end
 %             else
 %                 bool = false;
 %             end
@@ -104,7 +113,7 @@ classdef Simulator < handle
         
         function start(obj)
         %% START Starts the simulation.
-            if strcmp(obj.origin, 'launcher');
+            if (strcmp(obj.origin, 'launcher') || strcmp(obj.origin, 'hardware'))
                 start(obj.clock);
             end
         end
@@ -113,7 +122,8 @@ classdef Simulator < handle
         %% STOP Stops the simulation.
             if strcmp(obj.origin, 'launcher')
                 stop(obj.clock);
-            elseif strcmp(obj.origin, 'hardware');
+            elseif strcmp(obj.origin, 'hardware')
+                stop(obj.clock);
                 nRobots = length(obj.world.robots);
                 for k = 1:nRobots
                     robot_s = obj.world.robots.elementAt(k);
@@ -126,6 +136,13 @@ classdef Simulator < handle
             obj.stop();
             if strcmp(obj.origin, 'launcher')
                 delete(obj.clock);
+            elseif strcmp(obj.origin, 'hardware')
+                delete(obj.clock);
+                nRobots = length(obj.world.robots);
+                for k = 1:nRobots
+                    robot_s = obj.world.robots.elementAt(k);
+                    delete(robot_s.robot.driver.socket);
+                end
             end
         end
     end

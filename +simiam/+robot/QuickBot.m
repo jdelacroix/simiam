@@ -7,7 +7,8 @@ classdef QuickBot < simiam.robot.Robot
         wheel_radius
         wheel_base_length
         ticks_per_rev
-        speed_factor
+        max_vel
+        min_vel
         
         encoders = simiam.robot.sensor.WheelEncoder.empty(1,0);
         ir_array = simiam.robot.sensor.ProximitySensor.empty(1,0);
@@ -158,7 +159,14 @@ classdef QuickBot < simiam.robot.Robot
             obj.wheel_radius = 0.0325;           % 65.0mm in diameter
             obj.wheel_base_length = 0.09925;     % 99.25mm
             obj.ticks_per_rev = 16;
-            obj.speed_factor = 0;
+            
+            % Adjust these MAX/MIN RPM values for your QuickBot and surface
+            
+            max_rpm = 130;
+            obj.max_vel = max_rpm*2*pi/60;
+            
+            min_rpm = 30;
+            obj.min_vel = min_rpm*2*pi/60;
             
             obj.encoders(1) = simiam.robot.sensor.WheelEncoder('right_wheel', obj.wheel_radius, obj.wheel_base_length, obj.ticks_per_rev);
             obj.encoders(2) = simiam.robot.sensor.WheelEncoder('left_wheel', obj.wheel_radius, obj.wheel_base_length, obj.ticks_per_rev);
@@ -192,12 +200,11 @@ classdef QuickBot < simiam.robot.Robot
         end
         
         function ir_distances = get_ir_distances(obj)
-            % FIX conversion between IR raw and distances, SEE WEEK 2
             ir_array_values = obj.ir_array.get_range();
             
             %% START CODE BLOCK %%
             
-            ir_voltages = ir_array_values./500;
+            ir_voltages = ir_array_values*3/1000;
             coeff = [-0.0182 0.1690 -0.6264 1.1853 -1.2104 0.6293];
             
             %% END CODE BLOCK %%
@@ -210,27 +217,49 @@ classdef QuickBot < simiam.robot.Robot
             obj.driver = simiam.robot.driver.QuickBotDriver(hostname, port);
         end
         
-        function pose = update_state_from_hardware(obj, pose, dt)
+        function pose_new = update_state_from_hardware(obj, pose, dt)
+            
+            tstart = tic;
             encoder_ticks = obj.driver.get_encoder_ticks();
             
             if (~isempty(encoder_ticks))
                 obj.encoders(2).ticks = encoder_ticks(1);
                 obj.encoders(1).ticks = encoder_ticks(2);
             end
-
+            
             ir_raw_values = obj.driver.get_ir_raw_values();
+            fprintf('TIMIING HARDWARE: %0.3fs\n', toc(tstart));
             
             if (~isempty(ir_raw_values))
-                ir_voltages = ir_raw_values/500;
+                ir_voltages = ir_raw_values*3/1000;
                 coeff = [-0.0182 0.1690 -0.6264 1.1853 -1.2104 0.6293];
                 ir_distances = polyval(coeff, ir_voltages);
                 
                 for i = 1:numel(obj.ir_array)
-                    obj.ir_array.update_range(ir_distances(i));
+                    obj.ir_array(i).update_range(ir_distances(i));
                 end
             end
-                
-            obj.driver.set_speed(obj.right_wheel_speed, obj.left_wheel_speed);
+            
+            right_rps = obj.right_wheel_speed/(2*pi);
+            left_rps = obj.left_wheel_speed/(2*pi);
+            
+            beta = [0.0425, -0.9504];
+            
+            right_pwm = sign(right_rps)*(abs(right_rps)-beta(2))/beta(1);
+            left_pwm = sign(left_rps)*(abs(left_rps)-beta(2))/beta(1);
+
+            right_pwm = max(min(round(right_pwm), 100), -100);
+            left_pwm = max(min(round(left_pwm), 100), -100);
+            
+            obj.driver.set_speeds(right_pwm, left_pwm);
+            
+            pose_new = obj.update_pose_from_hardware(pose);
+            
+            obj.update_pose(pose_new);
+            
+            for k=1:length(obj.ir_array)
+                obj.ir_array(k).update_pose(pose_new);
+            end
         end
         
         function pose_k_1 = update_pose_from_hardware(obj, pose)
@@ -294,19 +323,29 @@ classdef QuickBot < simiam.robot.Robot
         
         function [vel_r, vel_l] = limit_speeds(obj, vel_r, vel_l)
             % actuator hardware limits            
-            max_rpm = 80;
-            max_vel = max_rpm*2*pi/60;
+            vel_r = max(min(vel_r, obj.max_vel), -obj.max_vel);
+            vel_l = max(min(vel_l, obj.max_vel), -obj.max_vel);
             
-            vel_r = max(min(vel_r, max_vel), -max_vel);
-            vel_l = max(min(vel_l, max_vel), -max_vel);
+            vel_r = vel_r*(abs(vel_r) >= obj.min_vel);
+            vel_l = vel_l*(abs(vel_l) >= obj.min_vel);
         end
     end
     
     methods (Static)
         function raw = ir_distance_to_raw(varargin)
-            distance = cell2mat(varargin);
-            coeff = [-5.3245, 5.4518, -2.2089, 0.4511, -0.0491, 0.0027]*10^6;
-            raw = min(max(round(polyval(coeff, distance)), 200), 1375);
+            distances = cell2mat(varargin);
+            nSensors = numel(distances);
+            
+%             coeff = [-10749        10994      -4448.1       906.57      -98.411       5.4958];
+            coeff = [-10749.324, 10994.428, -4448.079, 906.570, -98.411, 5.496];
+            
+            voltages = zeros(nSensors, 1);
+            for i = 1:nSensors
+                voltages(i) = polyval(coeff, distances(i));
+                fprintf('%0.3f, %0.3f\n', distances(i), voltages(i));
+            end
+                
+            raw = min(max(round(voltages*1000/3), 133), 917);
         end
     end
     

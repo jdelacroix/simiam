@@ -1,6 +1,6 @@
 <coversheet>
     
-    <course identifier="conrob-002" week="2" />
+    <course identifier="conrob-002" week="4" />
     
     <assignment week="1">
         <part identifier="k3pa0rK4" title="Running the simulator" test="week1.Part1Test" />
@@ -10,6 +10,17 @@
         <part identifier="QihGedxL" title="Unicycle to differential-drive transformation" test="week2.Part1Test" />
         <part identifier="TQkrYtec" title="Odometry" test="week2.Part2Test" />
         <part identifier="yptGGVPr" title="Converting raw IR sensor values to distances" test="week2.Part3Test" />
+    </assignment>
+    
+    <assignment week="3">
+        <part identifier="pKyj9jyA" title="Arriving at the goal location" test="week3.Part1Test" />
+        <part identifier="2aZEky7h" title="Tuning the PID gains for performance" test="week3.Part2Test" />
+        <part identifier="BlIrXfQO" title="Reshaping the output for the hardware" test="week3.Part3Test" />
+    </assignment>
+    
+    <assignment week="4">
+        <part identifier="n6Td5e5B" title="From IR distances to points in the World" test="week4.Part1Test" />
+        <part identifier="sw7on7mK" title="Avoiding collisions for 60 seconds" test="week4.Part2Test" />
     </assignment>
     
 </coversheet>

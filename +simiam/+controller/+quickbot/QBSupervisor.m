@@ -23,10 +23,18 @@ classdef QBSupervisor < simiam.controller.Supervisor
         current_state
 
         prev_ticks          % Previous tick count on the left and right wheels
+        
         v
         theta_d
-
+        goal
+        d_stop
+        
         p
+        
+        v_max_w0            % QuickBot's max linear velocity when w=0
+        w_max_v0            % QuickBot's max angular velocity when v=0
+        v_min_w0
+        w_min_v0
     end
     
     methods
@@ -39,10 +47,12 @@ classdef QBSupervisor < simiam.controller.Supervisor
             % initialize the controllers
             obj.controllers{1} = simiam.controller.Stop();
             obj.controllers{2} = simiam.controller.GoToAngle();
+            obj.controllers{3} = simiam.controller.GoToGoal();
+            obj.controllers{4} = simiam.controller.AvoidObstacles();
             
             % set the initial controller
-            obj.current_controller = obj.controllers{2};
-            obj.current_state = 2;
+            obj.current_controller = obj.controllers{4};
+            obj.current_state = 4;
             
             % generate the set of states
             for i = 1:length(obj.controllers)
@@ -57,9 +67,11 @@ classdef QBSupervisor < simiam.controller.Supervisor
             obj.prev_ticks = struct('left', 0, 'right', 0);
             
             obj.theta_d     = pi/4;
-            obj.v           = 0.1;
+            obj.v           = 0.9;
+            obj.goal        = [-1, 1];
+            obj.d_stop      = 0.05;
             
-            obj.p = []; %simiam.util.Plotter();
+            obj.p = simiam.util.Plotter();
             obj.current_controller.p = obj.p;
         end
         
@@ -70,16 +82,15 @@ classdef QBSupervisor < simiam.controller.Supervisor
         %
         %   See also controller/execute
         
-            inputs = obj.controllers{2}.inputs; 
+            obj.update_odometry();
+        
+            inputs = obj.controllers{4}.inputs;
             inputs.v = obj.v;
-            inputs.theta_d = obj.theta_d;
             
             outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
                 
-            [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
+            [vel_r, vel_l] = obj.ensure_w(obj.robot, outputs.v, outputs.w);
             obj.robot.set_wheel_speeds(vel_r, vel_l);
-                        
-            obj.update_odometry();
 
 %             [x, y, theta] = obj.state_estimate.unpack();
 %             fprintf('current_pose: (%0.3f,%0.3f,%0.3f)\n', x, y, theta);
@@ -96,6 +107,73 @@ classdef QBSupervisor < simiam.controller.Supervisor
                 rc = true;
             end
         end
+        
+        %% Output shaping
+        
+        function [vel_r, vel_l] = ensure_w(obj, robot, v, w)
+            
+            % This function ensures that w is respected as best as possible
+            % by scaling v.
+            
+            R = robot.wheel_radius;
+            L = robot.wheel_base_length;
+            
+            vel_max = robot.max_vel;
+            vel_min = robot.min_vel;
+            
+%             fprintf('IN (v,w) = (%0.3f,%0.3f)\n', v, w);
+            
+            if (abs(v) > 0)
+                % 1. Limit v,w to be possible in the range [vel_min, vel_max]
+                % (avoid stalling or exceeding motor limits)
+                v_lim = max(min(abs(v), (R/2)*(2*vel_max)), (R/2)*(2*vel_min));
+                w_lim = max(min(abs(w), (R/L)*(vel_max-vel_min)), 0);
+                
+                % 2. Compute the desired curvature of the robot's motion
+                
+                [vel_r_d, vel_l_d] = robot.dynamics.uni_to_diff(v_lim, w_lim);
+                
+                % 3. Find the max and min vel_r/vel_l
+                vel_rl_max = max(vel_r_d, vel_l_d);
+                vel_rl_min = min(vel_r_d, vel_l_d);
+                
+                % 4. Shift vel_r and vel_l if they exceed max/min vel
+                if (vel_rl_max > vel_max)
+                    vel_r = vel_r_d - (vel_rl_max-vel_max);
+                    vel_l = vel_l_d - (vel_rl_max-vel_max);
+                elseif (vel_rl_min < vel_min)
+                    vel_r = vel_r_d + (vel_min-vel_rl_min);
+                    vel_l = vel_l_d + (vel_min-vel_rl_min);
+                else
+                    vel_r = vel_r_d;
+                    vel_l = vel_l_d;
+                end
+                
+                % 5. Fix signs (Always either both positive or negative)
+                [v_shift, w_shift] = robot.dynamics.diff_to_uni(vel_r, vel_l);
+                
+                v = sign(v)*v_shift;
+                w = sign(w)*w_shift;
+                
+            else
+                % Robot is stationary, so we can either not rotate, or
+                % rotate with some minimum/maximum angular velocity
+                w_min = R/L*(2*vel_min);
+                w_max = R/L*(2*vel_max);
+                
+                if abs(w) > w_min
+                    w = sign(w)*max(min(abs(w), w_max), w_min);
+                else
+                    w = 0;
+                end
+                
+                
+            end
+            
+%             fprintf('OUT (v,w) = (%0.3f,%0.3f)\n', v, w);
+            [vel_r, vel_l] = robot.dynamics.uni_to_diff(v, w);
+        end
+        
         
         %% State machine support functions
         
@@ -194,7 +272,21 @@ classdef QBSupervisor < simiam.controller.Supervisor
             obj.prev_ticks.left = left_ticks;
             
             % Update your estimate of (x,y,theta)
-            obj.state_estimate.set_pose([x_new, y_new, theta_new]);
+            obj.state_estimate.set_pose([x_new, y_new, atan2(sin(theta_new), cos(theta_new))]);
+        end
+        
+        %% Utility functions
+        
+        function attach_robot(obj, robot, pose)
+            obj.robot = robot;
+            [x, y, theta] = pose.unpack();
+            obj.state_estimate.set_pose([x, y, theta]);
+
+            [v_0, obj.w_max_v0] = robot.dynamics.diff_to_uni(obj.robot.max_vel, -obj.robot.max_vel);
+            [obj.v_max_w0, w_0] = robot.dynamics.diff_to_uni(obj.robot.max_vel, obj.robot.max_vel);
+            
+            [v_0, obj.w_min_v0] = robot.dynamics.diff_to_uni(obj.robot.min_vel, -obj.robot.min_vel);
+            [obj.v_min_w0, w_0] = robot.dynamics.diff_to_uni(obj.robot.min_vel, obj.robot.min_vel);
         end
     end
 end

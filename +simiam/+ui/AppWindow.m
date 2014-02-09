@@ -87,7 +87,7 @@ classdef AppWindow < handle
                 set(robot.surfaces.tail_.key_.handle_, 'ButtonDownFcn', {@obj.ui_focus_view,robot});
             end
             
-            obj.simulator_ = simiam.simulator.Simulator(obj, world, 0.25, obj.origin_);
+            obj.simulator_ = simiam.simulator.Simulator(obj, world, 0.05, obj.origin_);
             obj.ui_update(0, obj.simulator_.physics.apply_physics());
         end
         
@@ -220,6 +220,7 @@ classdef AppWindow < handle
                 obj.ui_toggle_control(play, false);
                 obj.ui_toggle_control(refresh, false);
                 obj.ui_toggle_control(load, false);
+                obj.ui_toggle_control(hardware, false);
                 obj.ui_button_start([],[]);
             end
             
@@ -338,6 +339,7 @@ classdef AppWindow < handle
             % Change ui controls
             obj.ui_toggle_control(obj.ui_buttons_.play, true);
             obj.ui_toggle_control(obj.ui_buttons_.load, false);
+            obj.ui_toggle_control(obj.ui_buttons_.hardware, false);
             
             obj.create_callbacks();
 %             obj.create_simulator(fullfile(pathname, filename));
@@ -368,6 +370,7 @@ classdef AppWindow < handle
             obj.ui_toggle_control(obj.ui_buttons_.zoom_in, false);
             obj.ui_toggle_control(obj.ui_buttons_.zoom_out, false);
             obj.ui_toggle_control(obj.ui_buttons_.refresh, false);
+            obj.ui_toggle_control(obj.ui_buttons_.hardware, true);
             obj.ui_set_button_icon(obj.ui_buttons_.status, 'ui_status_ok.png');
             obj.time_ = 0;
             obj.ui_update_clock(0);
