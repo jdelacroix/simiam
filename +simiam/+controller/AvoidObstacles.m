@@ -70,7 +70,7 @@ classdef AvoidObstacles < simiam.controller.Controller
             
                         
             % Interpret the IR sensor measurements geometrically
-            ir_distances_rf = obj.apply_sensor_geometry(ir_distances, state_estimate);            
+            ir_distances_wf = obj.apply_sensor_geometry(ir_distances, state_estimate);            
             
             %% START CODE BLOCK %%
             
@@ -111,8 +111,8 @@ classdef AvoidObstacles < simiam.controller.Controller
             set(obj.u_arrow, 'YData', [y y+u_n(2)]);
             set(obj.u_arrow_r, 'XData', [x x+0.25*cos(theta)]);
             set(obj.u_arrow_r, 'YData', [y y+0.25*sin(theta)]);
-            set(obj.s_net, 'XData', ir_distances_rf(1,:));
-            set(obj.s_net, 'YData', ir_distances_rf(2,:));
+            set(obj.s_net, 'XData', ir_distances_wf(1,:));
+            set(obj.s_net, 'YData', ir_distances_wf(2,:));
 
             % velocity control
             outputs.v = v;
@@ -121,21 +121,21 @@ classdef AvoidObstacles < simiam.controller.Controller
         
         % Helper functions
         
-        function ir_distances_rf = apply_sensor_geometry(obj, ir_distances, state_estimate)
+        function ir_distances_wf = apply_sensor_geometry(obj, ir_distances, state_estimate)
             n_sensors = numel(ir_distances);
             
             %% START CODE BLOCK %%
             
             % Apply the transformation to robot frame.
             
-            ir_distances_sf = zeros(3,n_sensors);
+            ir_distances_rf = zeros(3,n_sensors);
             for i=1:n_sensors
                 x_s = obj.sensor_placement(1,i);
                 y_s = obj.sensor_placement(2,i);
                 theta_s = obj.sensor_placement(3,i);
                 
                 R = obj.get_transformation_matrix(x_s,y_s,theta_s);
-                ir_distances_sf(:,i) = zeros(3,1);
+                ir_distances_rf(:,i) = zeros(3,1);
             end
             
             % Apply the transformation to world frame.
@@ -143,11 +143,11 @@ classdef AvoidObstacles < simiam.controller.Controller
             [x,y,theta] = state_estimate.unpack();
             
             R = obj.get_transformation_matrix(x,y,theta);
-            ir_distances_rf = zeros(3,5);
+            ir_distances_wf = zeros(3,5);
             
             %% END CODE BLOCK %%
             
-            ir_distances_rf = ir_distances_rf(1:2,:);
+            ir_distances_wf = ir_distances_wf(1:2,:);
         end
         
         

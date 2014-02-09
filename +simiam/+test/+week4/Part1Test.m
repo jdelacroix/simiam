@@ -10,15 +10,27 @@ classdef Part1Test < simiam.test.PartTest
         
         function result = run_test(input, root_path)
             
-            tokens = strsplit(input, ';');
+            x = cell2mat(regexp(input, 'x=[0-9]*.[0-9]*;', 'match'));
+            x = str2double(x(3:end-1));
             
-            inputs = struct();
-            for i = 1:(numel(tokens)-1)
-                token = strsplit(tokens{i}, '=');
-                key = token{1};
-                value = str2double(token{2});
-                inputs.(key) = value;
-            end
+            y = cell2mat(regexp(input, 'y=[0-9]*.[0-9]*;', 'match'));
+            y = str2double(y(3:end-1));
+            
+            theta = cell2mat(regexp(input, 'theta=[0-9]*.[0-9]*;', 'match'));
+            theta = str2double(theta(7:end-1));
+            
+            dist_1 = cell2mat(regexp(input, 'dist_1=[0-9]*.[0-9]*;', 'match'));
+            dist_1 = str2double(dist_1(8:end-1));
+            
+%             tokens = strsplit(input, ';');
+%             
+%             inputs = struct();
+%             for i = 1:(numel(tokens)-1)
+%                 token = strsplit(tokens{i}, '=');
+%                 key = token{1};
+%                 value = str2double(token{2});
+%                 inputs.(key) = value;
+%             end
             
             app = simiam.ui.AppWindow(root_path, 'testing');
             app.load_ui();
@@ -27,8 +39,9 @@ classdef Part1Test < simiam.test.PartTest
             
             app.simulator_.step([],[]);
             
-            ir_distances_wf = robot_s.supervisor.current_controller.apply_sensor_geometry([inputs.dist_1 0.3 0.3 inputs.dist_1 0.3], simiam.ui.Pose2D(inputs.x, inputs.y, inputs.theta));
-            
+%             ir_distances_wf = robot_s.supervisor.current_controller.apply_sensor_geometry([inputs.dist_1 0.3 0.3 inputs.dist_1 0.3], simiam.ui.Pose2D(inputs.x, inputs.y, inputs.theta));
+            ir_distances_wf = robot_s.supervisor.current_controller.apply_sensor_geometry([dist_1 0.3 0.3 dist_1 0.3], simiam.ui.Pose2D(x, y, theta));
+                        
             error_1 = norm(ir_distances_wf(:,1)-[ 0.3637; -0.0545]);
             error_2 = norm(ir_distances_wf(:,4)-[-0.0895; -0.2932]);
             

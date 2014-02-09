@@ -10,21 +10,25 @@ classdef Part2Test < simiam.test.PartTest
         
         function result = run_test(input, root_path)
             
-            tokens = strsplit(input, ';');
+            v = cell2mat(regexp(input, 'v=[0-9]*.[0-9]*;', 'match'));
+            v = str2double(v(3:end-1));
             
-            inputs = struct();
-            for i = 1:(numel(tokens)-1)
-                token = strsplit(tokens{i}, '=');
-                key = token{1};
-                value = str2double(token{2});
-                inputs.(key) = value;
-            end
+%             tokens = strsplit(input, ';');
+%             
+%             inputs = struct();
+%             for i = 1:(numel(tokens)-1)
+%                 token = strsplit(tokens{i}, '=');
+%                 key = token{1};
+%                 value = str2double(token{2});
+%                 inputs.(key) = value;
+%             end
             
             app = simiam.ui.AppWindow(root_path, 'testing');
             app.load_ui();
             
             robot_s = app.simulator_.world.robots.elementAt(1);
-            robot_s.supervisor.v = inputs.v;
+%             robot_s.supervisor.v = inputs.v;
+            robot_s.supervisor.v = v;
             
             hasMoved = false;
             timeS = 60;
