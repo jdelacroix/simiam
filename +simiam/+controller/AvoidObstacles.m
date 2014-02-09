@@ -82,7 +82,7 @@ classdef AvoidObstacles < simiam.controller.Controller
             u_ao = sum(u_i,2);
             
             % Compute the heading and error for the PID controller
-            theta_o = 0;
+            theta_ao = 0;
             e_k = 0;
             e_k = atan2(sin(e_k),cos(e_k));
             
