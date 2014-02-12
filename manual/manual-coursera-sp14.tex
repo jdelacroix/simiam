@@ -504,4 +504,114 @@ Here are a few pointers to help you migrate your own solutions from last week to
  \item You may replace the PID regulator in \texttt{+simiam/+controller/AvoidObstacles.m} with your own version from the previous week (i.e., use the PID code from \texttt{GoToGoal.m}).
 \end{enumerate}
 
+\subsection{Week 5}
+Start by downloading the new robot simulator for this week from the Week 5 assignment. This week you will be adding small improvements to  testing two arbitration mechanisms: blending and hard switches. Arbitration between the two controllers will allow the robot to drive to a goal, while not colliding with any obstacles on the way.
+
+\begin{enumerate}
+  \item Implement a simple control for the linear velocity, $v$, as a function of the angular velocity, $\omega$. Add it to both \texttt{+simiam/+controller/GoToGoal.m} and \texttt{+simiam/+controller/AvoidObstacles.m}.
+  
+  So far, we have implemented controllers that either steer the robot towards a goal location, or steer the robot away from an obstacle. In both cases, we have set the linear velocity, $v$, to a constant value of $0.1$ m/s or similar. While this approach works, it certainly leave plenty of room for improvement. We will improve the performance of both the go-to-goal and avoid-obstacles behavior by dynamically adjusting the linear velocity based on the angular velocity of the robot.
+  
+We previously learned that with a differential drive robot, we cannot, for example, drive the robot at the maximum linear and angular velocities. Each motor has a maximum and minimum angular velocity; therefore, there must be a trade-off between linear and angular velocities: linear velocity has to decrease in some cases for angular velocity to increase, and vice versa.
+  
+  We added the \texttt{ensure\_w} function over the last two weeks, which ensured that $\omega$ is achieved by scaling $v$. However, for example, one could improve the above strategy by letting the linear velocity be a function of the angular velocity \textit{and} the distance to the goal (or distance to the nearest obstacle).
+  
+  Improve your go-to-goal and avoid-obstacles controllers by adding a simple function that adjusts $v$ as function of $\omega$ and other information. For example, the linear velocity in the go-to-goal controller could be scaled by $\omega$ and the distance to the goal, such that the robot slows down as it reaches the goal. 
+  
+  \textbf{Note}: This part of the programming assignment is open ended and not checked by the automatic grader. Experiment as much as you like and feel free to share your results on the discussion forums.
+  
+  \item Combine your go-to-goal controller and avoid-obstacle controller into a single controller that blends the two behaviors. Implement it in \texttt{+simiam/+controller/AOandGTG.m}.
+  
+  It's time to implement the first type of arbitration mechanism between multiple controllers: \textit{blending}. The solutions to the go-to-goal and avoid-obstacles controllers have been combined into a single controller, \texttt{+simiam/+controller/AOandGTG.m}. However, one important piece is missing. \texttt{u\_gtg} is a vector pointing to the goal from the robot, and \texttt{u\_ao} is a vector pointing from the robot to a point in space away from obstacles. These two vectors need to be combined (blended) in some way into the vector \texttt{u\_ao\_gtg}, which should be a vector that points the robot both away from obstacles and towards the goal.
+  
+  The combination of the two vectors into \texttt{u\_ao\_gtg} should result in the robot driving to a goal without colliding with any obstacles in the way. Do not use \texttt{if/else} to pick between \texttt{u\_gtg} or \texttt{u\_ao}, but rather think about weighing each vector according to their importance, and then linearly combining the two vectors into a single vector, \texttt{u\_ao\_gtg}. For example,
+  \begin{eqnarray*}
+    \alpha &=& 0.75 \\
+    u_{\text{ao,gtg}} &=& \alpha u_{\text{gtg}}+(1-\alpha)u_{\text{ao}}
+  \end{eqnarray*}
+  In this example, the go-to-goal behavior is stronger than the avoid-obstacle behavior, but that \textit{may} not be the best strategy. $\alpha$ needs to be carefully tuned (or a different weighted linear combination needs to be designed) to get the best balance between go-to-goal and avoid-obstacles. To make life easier, consider using the normalized versions of $u_{\text{gtg}}$ and $u_{\text{ao}}$ defined in the video lecture.
+  
+  \item Implement the switching logic that switches between the go-to-goal controller and the avoid-obstacles controller, such that the robot avoids any nearby obstacles and drives to the goal when clear of any obstacles.
+  
+  The second type of arbitration mechanism is \textit{switching}. Instead of executing both go-to-goal and avoid-obstacles simultaneously, we will only execute one controller at a time, but switch between the two controllers whenever a certain condition is satisfied.
+  
+  In the \texttt{execute} function of \texttt{+simiam/+controller/+khepera3/K3Supervisor.m}, you will need to implement the switching logic between go-to-goal and avoid-obstacles. The supervisor has been extended since last week to support switching between different controllers (or states, where a state simply corresponds to one of the controllers being executed). In order to switch between different controllers (or states), the supervisor also defines a set of events. These events can be checked to see if they are true or false. The idea is to start of in some state (which runs a certain controller), check if a particular event has occured, and if so, switch to a new controller.
+  
+  The tools that you should will need to implement the switching logic:
+  \begin{enumerate}[(i)]
+    \item Four events can be checked with the \texttt{obj.check\_event(name)} function, where \texttt{name} is the name of the state:
+      \begin{itemize}
+        \item \texttt{`at\_obstacle'} checks to see if any of front sensors (all but the three IR sensors in the back of the robot) detect an obstacle at a distance less than \texttt{obj.d\_at\_obs}. Return \texttt{true} if this is the case, \texttt{false} otherwise.
+        \item \texttt{`at\_goal'} checks to see if the robot is within \texttt{obj.d\_stop} meters of the goal location.
+        \item \texttt{`unsafe'} checks to see if any of the front sensors detect an obstacle at a distance less than \texttt{obj.d\_unsafe}.
+        \item \texttt{`obstacle\_cleared'} checks to see if all of the front sensors report distances greater than \texttt{obj.d\_at\_obs} meters.
+      \end{itemize}
+    \item The \texttt{obj.switch\_state(name)} function switches between the states/controllers. There currently are four possible values that \texttt{name} can be:
+      \begin{itemize}
+        \item \texttt{`go\_to\_goal'} for the go-to-goal controller.
+        \item \texttt{`avoid\_obstacles'} for the avoid-obstacles controller.
+        \item \texttt{`ao\_and\_gtg'} for the blending controller.
+        \item \texttt{`stop'} for stopping the robot.
+      \end{itemize}
+  \end{enumerate}
+  
+  Implement the logic for switching to \texttt{avoid\_obstacles}, when \texttt{at\_obstacle} is true, switching to \texttt{go\_to\_goal} when \texttt{obstacle\_cleared} is true, and switching to \texttt{stop} when \texttt{at\_goal} is true. 
+  
+  
+  \textbf{Note:} Running the blending controller was implemented using these switching tools as an example. In the example, \texttt{check\_event('at\_goal')} was used to switch from \texttt{ao\_and\_gtg} to \texttt{stop} once the robot reaches the goal.
+  
+  \item Improve the switching arbitration by using the blended controller as an intermediary between the go-to-goal and avoid-obstacles controller.
+  
+  The blending controller's advantage is that it (hopefully) smoothly blends go-to-goal and avoid-obstacles together. However, when there are no obstacle around, it is better to purely use go-to-goal, and when the robot gets dangerously close, it is better to only use avoid-obstacles. The switching logic performs better in those kinds of situations, but jitters between go-to-goal and avoid-obstacle when close to a goal. A solution is to squeeze the blending controller in between the go-to-goal and avoid-obstacle controller.
+  
+  Implement the logic for switching to \texttt{ao\_and\_gtg}, when \texttt{at\_obstacle} is true, switching to \texttt{go\_to\_goal} when \texttt{obstacle\_cleared} is true, switching to \texttt{avoid\_obstacles} when \texttt{unsafe} is true, and switching to \texttt{stop} when \texttt{at\_goal} is true.
+\end{enumerate}
+
+\subsubsection*{How to test it all}
+
+To test your code, the simulator is set up to either use the blending arbitration mechanism or the switching arbitration mechanism. If \texttt{obj.is\_blending} is \texttt{true}, then blending is used, otherwise switching is used. 
+
+Here are some tips to the test the four parts:
+
+\begin{enumerate}
+  \item Test the first part with the second part. Uncomment the line:\begin{verbatim}
+      fprintf('(v,w) = (%0.3f,%0.3f)\n', outputs.v, outputs.w);\end{verbatim}
+    It is located with the code for the blending, which you will test in the next part. Watch \texttt{(v,w)} to make sure that when one increases, the other decreases.
+  \item Test the second part by setting \texttt{obj.is\_blending} to \texttt{true}. The robot should successfully navigate to the goal location $(1,1)$ without colliding with the obstacle that is in the way. Once the robot is near the goal, it should stop (you can adjust the stopping distance with \texttt{obj.d\_stop}). The output plot will likely look something similar to (depends on location of obstacles, and how the blending is implemented):
+    \begin{figure}[h]
+ \centering
+ \includegraphics[scale=0.5]{images/week-5-part-2.png}
+%  \caption{IR range to point transformation.}
+  \label{fig:week5part2}
+\end{figure}
+  \item Test the third part by setting \texttt{obj.is\_blending} to \texttt{false}. The robot should successfully navigate to the same goal location $(1,1)$ without colliding with the obstacle that is in the way. Once the robot is near the goal, it should stop. The output plot will likely look something similar to:
+    \begin{figure}[h!]
+ \centering
+ \includegraphics[scale=0.5]{images/week-5-part-3.png}
+%  \caption{IR range to point transformation.}
+  \label{fig:week5part3}
+\end{figure}\newpage
+  
+  Notice that the blue line is the current heading of the robot, the red line is the heading set by the go-to-goal controller, and the green line is the heading set by the avoid-obstacles controller. You should see that the robot switches frequently between the two during its journey. Also, you will see messages in the MATLAB window stating that a switch has occurred.
+  
+  \item Test the fourth part in the same way as the third part. This time, the output plot will likely look something similar to:
+  \begin{figure}[h]
+ \centering
+ \includegraphics[scale=0.5]{images/week-5-part-4.png}
+%  \caption{IR range to point transformation.}
+  \label{fig:week5part4}
+\end{figure}
+  
+  Notice that the controller still switches, but less often than before, because it now switches to the blended controller (cyan line) instead. Depending on how you set \texttt{obj.d\_unsafe} and \texttt{obj.d\_at\_obs}, the number of switches and between which controllers the supervisor switches may change. Experiment with different settings to observe their effect.
+    
+\end{enumerate}
+
+\subsubsection*{How to migrate your solutions from last week}
+Here are a few pointers to help you migrate your own solutions from last week to this week's simulator code. You only need to pay attention to this section if you want to use your own solutions, otherwise you can use what is provided for this week and skip this section.
+
+\begin{enumerate}
+ \item The simulator has seen a significant amount of changes from last week to support this week's programming exercises. It is \textbf{recommended} that you do not overwrite any of the files this week with your solutions from last week.
+ \item However, you can selectively replace the sections delimited last week (by \texttt{START/END CODE BLOCK}) in \texttt{GoToGoal.m} and \texttt{AvoidObstacles.m}, as well as the sections that were copied from each into \texttt{AOandGTG.m}.
+\end{enumerate}
+
 \end{document}
