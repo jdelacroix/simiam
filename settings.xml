@@ -8,7 +8,7 @@
     </robot>
     
     <obstacle>
-      <pose x="-0.2" y="0.2" theta="0" />
+      <pose x="-0.1" y="-0.4" theta="0" />
       <geometry>
         <point x="0" y="0" />
         <point x="0.6" y="0" />
@@ -18,7 +18,7 @@
     </obstacle>
 
     <obstacle>
-      <pose x="-0.2" y="0.2" theta="1.5708" />
+      <pose x="-0.4" y="0.0" theta="1.0472" />
       <geometry>
         <point x="0" y="0" />
         <point x="0.6" y="0" />

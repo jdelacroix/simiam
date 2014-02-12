@@ -46,6 +46,10 @@ classdef Controller < handle
             outputs = [];
         end
         
+        function reset(obj)
+            
+        end
+        
     end % methods
     
 end

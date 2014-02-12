@@ -81,10 +81,10 @@ classdef QBSupervisor < simiam.controller.Supervisor
             obj.prev_ticks = struct('left', 0, 'right', 0);
             
             obj.theta_d     = pi/4;
-            obj.v           = 0.2;
+            obj.v           = 0.15;
             obj.goal        = [-1, 1];
             obj.d_stop      = 0.05;
-            obj.d_at_obs    = 0.16;                
+            obj.d_at_obs    = 0.12;                
             obj.d_unsafe    = 0.08;
             
             obj.is_blending = true;
@@ -176,8 +176,6 @@ classdef QBSupervisor < simiam.controller.Supervisor
             end
         end
         
-        
-        
         %% Output shaping
         
         function [vel_r, vel_l] = ensure_w(obj, robot, v, w)
@@ -266,6 +264,7 @@ classdef QBSupervisor < simiam.controller.Supervisor
                         obj.set_current_controller(obj.states{i}.controller);
                         obj.current_state = i;
                         fprintf('switching to state %s\n', name);
+                        obj.states{i}.controller.reset();
                         return;
                     end
                 end

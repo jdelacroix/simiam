@@ -33,9 +33,9 @@ classdef AOandGTG < simiam.controller.Controller
             obj = obj@simiam.controller.Controller('ao_and_gtg');            
             obj.calibrated = false;
             
-            obj.Kp = 5;
-            obj.Ki = 0.1;
-            obj.Kd = 0.1;
+            obj.Kp = 4;
+            obj.Ki = 0.01;
+            obj.Kd = 0.01;
             
             obj.E_k = 0;
             obj.e_k_1 = 0;
@@ -76,7 +76,7 @@ classdef AOandGTG < simiam.controller.Controller
             u_gtg = u_gtg/norm(u_gtg);
             u_ao = u_ao/norm(u_ao);
             
-            alpha = 0.3;
+            alpha = 0.325;
             u_ao_gtg = alpha*u_gtg+(1-alpha)*u_ao;
             
             %% END CODE BLOCK %%
@@ -146,6 +146,12 @@ classdef AOandGTG < simiam.controller.Controller
         
         function R = get_transformation_matrix(obj, x, y, theta)
             R = [cos(theta) -sin(theta) x; sin(theta) cos(theta) y; 0 0 1];
+        end
+        
+        function reset(obj)
+            % Reset accumulated and previous error
+            obj.E_k = 0;
+            obj.e_k_1 = 0;
         end
         
     end
