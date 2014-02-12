@@ -37,6 +37,8 @@ classdef QBSupervisor < simiam.controller.Supervisor
         w_max_v0            % QuickBot's max angular velocity when v=0
         v_min_w0
         w_min_v0
+        
+        is_blending
     end
     
     methods
@@ -85,6 +87,8 @@ classdef QBSupervisor < simiam.controller.Supervisor
             obj.d_at_obs    = 0.16;                
             obj.d_unsafe    = 0.08;
             
+            obj.is_blending = true;
+            
             obj.p = simiam.util.Plotter();
             obj.current_controller.p = obj.p;
         end
@@ -103,8 +107,22 @@ classdef QBSupervisor < simiam.controller.Supervisor
             inputs.x_g = obj.goal(1);
             inputs.y_g = obj.goal(2);
             
-            if obj.check_event('at_goal')
+            if(obj.is_blending)
+                % The following (finite state machine) logic sets the
+                % blending controller as the current controller until the
+                % robot arrives at the goal.
+                
+                if(obj.check_event('at_goal'))
+                    obj.switch_to_state('stop');
+                else
+                    obj.switch_to_state('ao_and_gtg');
+                end                
+            else
+                %% START CODE BLOCK %%
+                
                 obj.switch_to_state('stop');
+                
+                %% END CODE BLOCK %%
             end
             
             outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
