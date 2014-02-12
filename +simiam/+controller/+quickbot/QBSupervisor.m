@@ -50,9 +50,12 @@ classdef QBSupervisor < simiam.controller.Supervisor
             obj.controllers{3} = simiam.controller.GoToGoal();
             obj.controllers{4} = simiam.controller.AvoidObstacles();
             
+            obj.controllers{5} = simiam.controller.joystick.JoystickUnicycle();
+            obj.controllers{6} = simiam.controller.joystick.JoystickTankDrive();
+            
             % set the initial controller
-            obj.current_controller = obj.controllers{4};
-            obj.current_state = 4;
+            obj.current_controller = obj.controllers{6};
+            obj.current_state = 6;
             
             % generate the set of states
             for i = 1:length(obj.controllers)
@@ -71,7 +74,7 @@ classdef QBSupervisor < simiam.controller.Supervisor
             obj.goal        = [-1, 1];
             obj.d_stop      = 0.05;
             
-            obj.p = simiam.util.Plotter();
+            obj.p = []; % simiam.util.Plotter();
             obj.current_controller.p = obj.p;
         end
         
@@ -84,8 +87,10 @@ classdef QBSupervisor < simiam.controller.Supervisor
         
             obj.update_odometry();
         
-            inputs = obj.controllers{4}.inputs;
-            inputs.v = obj.v;
+            inputs = obj.controllers{5}.inputs;
+            inputs.v_max = obj.v_max_w0;
+            inputs.w_max = obj.w_max_v0;
+            inputs.vel_max = obj.robot.max_vel;
             
             outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
                 
