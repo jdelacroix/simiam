@@ -518,7 +518,7 @@ We previously learned that with a differential drive robot, we cannot, for examp
   
   Improve your go-to-goal and avoid-obstacles controllers by adding a simple function that adjusts $v$ as function of $\omega$ and other information. For example, the linear velocity in the go-to-goal controller could be scaled by $\omega$ and the distance to the goal, such that the robot slows down as it reaches the goal. 
   
-  \textbf{Note}: This part of the programming assignment is open ended and not checked by the automatic grader. Experiment as much as you like and feel free to share your results on the discussion forums.
+  \textbf{Note}: This part of the programming assignment is open ended and not checked by the automatic grader, but it will help with the other parts of this assignment.
   
   \item Combine your go-to-goal controller and avoid-obstacle controller into a single controller that blends the two behaviors. Implement it in \texttt{+simiam/+controller/AOandGTG.m}.
   
@@ -576,7 +576,7 @@ Here are some tips to the test the four parts:
 \begin{enumerate}
   \item Test the first part with the second part. Uncomment the line:\begin{verbatim}
       fprintf('(v,w) = (%0.3f,%0.3f)\n', outputs.v, outputs.w);\end{verbatim}
-    It is located with the code for the blending, which you will test in the next part. Watch \texttt{(v,w)} to make sure that when one increases, the other decreases.
+    It is located with the code for the blending, which you will test in the next part. Watch \texttt{(v,w)} to make sure your function works as intended.
   \item Test the second part by setting \texttt{obj.is\_blending} to \texttt{true}. The robot should successfully navigate to the goal location $(1,1)$ without colliding with the obstacle that is in the way. Once the robot is near the goal, it should stop (you can adjust the stopping distance with \texttt{obj.d\_stop}). The output plot will likely look something similar to (depends on location of obstacles, and how the blending is implemented):
     \begin{figure}[h]
  \centering
