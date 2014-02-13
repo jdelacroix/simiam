@@ -39,6 +39,7 @@ classdef QBSupervisor < simiam.controller.Supervisor
         w_min_v0
         
         is_blending
+        switch_count
     end
     
     methods
@@ -84,13 +85,15 @@ classdef QBSupervisor < simiam.controller.Supervisor
             obj.v           = 0.15;
             obj.goal        = [-1, 1];
             obj.d_stop      = 0.05;
-            obj.d_at_obs    = 0.12;                
-            obj.d_unsafe    = 0.08;
+            obj.d_at_obs    = 0.25;                
+            obj.d_unsafe    = 0.10;
             
             obj.is_blending = true;
             
             obj.p = simiam.util.Plotter();
             obj.current_controller.p = obj.p;
+            
+            obj.switch_count = 0;
         end
         
         function execute(obj, dt)
@@ -120,7 +123,25 @@ classdef QBSupervisor < simiam.controller.Supervisor
             else
                 %% START CODE BLOCK %%
                 
-                obj.switch_to_state('stop');
+%                 obj.switch_to_state('stop');
+                
+                if (obj.check_event('at_goal'))
+                    obj.switch_to_state('stop');
+                elseif (obj.check_event('unsafe'))
+                    obj.switch_to_state('avoid_obstacles');
+                elseif (obj.check_event('at_obstacle'))
+                    obj.switch_to_state('ao_and_gtg');
+                else
+                    obj.switch_to_state('go_to_goal');
+                end
+
+%                 if (obj.check_event('at_goal'))
+%                     obj.switch_to_state('stop');
+%                 elseif (obj.check_event('at_obstacle'))
+%                     obj.switch_to_state('avoid_obstacles');
+%                 else
+%                     obj.switch_to_state('go_to_goal');
+%                 end
                 
                 %% END CODE BLOCK %%
             end
@@ -175,6 +196,8 @@ classdef QBSupervisor < simiam.controller.Supervisor
                 rc = true;
             end
         end
+        
+        
         
         %% Output shaping
         
@@ -265,6 +288,7 @@ classdef QBSupervisor < simiam.controller.Supervisor
                         obj.current_state = i;
                         fprintf('switching to state %s\n', name);
                         obj.states{i}.controller.reset();
+                        obj.switch_count = obj.switch_count + 1;
                         return;
                     end
                 end

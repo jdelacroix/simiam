@@ -51,7 +51,7 @@ classdef AvoidObstacles < simiam.controller.Controller
             % Unpack state estimate
             [x, y, theta] = state_estimate.unpack();
             
-            % Poll the current IR sensor values 1-9
+            % Poll the current IR sensor values 1-5
             ir_distances = robot.get_ir_distances();
                         
             % Interpret the IR sensor measurements geometrically
@@ -59,7 +59,7 @@ classdef AvoidObstacles < simiam.controller.Controller
             
             % 1. Compute the heading vector for obstacle avoidance
             
-            sensor_gains = [2 1 1 1 2];
+            sensor_gains = [1 1 0.5 1 1];
             u_i = (ir_distances_wf-repmat([x;y],1,5))*diag(sensor_gains);
             u_ao = sum(u_i,2);
             
@@ -84,7 +84,7 @@ classdef AvoidObstacles < simiam.controller.Controller
                         
             % plot  
             obj.p.plot_2d_ref(dt, theta, theta_ao, 'g');
-            
+                        
 %             fprintf('(v,w) = (%0.4g,%0.4g)\n', v,w);
 
             outputs.v = v;

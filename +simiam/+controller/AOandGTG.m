@@ -61,7 +61,7 @@ classdef AOandGTG < simiam.controller.Controller
             
             % 1. Compute the heading vector for obstacle avoidance
             
-            sensor_gains = [2 1 1 1 2];
+            sensor_gains = [1 1 0.5 1 1];
             u_i = (ir_distances_wf-repmat([x;y],1,5))*diag(sensor_gains);
             u_ao = sum(u_i,2);
             
@@ -76,7 +76,7 @@ classdef AOandGTG < simiam.controller.Controller
             u_gtg = u_gtg/norm(u_gtg);
             u_ao = u_ao/norm(u_ao);
             
-            alpha = 0.325;
+            alpha = 0.4;
             u_ao_gtg = alpha*u_gtg+(1-alpha)*u_ao;
             
             %% END CODE BLOCK %%

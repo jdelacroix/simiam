@@ -1,6 +1,6 @@
 <coversheet>
     
-    <course identifier="conrob-002" week="4" />
+    <course identifier="conrob-002" week="5" />
     
     <assignment week="1">
         <part identifier="k3pa0rK4" title="Running the simulator" test="week1.Part1Test" />
@@ -21,6 +21,11 @@
     <assignment week="4">
         <part identifier="n6Td5e5B" title="From IR distances to points in the World" test="week4.Part1Test" />
         <part identifier="sw7on7mK" title="Avoiding collisions for 60 seconds" test="week4.Part2Test" />
+    </assignment>
+    
+    <assignment week="5">
+        <part identifier="HChwie7B" title="Collision-free navigation with blending" test="week5.Part1Test" />
+        <part identifier="7TGoq1mz" title="Collision-free navigation with switching" test="week5.Part2Test" />
     </assignment>
     
 </coversheet>
