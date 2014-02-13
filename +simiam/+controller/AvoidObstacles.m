@@ -67,8 +67,6 @@ classdef AvoidObstacles < simiam.controller.Controller
             theta_ao = atan2(u_ao(2),u_ao(1));
             e_k = theta_ao-theta;
             e_k = atan2(sin(e_k),cos(e_k));
-                        
-            e_k = atan2(sin(e_k),cos(e_k));
             
             e_P = e_k;
             e_I = obj.E_k + e_k*dt;

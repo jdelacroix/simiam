@@ -123,25 +123,7 @@ classdef QBSupervisor < simiam.controller.Supervisor
             else
                 %% START CODE BLOCK %%
                 
-%                 obj.switch_to_state('stop');
-                
-                if (obj.check_event('at_goal'))
-                    obj.switch_to_state('stop');
-                elseif (obj.check_event('unsafe'))
-                    obj.switch_to_state('avoid_obstacles');
-                elseif (obj.check_event('at_obstacle'))
-                    obj.switch_to_state('ao_and_gtg');
-                else
-                    obj.switch_to_state('go_to_goal');
-                end
-
-%                 if (obj.check_event('at_goal'))
-%                     obj.switch_to_state('stop');
-%                 elseif (obj.check_event('at_obstacle'))
-%                     obj.switch_to_state('avoid_obstacles');
-%                 else
-%                     obj.switch_to_state('go_to_goal');
-%                 end
+                obj.switch_to_state('stop');
                 
                 %% END CODE BLOCK %%
             end
