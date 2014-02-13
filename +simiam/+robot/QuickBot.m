@@ -336,13 +336,12 @@ classdef QuickBot < simiam.robot.Robot
             distances = cell2mat(varargin);
             nSensors = numel(distances);
             
-%             coeff = [-10749        10994      -4448.1       906.57      -98.411       5.4958];
             coeff = [-10749.324, 10994.428, -4448.079, 906.570, -98.411, 5.496];
             
             voltages = zeros(nSensors, 1);
             for i = 1:nSensors
                 voltages(i) = polyval(coeff, distances(i));
-                fprintf('%0.3f, %0.3f\n', distances(i), voltages(i));
+%                 fprintf('%0.3f, %0.3f\n', distances(i), voltages(i));
             end
                 
             raw = min(max(round(voltages*1000/3), 133), 917);
