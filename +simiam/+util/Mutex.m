@@ -14,12 +14,12 @@ classdef Mutex < handle
         end
         
         function acquire(obj, owner)
-            if (get(obj.handle, 'UserData') == owner)
-                fprintf('You have already acquired this mutex.\n');
-            else
+%             if (get(obj.handle, 'UserData') == owner)
+%                 fprintf('You have already acquired this mutex.\n');
+%             else
                 waitfor(obj.handle, 'UserData', []);
                 set(obj.handle, 'UserData', owner);
-            end
+%             end
         end
         
         function release(obj, owner)
