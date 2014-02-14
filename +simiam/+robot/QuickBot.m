@@ -219,7 +219,6 @@ classdef QuickBot < simiam.robot.Robot
         
         function pose_new = update_state_from_hardware(obj, pose, dt)
             
-            tstart = tic;
             encoder_ticks = obj.driver.get_encoder_ticks();
             
             if (~isempty(encoder_ticks))
@@ -228,7 +227,6 @@ classdef QuickBot < simiam.robot.Robot
             end
             
             ir_raw_values = obj.driver.get_ir_raw_values();
-            fprintf('TIMIING HARDWARE: %0.3fs\n', toc(tstart));
             
             if (~isempty(ir_raw_values))
                 ir_voltages = ir_raw_values*3/1000;

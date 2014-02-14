@@ -101,7 +101,9 @@ classdef QuickBotDriver < handle
                 if strcmp(get(obj.clock, 'Running'), 'on')
                     stop(obj.clock);
                 end
+                obj.mutex_.release(obj);
                 obj.set_speeds(0,0);
+                obj.update_speeds();
                 fprintf('Closing network connection to robot.\n');
                 fclose(obj.socket);
                 obj.is_connected = false;
