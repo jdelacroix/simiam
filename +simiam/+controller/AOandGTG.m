@@ -79,9 +79,8 @@ classdef AOandGTG < simiam.controller.Controller
             
             % 4. Compute the heading and error for the PID controller
             theta_ao_gtg = atan2(u_ao_gtg(2),u_ao_gtg(1));
+            
             e_k = theta_ao_gtg-theta;
-            e_k = atan2(sin(e_k),cos(e_k));
-                        
             e_k = atan2(sin(e_k),cos(e_k));
             
             e_P = e_k;
