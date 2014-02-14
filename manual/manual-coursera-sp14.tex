@@ -233,6 +233,7 @@ This week's exercises will help you learn about MATLAB and robot simulator:
 \item Familiarize yourself with the simulator by reading this manual and downloading the robot simulator posted on the \href{https://class.coursera.org/conrob-002/wiki/ProgrammingAssignments}{\textit{Programming Assignments}} section on the Coursera page.
 \end{enumerate}
 
+\newpage
 \subsection{Week 2}
 \label{sec:week-2}
 Start by downloading the robot simulator for this week from the \href{https://class.coursera.org/conrob-002/assignment/view?assignment_id=5}{Week 2 programming assignment}. Before you can design and test controllers in the simulator, you will need to implement three components of the simulator:
@@ -305,6 +306,7 @@ To test your code, the simulator will is set to run a single P-regulator that wi
   This \texttt{for} loop will print out the IR distances. If there are no obstacles (for example, walls) around the robot, these values should be close (if not equal to) $0.3$m. Once the robot gets within range of a wall, these values should decrease for some of the IR sensors (depending on which ones can sense the obstacle). \texttt{Note:} The robot will eventually collide with the wall, because we have not designed an obstacle avoidance controller yet!
 \end{enumerate}
 
+\newpage
 \subsection{Week 3}
 
 Start by downloading the new robot simulator for this week from the \href{}{Week 3 programming assignment}. This week you will be implementing the different parts of a PID regulator that steers the robot successfully to some goal location. This is known as the go-to-goal behavior:
@@ -406,9 +408,10 @@ Here are a few pointers to help you migrate your own solutions from last week to
 \begin{enumerate}
  \item You may overwrite \texttt{+simiam/+robot/+dynamics/DifferentialDrive.m} with your own version from last week.
  \item You should not overwrite \texttt{+simiam/+robot/QuickBot.m} with your own version from last week! Many changes were made to this file for this week.
- \item You should not overwrite \texttt{+simiam/+controller/+quickbot/QBSupervisor.m}! However, to use your own solution to the odometry, you can replace the provided \texttt{update\_odometry} function in \texttt{K3Supervisor.m} with your own version from last week.
+ \item You should not overwrite \texttt{+simiam/+controller/+quickbot/QBSupervisor.m}! However, to use your own solution to the odometry, you can replace the provided \texttt{update\_odometry} function in \texttt{QBSupervisor.m} with your own version from last week.
 \end{enumerate}
 
+\newpage
 \subsection{Week 4}
 
 Start by downloading the new robot simulator for this week from the Week 4 programming assignment. This week you will be implementing the different parts of a controller that steers the robot successfully away from obstacles to avoid a collision. This is known as the avoid-obstacles behavior. The IR sensors allow us to measure the distance to obstacles in the environment, but we need to compute the points in the world to which these distances correspond.
@@ -504,6 +507,7 @@ Here are a few pointers to help you migrate your own solutions from last week to
  \item You may replace the PID regulator in \texttt{+simiam/+controller/AvoidObstacles.m} with your own version from the previous week (i.e., use the PID code from \texttt{GoToGoal.m}).
 \end{enumerate}
 
+\newpage
 \subsection{Week 5}
 Start by downloading the new robot simulator for this week from the Week 5 assignment. This week you will be adding small improvements to  testing two arbitration mechanisms: blending and hard switches. Arbitration between the two controllers will allow the robot to drive to a goal, while not colliding with any obstacles on the way.
 
@@ -516,7 +520,7 @@ We previously learned that with a differential drive robot, we cannot, for examp
   
   We added the \texttt{ensure\_w} function over the last two weeks, which ensured that $\omega$ is achieved by scaling $v$. However, for example, one could improve the above strategy by letting the linear velocity be a function of the angular velocity \textit{and} the distance to the goal (or distance to the nearest obstacle).
   
-  Improve your go-to-goal and avoid-obstacles controllers by adding a simple function that adjusts $v$ as function of $\omega$ and other information. For example, the linear velocity in the go-to-goal controller could be scaled by $\omega$ and the distance to the goal, such that the robot slows down as it reaches the goal. 
+  Improve your go-to-goal and avoid-obstacles controllers by adding a simple function that adjusts $v$ as function of $\omega$ and other information. For example, the linear velocity in the go-to-goal controller could be scaled by $\omega$ and the distance to the goal, such that the robot slows down as it reaches the goal. However, remember that \texttt{ensure\_w} will scale $v$ up if it is too low to support $\omega$. You can think of your simple function as part of the controller design (what we would like the robot to do), while \texttt{ensure\_w} is part of the robot design (what the robot actually can do). 
   
   \textbf{Note}: This part of the programming assignment is open ended and not checked by the automatic grader, but it will help with the other parts of this assignment.
   
@@ -535,7 +539,7 @@ We previously learned that with a differential drive robot, we cannot, for examp
   
   The second type of arbitration mechanism is \textit{switching}. Instead of executing both go-to-goal and avoid-obstacles simultaneously, we will only execute one controller at a time, but switch between the two controllers whenever a certain condition is satisfied.
   
-  In the \texttt{execute} function of \texttt{+simiam/+controller/+khepera3/K3Supervisor.m}, you will need to implement the switching logic between go-to-goal and avoid-obstacles. The supervisor has been extended since last week to support switching between different controllers (or states, where a state simply corresponds to one of the controllers being executed). In order to switch between different controllers (or states), the supervisor also defines a set of events. These events can be checked to see if they are true or false. The idea is to start of in some state (which runs a certain controller), check if a particular event has occured, and if so, switch to a new controller.
+  In the \texttt{execute} function of \texttt{+simiam/+controller/+quickbot/QBSupervisor.m}, you will need to implement the switching logic between go-to-goal and avoid-obstacles. The supervisor has been extended since last week to support switching between different controllers (or states, where a state simply corresponds to one of the controllers being executed). In order to switch between different controllers (or states), the supervisor also defines a set of events. These events can be checked to see if they are true or false. The idea is to start of in some state (which runs a certain controller), check if a particular event has occured, and if so, switch to a new controller.
   
   The tools that you should will need to implement the switching logic:
   \begin{enumerate}[(i)]
