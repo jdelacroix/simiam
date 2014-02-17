@@ -42,6 +42,8 @@ classdef QBSupervisor < simiam.controller.Supervisor
         
         is_blending
         switch_count
+        
+        fw_direction
     end
     
     methods
@@ -92,9 +94,11 @@ classdef QBSupervisor < simiam.controller.Supervisor
             obj.d_unsafe    = 0.10;
             obj.d_fw        = 0.18;
             
+            obj.fw_direction   = 'left';
+            
             obj.is_blending = true;
             
-            obj.p = simiam.util.Plotter();
+            obj.p = []; % simiam.util.Plotter();
             obj.current_controller.p = obj.p;
             
             obj.switch_count = 0;
@@ -111,7 +115,7 @@ classdef QBSupervisor < simiam.controller.Supervisor
         
             inputs = obj.controllers{6}.inputs; 
             inputs.v = obj.v;
-            inputs.direction = 'right';
+            inputs.direction = obj.fw_direction;
             inputs.d_fw = obj.d_fw;
             
             outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
