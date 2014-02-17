@@ -129,8 +129,7 @@ classdef FollowWall < simiam.controller.Controller
 %             obj.p.plot_2d_ref(dt, atan2(sin(theta),cos(theta)), theta_fw, 'c');
             
 %             fprintf('(v,w) = (%0.4g,%0.4g)\n', v,w);            
-            % velocity control
-%             v = 0.25/(log(abs(w)+2)+1);
+
             outputs.v = v;
             outputs.w = w;
         end
