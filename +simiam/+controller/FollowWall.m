@@ -59,14 +59,14 @@ classdef FollowWall < simiam.controller.Controller
                 hold(robot.parent, 'on');
                 obj.v_t = plot(robot.parent, [0;0],[0;0],'r-', 'LineWidth', 2);
                 obj.v_p = plot(robot.parent, [0;0],[0;0],'b-', 'LineWidth', 2);
-                set(obj.v_t, 'ZData', [1;1]);
-                set(obj.v_p, 'ZData', [1;1]);
+                set(obj.v_t, 'ZData', [2;2]);
+                set(obj.v_p, 'ZData', [2;2]);
             end
             
             % Unpack state estimate
             [x, y, theta] = state_estimate.unpack();
             
-            % Poll the current IR sensor values 1-9
+            % Poll the current IR sensor values 1-5
             ir_distances = robot.get_ir_distances();
                         
             % Interpret the IR sensor measurements geometrically
@@ -97,8 +97,7 @@ classdef FollowWall < simiam.controller.Controller
                 
             else
                 % Pick two of the left sensors based on ir_distances
-                ir_distances(1:3)
-                S = [1:3 ; ir_distances(1:3)']
+                S = [1:3 ; ir_distances(1:3)'];
                 [Y,i] = sort(S(2,:));
                 S = S(1,i);
                 

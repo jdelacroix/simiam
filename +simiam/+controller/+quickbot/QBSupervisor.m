@@ -98,6 +98,8 @@ classdef QBSupervisor < simiam.controller.Supervisor
             obj.fw_direction   = 'left';
             %% END CODE BLOCK %%
             
+            obj.fw_direction   = 'left';
+            
             obj.is_blending = true;
             
             obj.p = []; % simiam.util.Plotter();
