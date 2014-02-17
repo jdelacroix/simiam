@@ -27,9 +27,11 @@ classdef QBSupervisor < simiam.controller.Supervisor
         v
         theta_d
         goal
+        
         d_stop
         d_at_obs
         d_unsafe
+        d_fw
         
         p
         
@@ -55,10 +57,11 @@ classdef QBSupervisor < simiam.controller.Supervisor
             obj.controllers{3} = simiam.controller.GoToGoal();
             obj.controllers{4} = simiam.controller.AvoidObstacles();
             obj.controllers{5} = simiam.controller.AOandGTG();
+            obj.controllers{6} = simiam.controller.FollowWall();
             
             % set the initial controller
-            obj.current_controller = obj.controllers{5};
-            obj.current_state = 5;
+            obj.current_controller = obj.controllers{6};
+            obj.current_state = 6;
             
             % generate the set of states
             for i = 1:length(obj.controllers)
@@ -87,6 +90,7 @@ classdef QBSupervisor < simiam.controller.Supervisor
             obj.d_stop      = 0.05;
             obj.d_at_obs    = 0.25;                
             obj.d_unsafe    = 0.10;
+            obj.d_fw        = 0.18;
             
             obj.is_blending = true;
             
@@ -105,28 +109,10 @@ classdef QBSupervisor < simiam.controller.Supervisor
         
             obj.update_odometry();
         
-            inputs = obj.controllers{5}.inputs;
+            inputs = obj.controllers{6}.inputs; 
             inputs.v = obj.v;
-            inputs.x_g = obj.goal(1);
-            inputs.y_g = obj.goal(2);
-            
-            if(obj.is_blending)
-                % The following (finite state machine) logic sets the
-                % blending controller as the current controller until the
-                % robot arrives at the goal.
-                
-                if(obj.check_event('at_goal'))
-                    obj.switch_to_state('stop');
-                else
-                    obj.switch_to_state('ao_and_gtg');
-                end                
-            else
-                %% START CODE BLOCK %%
-                
-                obj.switch_to_state('stop');
-                
-                %% END CODE BLOCK %%
-            end
+            inputs.direction = 'right';
+            inputs.d_fw = obj.d_fw;
             
             outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
                 
