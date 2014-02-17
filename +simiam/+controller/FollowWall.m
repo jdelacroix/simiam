@@ -45,6 +45,7 @@ classdef FollowWall < simiam.controller.Controller
             obj.E_k = 0;
             obj.e_k_1 = 0;
             
+            
 %             obj.p = simiam.util.Plotter();
         end
         
@@ -58,14 +59,14 @@ classdef FollowWall < simiam.controller.Controller
                 hold(robot.parent, 'on');
                 obj.v_t = plot(robot.parent, [0;0],[0;0],'r-', 'LineWidth', 2);
                 obj.v_p = plot(robot.parent, [0;0],[0;0],'b-', 'LineWidth', 2);
-                set(obj.v_t, 'ZData', [2;2]);
-                set(obj.v_p, 'ZData', [2;2]);
+                set(obj.v_t, 'ZData', [1;1]);
+                set(obj.v_p, 'ZData', [1;1]);
             end
             
             % Unpack state estimate
             [x, y, theta] = state_estimate.unpack();
             
-            % Poll the current IR sensor values 1-5
+            % Poll the current IR sensor values 1-9
             ir_distances = robot.get_ir_distances();
                         
             % Interpret the IR sensor measurements geometrically
@@ -74,34 +75,56 @@ classdef FollowWall < simiam.controller.Controller
             % Compute the heading vector
             d_fw = inputs.d_fw;
 
-            %% START CODE BLOCK %%
-            
             % 1. Select p_2 and p_1, then compute u_fw_t
             if(strcmp(inputs.direction,'right'))
                 % Pick two of the right sensors based on ir_distances
-                p_1 = ir_distances_wf(:,1);
-                p_2 = ir_distances_wf(:,1);
+                S = [1:3 ; ir_distances(5:-1:3)'];
+                [Y,i] = sort(S(2,:));
+                S = S(1,i);
+                
+                Sp = 5:-1:3;
+                
+                S1 = Sp(S(1));
+                S2 = Sp(S(2));
+                
+                if(S1 < S2)
+                    p_1 = ir_distances_wf(:,S2);
+                    p_2 = ir_distances_wf(:,S1);
+                else
+                    p_1 = ir_distances_wf(:,S1);
+                    p_2 = ir_distances_wf(:,S2);
+                end
+                
             else
                 % Pick two of the left sensors based on ir_distances
-                p_1 = ir_distances_wf(:,5);
-                p_2 = ir_distances_wf(:,5);
+                ir_distances(1:3)
+                S = [1:3 ; ir_distances(1:3)']
+                [Y,i] = sort(S(2,:));
+                S = S(1,i);
+                
+                if(S(1) > S(2))
+                    p_1 = ir_distances_wf(:,S(2));
+                    p_2 = ir_distances_wf(:,S(1));
+                else
+                    p_1 = ir_distances_wf(:,S(1));
+                    p_2 = ir_distances_wf(:,S(2));
+                end
             end
             
-            u_fw_t = [0;0];
+            u_fw_t = p_2-p_1;
 
             % 2. Compute u_a, u_p, and u_fw_tp to compute u_fw_p
             
-            u_fw_tp = [0;0];
-            u_a = [0;0];
-            u_p = [0;0];
+            u_fw_tp = u_fw_t/norm(u_fw_t);
+            u_a = p_1;
+            u_p = [x;y];
             
-            u_fw_p = [0;0];
+            u_fw_p = ((u_a-u_p)-((u_a-u_p)'*u_fw_tp)*u_fw_tp);
             
             % 3. Combine u_fw_tp and u_fw_pp into u_fw;
-            u_fw_pp = [0;0];
-            u_fw = u_fw_tp;
+            u_fw_pp = u_fw_p/norm(u_fw_p);
+            u_fw = d_fw*u_fw_tp+(u_fw_p-d_fw*u_fw_pp);
             
-            %% END CODE BLOCK %%
             
             % Compute the heading and error for the PID controller
             theta_fw = atan2(u_fw(2),u_fw(1));
