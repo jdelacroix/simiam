@@ -45,7 +45,6 @@ classdef FollowWall < simiam.controller.Controller
             obj.E_k = 0;
             obj.e_k_1 = 0;
             
-            
 %             obj.p = simiam.util.Plotter();
         end
         
@@ -75,55 +74,34 @@ classdef FollowWall < simiam.controller.Controller
             % Compute the heading vector
             d_fw = inputs.d_fw;
 
+            %% START CODE BLOCK %%
+            
             % 1. Select p_2 and p_1, then compute u_fw_t
             if(strcmp(inputs.direction,'right'))
                 % Pick two of the right sensors based on ir_distances
-                S = [1:3 ; ir_distances(5:-1:3)'];
-                [Y,i] = sort(S(2,:));
-                S = S(1,i);
-                
-                Sp = 5:-1:3;
-                
-                S1 = Sp(S(1));
-                S2 = Sp(S(2));
-                
-                if(S1 < S2)
-                    p_1 = ir_distances_wf(:,S2);
-                    p_2 = ir_distances_wf(:,S1);
-                else
-                    p_1 = ir_distances_wf(:,S1);
-                    p_2 = ir_distances_wf(:,S2);
-                end
-                
+                p_1 = ir_distances_wf(:,1);
+                p_2 = ir_distances_wf(:,1);
             else
                 % Pick two of the left sensors based on ir_distances
-                S = [1:3 ; ir_distances(1:3)'];
-                [Y,i] = sort(S(2,:));
-                S = S(1,i);
-                
-                if(S(1) > S(2))
-                    p_1 = ir_distances_wf(:,S(2));
-                    p_2 = ir_distances_wf(:,S(1));
-                else
-                    p_1 = ir_distances_wf(:,S(1));
-                    p_2 = ir_distances_wf(:,S(2));
-                end
+                p_1 = ir_distances_wf(:,5);
+                p_2 = ir_distances_wf(:,5);
             end
             
-            u_fw_t = p_2-p_1;
+            u_fw_t = [0;0];
 
             % 2. Compute u_a, u_p, and u_fw_tp to compute u_fw_p
             
-            u_fw_tp = u_fw_t/norm(u_fw_t);
-            u_a = p_1;
-            u_p = [x;y];
+            u_fw_tp = [0;0];
+            u_a = [0;0];
+            u_p = [0;0];
             
-            u_fw_p = ((u_a-u_p)-((u_a-u_p)'*u_fw_tp)*u_fw_tp);
+            u_fw_p = [0;0];
             
             % 3. Combine u_fw_tp and u_fw_pp into u_fw;
-            u_fw_pp = u_fw_p/norm(u_fw_p);
-            u_fw = d_fw*u_fw_tp+(u_fw_p-d_fw*u_fw_pp);
+            u_fw_pp = [0;0];
+            u_fw = u_fw_tp;
             
+            %% END CODE BLOCK %%
             
             % Compute the heading and error for the PID controller
             theta_fw = atan2(u_fw(2),u_fw(1));

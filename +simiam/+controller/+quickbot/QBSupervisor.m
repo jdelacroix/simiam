@@ -92,9 +92,11 @@ classdef QBSupervisor < simiam.controller.Supervisor
             obj.d_stop      = 0.05;
             obj.d_at_obs    = 0.25;                
             obj.d_unsafe    = 0.10;
-            obj.d_fw        = 0.18;
             
+            %% START CODE BLOCK %%
+            obj.d_fw        = 0.1;
             obj.fw_direction   = 'left';
+            %% END CODE BLOCK %%
             
             obj.is_blending = true;
             
