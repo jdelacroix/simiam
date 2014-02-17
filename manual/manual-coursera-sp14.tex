@@ -618,4 +618,101 @@ Here are a few pointers to help you migrate your own solutions from last week to
  \item However, you can selectively replace the sections delimited last week (by \texttt{START/END CODE BLOCK}) in \texttt{GoToGoal.m} and \texttt{AvoidObstacles.m}, as well as the sections that were copied from each into \texttt{AOandGTG.m}.
 \end{enumerate}
 
+\newpage
+\subsection{Week 6}
+
+Start by downloading the new robot simulator for this week from the Week 6 programming assignment. This week you will be implementing a wall following behavior that will aid the robot in navigating around obstacles. Implement these parts in \texttt{+simiam/+controller/+FollowWall.m}.
+
+\begin{enumerate}
+	\item Compute a vector, $u_{fw,t}$, that estimates a section of the obstacle (``wall'') next to the robot using the robot's right (or left) IR sensors.
+	
+	We will use the IR sensors to detect an obstacle and construct a vector that approximates a section of the obstacle (``wall''). In the figure, this vector, $u_{fw,t}$ (\texttt{u\_fw\_t}), is illustrated in red.
+	
+	\begin{figure}[h]
+		\centering
+		\includegraphics[scale=0.5]{images/week-6-part-1.png}
+		%  \caption{IR range to point transformation.}
+		\label{fig:week6part1}
+	\end{figure}
+	
+	The direction of the wall following behavior (whether it is follow obstacle on the left or right) is determined by \texttt{inputs.direction}, which can either be equal to \texttt{right} or \texttt{left}. Suppose we want to follow an obstacle to the \texttt{left} of the robot, then we would could use the left set of IR sensors (1-3). If we are following the wall, then at all times there should be at least one sensor that can detect the obstacle. So, we need to pick a second sensor and use the points corresponding to the measurements from these two sensors (see avoid-obstacles in Week 4) to form a line that estimates a section of the obstacle. In the figure above, sensors 1 and 2 are used to roughly approximate the edge of the obstacle. But what about corners?
+	
+	\begin{figure}[h]
+		\centering
+		\includegraphics[scale=0.5]{images/week-6-part-1b.png}
+		%  \caption{IR range to point transformation.}
+		\label{fig:week6part2}
+	\end{figure}
+	
+	Corners are trickier (see figure below), because typically only a single sensor will be able to detect the wall. The estimate is off as one can see in the figure, but as long as the robot isn't following the wall too closely, it will be ok.
+	
+	An example strategy for estimating a section of the wall is to pick the two sensors (from IR sensors 1-3) with the smallest reported measurement in \texttt{ir\_distances}. Suppose sensor 2 and 3 returned the smallest values, then let $p_1$ \texttt{= ir\_distances\_wf(:,2)} and $p_2$ \texttt{= ir\_distances\_wf(:,3)}. A vector that estimates a section of the obstacle is $u_{fw,t}=p_2-p_1$. 
+	
+	\textbf{Note}: It is important that the sensor with smaller ID (in the example, sensor 2) is assigned to $p_1$ (\texttt{p\_1}) and the sensor with the larger ID (in the example, sensor 3) is assigned to $p_2$ (\texttt{p\_2}), because we want that the vector points in the direction that the robot should travel.
+	
+	The figures correspond to the above example strategy, but you may want to experiment with different strategies for computing $u_{fw,t}$. A better estimate would make wall following safer and smoother when the robot navigates around the corners of obstacles. 
+	
+	\item Compute a vector, $u_{fw,p}$, that points from the robot to the closest point on $u_{fw,t}$.
+	
+	Now that we have the vector $u_{fw,t}$ (represented by the red line in the figures), we need to compute a vector $u_{fw,p}$ that points from the robot to the closest point on $u_{fw,t}$. This vector is visualized as blue line in the figures and can be computed using a little bit of linear algebra:
+	\begin{equation*}
+		\begin{split}
+			u'_{fw,t} &= \frac{u_{fw,t}}{\|u_{fw,t}\|}, \quad u_p = \begin{bmatrix} x \\ y \end{bmatrix}, \quad u_a = p_1 \\
+			u_{fw,p} &= (u_a-u_p)-((u_a-u_p)\cdot u'_{fw,t})u'_{fw,t}
+		\end{split}
+	\end{equation*}
+	$u_{fw,p}$ corresponds to \texttt{u\_fw\_p} and $u'_{fw,t}$ corresponds to \texttt{u\_fw\_tp} in the code. 
+	
+	\textbf{Note}: A small technicality is that we are computing $u_{fw,p}$ as the the vector pointing from the robot to the closest point on $u_{fw,t}$, as if $u_{fw,t}$ were infinitely long.
+	
+	\item Combine the two vectors, such that it can be used as a heading vector for a PID controller that will follow the wall to the right (or left) at some distance $d_{fw}$.
+	
+	The last step is to combine $u_{fw,t}$ and $u_{fw,p}$ such that the robot follows the obstacle all the way around at some distance $d_{fw}$ (\texttt{d\_fw}). $u_{fw,t}$ will ensure that the robot drives in a direction that is parallel to an edge on the obstacle, while $u_{fw,p}$ needs to be used to maintain a distance $d_{fw}$ from the obstacle.
+	
+	One way to achieve this is,
+	\begin{equation*}
+		u'_{fw,p} = u_{fw,p}-d_{fw}\frac{u_{fw,p}}{\|u_{fw,p}|},
+	\end{equation*} 
+	where $u'_{fw,p}$ (\texttt{u\_fw\_pp}) is now a vector points towards the obstacle when the distance to the obstacle, $d>d_{fw}$, is near zero when the robot is $d_{fw}$ away from the obstacle, and points away from the obstacle when $d<d_{fw}$.
+	
+	All that is left is to linearly combine $u'_{fw,t}$ and $u'_{fw,p}$ into a single vector $u_{fw}$ (\texttt{u\_fw}) that can be used with the PID controller to steer the robot along the obstacle at the distance $d_{fw}$.
+	
+	(\textit{Hint}: Think about how this worked with $u_{ao}$ and $u_{gtg}$ last week).	
+\end{enumerate}
+
+\subsubsection*{How to test it all}
+
+To test your code, the simulator is set up to run \texttt{+simiam/+controller/FollowWall.m}. First test the follow wall behaviour by setting \texttt{obj.fw\_direction = `left'} in \texttt{+simiam/+controller/+quickbot/}\texttt{QBSupervisor.m}. This will test the robot following the obstacle to its left (like in the figures). Then set \texttt{obj.fw\_direction = `right'}, and changed in \texttt{settings.xml} the initial theta of the robot to $\pi$:
+\begin{verbatim}
+     <pose x="0" y="0" theta="3.1416" />
+\end{verbatim}
+The robot is set up near the obstacle, so that it can start following it immediately. This is a valid situation, because we are assuming another behavior (like go-to-goal) has brought us near the obstacle. Here are some tips to the test the three parts:
+
+\begin{enumerate}
+	\item Set \texttt{u\_fw = u\_fw\_tp}. The robot starts off next to an obstacle and you should see that the red line approximately matches up with the edge of the obstacle (like in the figures above). The robot should be able to follow the obstacle all the way around.
+	
+	\textbf{Note}: Depending on how the edges of the obstacle are approximated, it is possible for the robot to peel off at one of the corners. This is not the case in the example strategy provided for the first part.
+	
+	\item If this part is implemented correctly, the blue line should point from the robot to the closest point on the red line.
+	
+	\begin{figure}[h]
+		\centering
+		\includegraphics[scale=0.5]{images/week-6-part-2.png}
+		%  \caption{IR range to point transformation.}
+		\label{fig:week6part2}
+	\end{figure}
+	
+% 	\textbf{Note}: Recall that we are computing $u_{fw,p}$ (the blue line) as the the vector pointing from the robot to the closest point on $u_{fw,t}$, as if $u_{fw,t}$ (the red line) were infinitely long. In the figure above, the red line is not drawn infinitely long, so the blue line does not touch the red line in this situation. However, if we were to extend the red line, we would see that the blue line correctly points to the closest point on the red line to the robot.
+	
+	\item Set \texttt{obj.d\_fw} to some distance in $[0.04,0.3]$ m. The robot should follow the wall at approximately the distance specified by \texttt{obj.d\_fw}. If the robot does not follow the wall at the specified distance, then $u'_{fw,p}$ is not given enough weight (or $u'_{fw,t}$ is given too much weight).
+	
+\end{enumerate}
+
+\subsubsection*{How to migrate your solutions from last week}
+Here are a few pointers to help you migrate your own solutions from last week to this week's simulator code. You only need to pay attention to this section if you want to use your own solutions, otherwise you can use what is provided for this week and skip this section.
+
+\begin{enumerate}
+ \item The only new addition to the simulator is \texttt{+simiam/+controller/FollowWall.m}. Everything else may be overwrite with the exception of \texttt{QBSupervisor.m}.
+\end{enumerate}
+
 \end{document}
