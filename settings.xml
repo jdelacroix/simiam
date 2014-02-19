@@ -8,23 +8,63 @@
     </robot>
     
     <obstacle>
-      <pose x="-0.2" y="0.2" theta="0" />
-      <geometry>
-        <point x="0" y="0" />
-        <point x="0.6" y="0" />
-        <point x="0.6" y="0.2" />
-        <point x="0" y="0.2" />
-      </geometry>
+        <pose x="-0.4" y="0.2" theta="0" />
+        <geometry>
+            <point x="0" y="0" />
+            <point x="0.8" y="0" />
+            <point x="0.8" y="0.2" />
+            <point x="0" y="0.2" />
+        </geometry>
     </obstacle>
-
+    
     <obstacle>
-      <pose x="-0.2" y="0.2" theta="1.5708" />
-      <geometry>
-        <point x="0" y="0" />
-        <point x="0.6" y="0" />
-        <point x="0.6" y="0.2" />
-        <point x="0" y="0.2" />
-      </geometry>
+        <pose x="-0.4" y="-0.2" theta="1.5708" />
+        <geometry>
+            <point x="0" y="0" />
+            <point x="0.6" y="0" />
+            <point x="0.6" y="0.2" />
+            <point x="0" y="0.2" />
+        </geometry>
+    </obstacle>
+    
+    <obstacle>
+        <pose x="0.4" y="0.4" theta="-1.5708" />
+        <geometry>
+            <point x="0" y="0" />
+            <point x="1.0" y="0" />
+            <point x="1.0" y="0.2" />
+            <point x="0" y="0.2" />
+        </geometry>
+    </obstacle>
+    
+    <obstacle>
+        <pose x="0" y="-0.6" theta="0" />
+        <geometry>
+            <point x="0" y="0" />
+            <point x="0.4" y="0" />
+            <point x="0.4" y="0.2" />
+            <point x="0" y="0.2" />
+        </geometry>
+    </obstacle>
+    
+    <obstacle>
+        <pose x="0.7" y="0.7" theta="0" />
+        <geometry>
+            <point x="0" y="0" />
+            <point x="0.2" y="0" />
+            <point x="0.2" y="0.2" />
+            <point x="0" y="0.2" />
+        </geometry>
+    </obstacle>
+    
+    <obstacle>
+        <pose x="0.7" y="0.7" theta="1.5708" />
+        <geometry>
+            <point x="0" y="0" />
+            <point x="0.4" y="0" />
+            <point x="0.4" y="0.2" />
+            <point x="0" y="0.2" />
+        </geometry>
     </obstacle>
     
     <obstacle>

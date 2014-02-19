@@ -1,4 +1,4 @@
-classdef FollowWall < simiam.controller.Controller
+classdef SlidingMode < simiam.controller.Controller
 
 % Copyright (C) 2013, Georgia Tech Research Corporation
 % see the LICENSE file included with this software
@@ -6,21 +6,16 @@ classdef FollowWall < simiam.controller.Controller
     properties
         
         % memory banks
-        E_k
-        e_k_1
-        
-        % gains
-        Kp
-        Ki
-        Kd
+        u_gtg
+        u_ao
+        u_fw
         
         % plot support
         p
         
         % sensor geometry
         calibrated
-        sensor_placement
-        
+        sensor_placement        
     end
     
     properties (Constant)
@@ -30,19 +25,10 @@ classdef FollowWall < simiam.controller.Controller
     
     methods
         
-        function obj = FollowWall()
-            obj = obj@simiam.controller.Controller('follow_wall');            
+        function obj = SlidingMode()
+            obj = obj@simiam.controller.Controller('sliding_mode');            
             obj.calibrated = false;
-            
-            obj.Kp = 2;
-            obj.Ki = 0;
-            obj.Kd = 0;
-            
-            obj.E_k = 0;
-            obj.e_k_1 = 0;
-            
-            
-%             obj.p = simiam.util.Plotter();
+            obj.p = [];
         end
         
         function outputs = execute(obj, robot, state_estimate, inputs, dt)
@@ -60,11 +46,17 @@ classdef FollowWall < simiam.controller.Controller
                         
             % Interpret the IR sensor measurements geometrically
             ir_distances_wf = obj.apply_sensor_geometry(ir_distances, state_estimate);            
+                        
+            % 1. Compute u_gtg
+            obj.u_gtg = [inputs.x_g-x; inputs.y_g-y];
             
-            % Compute the heading vector
-            d_fw = inputs.d_fw;
+            % 2. Compute u_ao
+            sensor_gains = [1 1 0.5 1 1];
+            u_i = (ir_distances_wf-repmat([x;y],1,5))*diag(sensor_gains);
+            obj.u_ao = sum(u_i,2);
+            
+            % 3. Compute u_fw (as if it originated from the robot)
 
-            % 1. Select p_2 and p_1, then compute u_fw_t
             if(strcmp(inputs.direction,'right'))
                 % Pick two of the right sensors based on ir_distances
                 S = [1:3 ; ir_distances(5:-1:3)'];
@@ -99,45 +91,12 @@ classdef FollowWall < simiam.controller.Controller
                 end
             end
             
-            u_fw_t = p_2-p_1;
-
-            % 2. Compute u_a, u_p, and u_fw_tp to compute u_fw_p
+            u_fw_t = p_2-p_1;                        
+            theta_fw = atan2(u_fw_t(2),u_fw_t(1));
+            obj.u_fw = [x+cos(theta_fw); y+sin(theta_fw)];
             
-            u_fw_tp = u_fw_t/norm(u_fw_t);
-            u_a = p_1;
-            u_p = [x;y];
-            
-            u_fw_p = ((u_a-u_p)-((u_a-u_p)'*u_fw_tp)*u_fw_tp);
-            
-            % 3. Combine u_fw_tp and u_fw_pp into u_fw;
-            u_fw_pp = u_fw_p/norm(u_fw_p);
-            u_fw = d_fw*u_fw_tp+(u_fw_p-d_fw*u_fw_pp);
-            
-            
-            % Compute the heading and error for the PID controller
-            theta_fw = atan2(u_fw(2),u_fw(1));
-            e_k = theta_fw-theta;
-            e_k = atan2(sin(e_k),cos(e_k));
-                                    
-            e_P = e_k;
-            e_I = obj.E_k + e_k*dt;
-            e_D = (e_k-obj.e_k_1)/dt;
-              
-            % PID control on w
-            v = inputs.v;
-            w = obj.Kp*e_P + obj.Ki*e_I + obj.Kd*e_D;
-            
-            % Save errors for next time step
-            obj.E_k = e_I;
-            obj.e_k_1 = e_k;
-                        
-            % plot
-%             obj.p.plot_2d_ref(dt, atan2(sin(theta),cos(theta)), theta_fw, 'c');
-            
-%             fprintf('(v,w) = (%0.4g,%0.4g)\n', v,w);            
-
-            outputs.v = v;
-            outputs.w = w;
+            outputs.v = 0;
+            outputs.w = 0;
         end
         
         % Helper functions
@@ -177,12 +136,6 @@ classdef FollowWall < simiam.controller.Controller
         
         function R = get_transformation_matrix(obj, x, y, theta)
             R = [cos(theta) -sin(theta) x; sin(theta) cos(theta) y; 0 0 1];
-        end
-        
-        function reset(obj)
-            % Reset accumulated and previous error
-            obj.E_k = 0;
-            obj.e_k_1 = 0;
         end
         
     end

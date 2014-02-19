@@ -78,7 +78,7 @@ classdef Simulator < handle
                     [x, y, theta] = robot_s.robot.update_state(robot_s.pose, split).unpack();
                 end
                 robot_s.pose.set_pose([x, y, theta]);
-                fprintf('current_pose: (%0.3f,%0.3f,%0.3f)\n', x, y, theta);
+%                 fprintf('current_pose: (%0.3f,%0.3f,%0.3f)\n', x, y, theta);
                 
                 robot_s.supervisor.execute(split);
             end

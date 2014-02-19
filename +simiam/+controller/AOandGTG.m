@@ -71,7 +71,7 @@ classdef AOandGTG < simiam.controller.Controller
             u_gtg = [x_g-x; y_g-y];
                         
             % 3. Blend the two vectors
-            alpha = 0.3;
+            alpha = 0.25;
             u_ao_gtg = alpha*u_gtg+(1-alpha)*u_ao;
                         
             % 4. Compute the heading and error for the PID controller
