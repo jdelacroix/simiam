@@ -682,7 +682,7 @@ Start by downloading the new robot simulator for this week from the Week 6 progr
 
 \subsubsection*{How to test it all}
 
-To test your code, the simulator is set up to run \texttt{+simiam/+controller/FollowWall.m}. First test the follow wall behaviour by setting \texttt{obj.fw\_direction = `left'} in \texttt{+simiam/+controller/+quickbot/}\texttt{QBSupervisor.m}. This will test the robot following the obstacle to its left (like in the figures). Then set \texttt{obj.fw\_direction = `right'}, and changed in \texttt{settings.xml} the initial theta of the robot to $\pi$:
+To test your code, the simulator is set up to run \texttt{+simiam/+controller/FollowWall.m}. First test the follow wall behaviour by setting \texttt{obj.fw\_direction = `left'} in \texttt{+simiam/+controller/+quickbot/}\texttt{QBSupervisor.m}. This will test the robot following the obstacle to its left (like in the figures). Then set \texttt{obj.fw\_direction = `right'}, and change in \texttt{settings.xml} the initial theta of the robot to $\pi$:
 \begin{verbatim}
      <pose x="0" y="0" theta="3.1416" />
 \end{verbatim}
