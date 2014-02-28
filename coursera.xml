@@ -1,6 +1,6 @@
 <coversheet>
     
-    <course identifier="conrob-002" week="6" />
+    <course identifier="conrob-002" week="7" />
     
     <assignment week="1">
         <part identifier="k3pa0rK4" title="Running the simulator" test="week1.Part1Test" />
@@ -31,6 +31,10 @@
     <assignment week="6">
         <part identifier="L6V17gUC" title="Two laps around the obstacle to the left" test="week6.Part1Test" />
         <part identifier="J12UGUtV" title="Two laps around the obstacle to the right" test="week6.Part2Test" />
+    </assignment>
+    
+    <assignment week="7">
+        <part identifier="jbZAu4c1" title="Navigating to the goal" test="week7.Part1Test" />
     </assignment>
     
 </coversheet>

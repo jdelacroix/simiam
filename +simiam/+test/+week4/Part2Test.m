@@ -46,8 +46,6 @@ classdef Part2Test < simiam.test.PartTest
                 end
             end
             
-            
-            
             % Export percent error between actual and estimated pose
             
             result = sprintf('%d', (app.is_state_crashed_ || ~hasMoved));
