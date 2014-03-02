@@ -22,7 +22,7 @@ classdef Part1Test < simiam.test.PartTest
             robot_s = app.simulator_.world.robots.elementAt(1);
             robot_s.supervisor.goal = [x_g, y_g];
             
-            timeS = 30;
+            timeS = 60;
             nSteps = timeS/app.simulator_.time_step;
             for i = 1:nSteps
                 app.simulator_.step([],[]);
