@@ -3,10 +3,14 @@ classdef QuickBotDriver < handle
 % Copyright (C) 2013, Georgia Tech Research Corporation
 % see the LICENSE file included with this software
     
+    properties (Hidden = true, SetAccess = private)
+        java_handle
+    end
+
     properties
         hostname
         port
-        socket
+        
         is_connected
         
         clock
@@ -23,11 +27,10 @@ classdef QuickBotDriver < handle
     
     methods
         function obj = QuickBotDriver(hostname, port)
+            obj.java_handle = javaObject('edu.gatech.gritslab.QuickBotConnector', hostname, port);
+            
             obj.hostname = hostname;
             obj.port = port;
-            obj.socket = udp(hostname, port, 'LocalPort', port);
-            set(obj.socket, 'Timeout', 0.5);
-            obj.is_connected = false;
             
             obj.update_dt = 0.2;
             obj.clock = timer('Period', obj.update_dt, ...
@@ -40,22 +43,15 @@ classdef QuickBotDriver < handle
         end
         
         function init(obj)
-            if strcmp(get(obj.socket, 'Status'), 'closed')
-                fprintf('Initializing network connection to robot.\n');
-                fopen(obj.socket);
-
-                command = '$CHECK*\n';
-                fprintf(obj.socket, command);
-                [reply, count] = fscanf(obj.socket);
-
-                if (count > 0 && strcmp(reply, sprintf('Hello from QuickBot\n')))
-                    fprintf('Network connection is live.\n');
-                    obj.is_connected = true;
-                    obj.reset();
-                    start(obj.clock);
-                else
-                    fprintf('Network connection failed.\n');
-                end
+            fprintf('Initializing network connection to robot.\n');
+            status = obj.java_handle.initialize();
+            if status
+                fprintf('Network connection is live.\n');
+                obj.is_connected = true;
+                obj.java_handle.reset();
+                start(obj.clock);
+            else
+                fprintf('Network connection failed.\n');
             end
         end
         
@@ -75,15 +71,6 @@ classdef QuickBotDriver < handle
             obj.mutex_.release(obj);
         end
         
-        function reset(obj)
-            if strcmp(get(obj.socket, 'Status'), 'open')
-                fprintf('Reset state of the QuickBot.\n');
-
-                command = '$RESET*\n';
-                fprintf(obj.socket, command);
-            end
-        end
-        
         function encoder_ticks = get_encoder_ticks(obj)
             obj.mutex_.acquire(obj);
             encoder_ticks = obj.encoder_ticks_;
@@ -97,7 +84,7 @@ classdef QuickBotDriver < handle
         end
         
         function obj = close(obj)
-            if strcmp(get(obj.socket, 'Status'), 'open')
+            if obj.is_connected
                 if strcmp(get(obj.clock, 'Running'), 'on')
                     stop(obj.clock);
                 end
@@ -105,7 +92,7 @@ classdef QuickBotDriver < handle
                 obj.set_speeds(0,0);
                 obj.update_speeds();
                 fprintf('Closing network connection to robot.\n');
-                fclose(obj.socket);
+                obj.java_handle.close();
                 obj.is_connected = false;
             end
         end
@@ -116,62 +103,23 @@ classdef QuickBotDriver < handle
         function update_speeds(obj)
             if obj.is_connected
                 obj.mutex_.acquire(obj);
-                command = ['$PWM=' num2str(obj.wheel_speeds_(2)) ',' num2str(obj.wheel_speeds_(1)) '*\n'];
+                obj.java_handle.setMotorPWM(obj.wheel_speeds_(1), obj.wheel_speeds_(2));
                 obj.mutex_.release(obj);
-                fprintf(obj.socket, command);
             end
         end
         
         function update_encoder_ticks(obj)
            if obj.is_connected
-               command = '$ENVAL=?*\n';
-               fprintf(obj.socket, command);
-               [reply, count] = fscanf(obj.socket);
-               
-               if (count > 0)
-%                    fprintf('Received reply: %s\n', reply);
-
-                   reply_array = regexp(reply,'(-?[0-9]*\.[0-9]*|nan)', 'match');
-                    
-                   encoder_ticks = zeros(numel(reply_array),1);
-                   
-                   for i = 1:numel(encoder_ticks)
-                       encoder_ticks(i) = str2double(reply_array{i});
-                   end
-               else   
-                   fprintf('Received no reply.\n');
-                   encoder_ticks = [];
-               end
-               
                obj.mutex_.acquire(obj);
-               obj.encoder_ticks_ = encoder_ticks;
+               obj.encoder_ticks_ = obj.java_handle.getEncoderTicks();
                obj.mutex_.release(obj);
            end
         end
         
         function update_ir_raw_values(obj)
             if obj.is_connected
-                command = '$IRVAL=?*\n';
-                fprintf(obj.socket, command);
-                [reply, count] = fscanf(obj.socket);
-                
-                if (count > 0)
-%                     fprintf('Received reply: %s\n', reply);
-                    
-                    reply_array = regexp(reply,'(-?[0-9]*\.[0-9]*|nan)', 'match');
-                    
-                    ir_raw_values = zeros(numel(reply_array),1);
-                    
-                    for i = 1:numel(ir_raw_values)
-                        ir_raw_values(i) = str2double(reply_array{i});
-                    end
-                else
-                    fprintf('Received no reply.\n');
-                    ir_raw_values = [];
-                end
-                
                 obj.mutex_.acquire(obj);
-                obj.ir_raw_values_ = ir_raw_values;
+                obj.ir_raw_values_ = obj.java_handle.getIREncodedValues();
                 obj.mutex_.release(obj);
             end
         end

@@ -14,6 +14,8 @@ else
 end
 addpath(genpath(root_path));
 
+javaaddpath(fullfile(root_path, 'java'));
+
 app = simiam.ui.AppWindow(root_path, 'launcher');
 app.load_ui();
 
