@@ -55,14 +55,23 @@ classdef AOandGTG < simiam.controller.Controller
             
             % Poll the current IR sensor values 1-9
             ir_distances = robot.get_ir_distances();
-                        
+            nSensors = numel(ir_distances);
+            
             % Interpret the IR sensor measurements geometrically
             ir_distances_wf = obj.apply_sensor_geometry(ir_distances, state_estimate);            
             
             % 1. Compute the heading vector for obstacle avoidance
             
-            sensor_gains = [1 1 0.5 1 1];
-            u_i = (ir_distances_wf-repmat([x;y],1,5))*diag(sensor_gains);
+%             sensor_gains = [1 1 0.5 1 1];
+            if (nSensors == 5)
+                % QuickBot
+                sensor_gains = [1 1 0.5 1 1];
+            elseif (nSensors == 9)
+                % Khepera3
+                sensor_gains = ones(1,nSensors);
+            end
+            
+            u_i = (ir_distances_wf-repmat([x;y],1,nSensors))*diag(sensor_gains);
             u_ao = sum(u_i,2);
             
             % 2. Compute the heading vector for go-to-goal
@@ -106,9 +115,10 @@ classdef AOandGTG < simiam.controller.Controller
         function ir_distances_wf = apply_sensor_geometry(obj, ir_distances, state_estimate)
                     
             % 1. Apply the transformation to robot frame.
+            nSensors = numel(ir_distances);
             
-            ir_distances_rf = zeros(3,5);
-            for i=1:5
+            ir_distances_rf = zeros(3,nSensors);
+            for i=1:nSensors
                 x_s = obj.sensor_placement(1,i);
                 y_s = obj.sensor_placement(2,i);
                 theta_s = obj.sensor_placement(3,i);
@@ -128,8 +138,10 @@ classdef AOandGTG < simiam.controller.Controller
         end
         
         function set_sensor_geometry(obj, robot)
-            obj.sensor_placement = zeros(3,5);
-            for i=1:5
+            nSensors = numel(robot.ir_array);
+            
+            obj.sensor_placement = zeros(3,nSensors);
+            for i=1:nSensors
                 [x, y, theta] = robot.ir_array(i).location.unpack();
                 obj.sensor_placement(:,i) = [x; y; theta];
             end                        

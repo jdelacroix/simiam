@@ -29,7 +29,7 @@ classdef DifferentialDrive < simiam.robot.dynamics.Dynamics
             [x_k, y_k, theta_k] = pose_t.unpack();
 
             options = odeset('RelTol',1e-8,'AbsTol',1e-8);
-            [t,z] = ode45(@obj.dynamics, [0 dt], [x_k, y_k, theta_k, v, w], options);
+            [t,z] = ode23(@obj.dynamics, [0 dt], [x_k, y_k, theta_k, v, w], options);
             
 %             x_k_1 = x_k + dt*(v*cos(theta_k));
 %             y_k_1 = y_k + dt*(v*sin(theta_k));
