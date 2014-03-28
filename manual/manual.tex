@@ -28,8 +28,7 @@
   \includegraphics[width=0.25\textwidth]{images/simiam-round-logo.png}
 \end{figure}
 
-\title{{\huge{\bf{Sim.I.am: A Robot Simulator }}} \\
-         Coursera: Control of Mobile Robots}
+\title{{\huge{\bf{Sim.I.am: A Robot Simulator }}}}
 \author{Jean-Pierre de la Croix}
 \date{Last Updated: \today}
 
@@ -37,25 +36,27 @@
 \tableofcontents
 \newpage
 \section{Introduction}
-This manual is going to be your resource for using the simulator with the programming assignments featured in the Coursera course, \textit{Control of Mobile Robots} (and included at the end of this manual). It will be updated from time to time whenever new features are added to the simulator or any corrections to the course material are made.
+This manual is going to be your resource for using the simulator with the programming assignments originally featured in the Coursera course, \textit{Control of Mobile Robots} (and included at the end of this manual). It will be updated from time to time whenever new features are added to the simulator.
 
 \subsection{Installation}
 
-Download \texttt{simiam-coursera-week-X.zip} (where X is the corresponding week number for the assignment) from the course page on Coursera under \href{https://class.coursera.org/conrob-002/wiki/ProgrammingAssignments}{\textit{Programming Assignments}}. Make sure to download a new copy of the simulator \textbf{before} you start a new week's programming assignment, or whenever an announcement is made that a new version is available. It is important to stay up-to-date, since new versions may contain important bug fixes or features required for the programming assignment.
+Download \texttt{simiam-coursera-week-X.zip} (where X is the corresponding week number for the assignment) from GitHub project page under \href{https://github.com/jdelacroix/simiam/releases}{\textit{Releases}}. Make sure to download a new copy of the simulator \textbf{before} you start a new week's programming assignment. It is important to stay up-to-date, since new versions may contain important bug fixes or features required for the programming assignments.
 
 Unzip the \texttt{.zip} file to any directory.
 
 \subsection{Requirements}
 
-You will need a reasonably modern computer to run the robot simulator. While the simulator will run on hardware older than a Pentium 4, it will probably be a very slow experience. You will also need a copy of MATLAB. 
-
-Thanks to support from MathWorks, a license for MATLAB and all required toolboxes is available to all students for the duration of the course. Check the \textit{Getting Started with MATLAB} section under \href{https://class.coursera.org/conrob-002/wiki/ProgrammingAssignments}{\textit{Programming Assignments}} on the course page for detailed instructions on how to download and install MATLAB on your computer.
+You will need a reasonably modern computer to run the robot simulator. While the simulator will run on hardware older than a Pentium 4, it will probably be a very slow experience. You will also need a copy of MATLAB.
 
 \subsection{Bug Reporting}
-If you run into a bug (issue) with the simulator, please create a post on the discussion forums in the \href{https://class.coursera.org/conrob-002/forum/list?forum_id=3}{\textit{Programming Assignments}} section. Make sure to leave a detailed description of the bug. Any questions or issues with MATLAB itself should be posted on the discussion forums in the \href{https://class.coursera.org/conrob-002/forum/list?forum_id=3}{\textit{MATLAB}} section.
+If you run into a bug (issue) with the simulator, please create a new issue in the \href{https://github.com/jdelacroix/simiam/issues?state=open}{\textit{Browse Issues}} section on the GitHub project page. Make sure to leave a detailed description of the bug.
 
 \newpage
 \section{Mobile Robot}
+
+The simulator currently supports two different mobile robot platforms: the \href{http://o-botics.org/robots/quickbot/mooc/v1/}{QuickBot} and the \href{http://www.k-team.com/mobile-robotics-products/khepera-iii}{Khepera III}. The QuickBot is featured in the programming exercises; however, the programming assignments can also be completed with the Khepera III.
+
+\subsection{QuickBot}
 
 The mobile robot you will be working with in the programming exercises is the QuickBot. The QuickBot is equipped with five infrared (IR) range sensors, of which three are located in the front and two are located on its sides. The QuickBot has a two-wheel differential drive system (two wheels, two motors) with a wheel encoder for each wheel. It is powered by two 4x AA battery packs on top and can be controlled via software on its embedded Linux computer, the BeagleBone Black. You can build the QuickBot yourself by following the hardware lectures in this course.
 
@@ -77,7 +78,7 @@ The mobile robot you will be working with in the programming exercises is the Qu
 
 Figure \ref{fig:quickbot} shows the simulated and actual QuickBot mobile robot. The robot simulator recreates the QuickBot as faithfully as possible. For example, the range, output, and field of view of the simulated IR range sensors match the specifications in the datasheet for the actual Sharp GP2D120XJ00F infrared proximity sensors on the QuickBot.
 
-\subsection{IR Range Sensors}\label{irprox}
+\subsubsection{IR Range Sensors}\label{irprox}
 You will have access to the array of five IR sensors that encompass the QuickBot. The orientation (relative to the body of the QuickBot, as shown in figure \ref{fig:simulated-quickbot}) of IR sensors 1 through 5 is $90^\circ, 45^\circ, 0^\circ$, $-45^\circ, -90^\circ$, respectively.I R range sensors are effective in the range $0.04$ m to $0.3$ m only. However, the IR sensors return raw values in the range of $[0.4,2.75] V$ instead of the measured distances. Figure \ref{fig:ir-volts-meters} demonstrates the function that maps these sensors values to distances. To complicate matters slightly, the BeagleBone Black digitizes the analog output voltage using a voltage divider and a 12-bit, 1.8V analog-to-digital converter (ADC). Figure \ref{fig:ir-adc} is a look-up table to demonstrate the relationship between the ADC output, the analog voltage from the IR proximity sensor, and the approximate distance that corresponds to this voltage.
 
 \begin{figure}[t]
@@ -139,7 +140,7 @@ Converting from the the analog output voltage to a distance is a little bit more
 
 It is important to note that the IR proximity sensor on the actual QuickBot will be influenced by ambient lighting and other sources of interference. For example, under different ambient lighting conditions, the same analog output voltage may correspond to different distances of an object from the IR proximity sensor. This effect of ambient lighting (and other sources of noise) is \textbf{not} modelled in the simulator, but will be apparent on the actual hardware.
 
-\subsection{Differential Wheel Drive}\label{diffdrive}
+\subsubsection{Differential Wheel Drive}\label{diffdrive}
 Since the QuickBot has a differential wheel drive (i.e., is not a unicyle), it has to be controlled by specifying the angular velocities of the right and left wheel $(v_r,v_l)$, instead of the linear and angular velocities of a unicycle $(v,\omega)$. These velocities are computed by a transformation from $(v,\omega)$ to $(v_r,v_\ell)$. Recall that the dynamics of the unicycle are defined as,
 \begin{equation}
  \begin{split}
@@ -169,7 +170,7 @@ The speed of the QuickBot can be set in the following way assuming that the \tex
 
 The maximum angular wheel velocity for the QuickBot is approximately 80 RPM or 8.37 rad/s. It is important to note that if the QuickBot is controlled ot move at maximum linear velocity, it is not possible to achieve any angular velocity, because the angular velocity of the wheel will have been maximized. Therefore, there exists a tradeoff between the linear and angular velocity of the QuickBot: \textit{the faster the robot should turn, the slower it has to move forward}.
 
-\subsection{Wheel Encoders}
+\subsubsection{Wheel Encoders}
 
 Each of the wheels is outfitted with a wheel encoder that increments or decrements a tick counter depending on whether the wheel is moving forward or backwards, respectively. Wheel encoders may be used to infer the relative pose of the robot. This inference is called \textbf{odometry}. The relevant information needed for odometry is the radius of the wheel ($32.5$mm), the distance between the wheels ($99.25$mm), and the number of ticks per revolution of the wheel ($16$ ticks/rev). For example,
 
@@ -184,6 +185,92 @@ Each of the wheels is outfitted with a wheel encoder that increments or decremen
 
 For more information about odometry, see Section \ref{sec:week-2}.
 
+\subsection{Khepera III}
+
+The mobile robot platform you will be using in the homeworks and projects is the Khepera III (K3) mobile robot. The K3 is equipped with 11 infrared (IR) range sensors, of which nine are located in a ring around it and two are located on the underside of the robot. The IR sensors are complemented by a set of five ultrasonic sensors. The K3 has a two-wheel differential drive with a wheel encoder for each wheel. It is powered by a single battery on the underside and can be controlled via software on its embedded Linux computer.
+
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}{0.45\textwidth}
+    \includegraphics[width=0.75\textwidth]{images/k3-sensors.png}
+    \caption{IR range sensor configuration}
+    \label{fig:k3sensors}
+  \end{subfigure}
+  \begin{subfigure}{0.45\textwidth}
+    \includegraphics[width=\textwidth]{images/k3-ir-sensor-graph.eps}
+    \caption{Sensor values vs. Measured Distance}
+    \label{fig:irvalues}
+  \end{subfigure}
+  \caption{The Khepera III mobile robot and its IR sensors in the simulator.}
+  \label{fig:k3}
+\end{figure}
+
+\subsubsection*{IR Range Sensors}
+For the purpose of the homeworks and projects in the class, you will have access to the array of nine IR sensors that encompass the K3. IR range sensors are effective in the range $0.02$ m to $0.2$ m only. However, the IR sensors return raw values in the range of $[18,3960]$ instead of the measured distances. Figure \ref{fig:irvalues} demonstrates the function that maps these sensors values to distances.
+
+The green plot represents the sensor model used in the simulator, while the blue and red plots show the sensor response of two different IR sensors (under different ambient lighting levels). The effect of ambient lighting (and other sources of noise) are \textbf{not} modelled in the simulator, but will be apparent on the actual hardware.
+
+The function that maps distances, denoted by $\Delta$, to sensor values is the following piecewise function:
+\begin{equation}
+ f(\Delta) =
+\begin{cases}
+3960, & \text{if } 0\text{m} \leq \Delta \leq 0.02\text{m} \\
+\lfloor3960e^{-30(\Delta-0.02)}\rfloor, & \text{if } 0.02\text{m} \leq \Delta \leq 0.2\text{m}
+\end{cases}
+\end{equation}
+
+Your controller can access the IR array through the \texttt{robot} object that is passed into the \texttt{execute} function. For example,
+\begin{verbatim}
+ for i=1:9
+    fprintf('IR #%d has a value of %d.\n', i, robot.ir_array(i).get_range());
+ end
+\end{verbatim}
+
+The orientation (relative to the body of the K3, as shown in figure \ref{fig:k3sensors}) of IR sensors 1 through 9 is $128^\circ, 75^\circ, 42^\circ$, $13^\circ, -13^\circ, -42^\circ, -75^\circ, -128^\circ$, and $180^\circ$, respectively.
+
+\subsubsection*{Ultrasonic Range Sensors}
+The ultrasonice range sensors have a sensing range of $0.2$m to $4$m, but are not available in the simulator.
+
+\subsubsection*{Differential Wheel Drive}
+Since the K3 has a differential wheel drive (i.e., is not a unicyle), it has to be controlled by specifying the rotational velocities of the right and left wheel. These velocities are computed by a transformation from $(v,\omega)$ to $(v_r,v_\ell)$. Recall that the dynamics of the unicycle are defined as,
+\begin{equation}
+ \begin{split}
+   \dot{x} &= vcos(\theta) \\
+   \dot{y} &= vsin(\theta) \\
+   \dot{\theta} &= \omega.
+ \end{split}
+\end{equation}
+The dynamics of the differential drive are defined as,
+\begin{equation}
+ \begin{split}
+  \dot{x} &= \frac{R}{2}(v_r+v_\ell)cos(\theta) \\
+  \dot{y} &= \frac{R}{2}(v_r+v_\ell)sin(\theta) \\
+  \dot{\theta} &= \frac{R}{L}(v_r-v_\ell),
+ \end{split}
+\end{equation}
+where $R$ is the radius of the wheels and $L$ is the distance between the wheels.
+
+The speed of the K3 can be set in the following way assuming that you have implemented the \texttt{uni\_to\_diff} function, which transforms $(v,\omega)$ to $(v_r,v_\ell)$:
+\begin{verbatim}
+ v = 0.15; % m/s
+ w = pi/4; % rad/s
+ % Transform from v,w to v_r,v_l and set the speed of the robot
+ [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(robot,v,w);
+\end{verbatim}
+
+
+\subsubsection*{Wheel Encoders}
+Each of the wheels is outfitted with a wheel encoder that increments or decrements a tick counter depending on whether the wheel is moving forward or backwards, respectively. Wheel encoders may be used to infer the relative pose of the robot. This inference is called \textbf{odometry}. The relevant information needed for odometry is the radius of the wheel, the distance between the wheels, and the number of ticks per revolution of the wheel.
+
+\begin{verbatim}
+ R = robot.wheel_radius; % radius of the wheel
+ L = robot.wheel_base_length; % distance between the wheels
+ tpr = robot.encoders(1).ticks_per_rev; % ticks per revolution for the right wheel
+
+ fprintf('The right wheel has a tick count of %d\n', robot.encoders(1).state);
+ fprintf('The left wheel has a tick count of %d\n', robot.encoders(2).state);
+\end{verbatim}
+
 \newpage
 \section{Simulator}
 
@@ -191,24 +278,12 @@ Start the simulator with the \texttt{launch} command in MATLAB from the command 
 
 \begin{figure}[h]
   \centering
-  \begin{subfigure}{0.45\textwidth}
-    \includegraphics[width=\textwidth]{images/simiam-quickbot.png}
+    \includegraphics[width=0.6\textwidth]{images/simiam-quickbot.png}
     \caption{Simulator}
     \label{fig:simulator}
-  \end{subfigure}
-  $\qquad$
-  \begin{subfigure}{0.4\textwidth}
-    \includegraphics[width=\textwidth]{images/simiam-submit.png}
-    \caption{Submission screen}
-    \label{fig:submission}
-  \end{subfigure}
-  \caption{\texttt{launch} starts the simulator, while \texttt{submit} brings up the submission tool.}
-  \label{fig:screens}
 \end{figure}
 
 Figure \ref{fig:simulator} is a screenshot of the graphical user interface (GUI) of the simulator. The GUI can be controlled by the bottom row of buttons. The first button is the \textit{Home} button and returns you to the home screen. The second button is the \textit{Rewind} button and resets the simulation. The third button is the \textit{Play} button, which can be used to play and pause the simulation. The set of \textit{Zoom} buttons or the mouse scroll wheel allows you to zoom in and out to get a better view of the simulation. Clicking, holding, and moving the mouse allows you to pan around the environment. You can click on a robot to follow it as it moves through the environment.
-
-Figure \ref{fig:submission} is a screenshot of the submission screen. Each assignment can be submitted to Coursera for automatic grading and feedback. Start the submission tool by typing \texttt{submit} into the MATLAB command window. Use your login and password from the \href{https://class.coursera.org/conrob-002/assignment/list}{\textit{Assignments}} page. Your Coursera login and password will \textbf{not} work. Select which parts of the assignments in the list you would like to submit, then click \textit{Submit to Coursera for Grading}. You will receive feedback, either a green checkmark for pass, or a red checkmark for fail. If you receive a red checkmark, check the MATLAB command window for a helpful message.
 
 \newpage
 \section{Programming Assignments}
@@ -228,15 +303,15 @@ To start the simulator with the \texttt{launch} command from the command window,
 This week's exercises will help you learn about MATLAB and robot simulator:
 
 \begin{enumerate}
-\item Since the assignments in this course involve programming in MATLAB, you should familiarize yourself with MATLAB (both the environment and the language). Review the resources posted in the "Getting Started with MATLAB" section on the \href{https://class.coursera.org/conrob-002/wiki/ProgrammingAssignments}{\textit{Programming Assignments}} page.
+\item Since the assignments in this course involve programming in MATLAB, you should familiarize yourself with MATLAB (both the environment and the language).
 
-\item Familiarize yourself with the simulator by reading this manual and downloading the robot simulator posted on the \href{https://class.coursera.org/conrob-002/wiki/ProgrammingAssignments}{\textit{Programming Assignments}} section on the Coursera page.
+\item Familiarize yourself with the simulator by reading this manual and downloading the robot simulator posted here: \href{https://github.com/jdelacroix/simiam/archive/simiam-coursera-week-1.zip}{simiam-coursera-week-1.zip}.
 \end{enumerate}
 
 \newpage
 \subsection{Week 2}
 \label{sec:week-2}
-Start by downloading the robot simulator for this week from the \href{https://class.coursera.org/conrob-002/assignment/view?assignment_id=5}{Week 2 programming assignment}. Before you can design and test controllers in the simulator, you will need to implement three components of the simulator:
+Start by downloading the robot simulator for this week from \href{https://github.com/jdelacroix/simiam/archive/simiam-coursera-week-2.zip}{simiam-coursera-week-2.zip}. Before you can design and test controllers in the simulator, you will need to implement three components of the simulator:
 
 \begin{enumerate}
  \item Implement the transformation from unicycle dynamics to differential drive dynamics, i.e. convert from $(v,\omega)$ to the right and left \textbf{angular} wheel speeds $(v_r,v_l)$.
@@ -309,7 +384,7 @@ To test your code, the simulator will is set to run a single P-regulator that wi
 \newpage
 \subsection{Week 3}
 
-Start by downloading the new robot simulator for this week from the \href{}{Week 3 programming assignment}. This week you will be implementing the different parts of a PID regulator that steers the robot successfully to some goal location. This is known as the go-to-goal behavior:
+Start by downloading the new robot simulator for this week from \href{https://github.com/jdelacroix/simiam/archive/simiam-coursera-week-3.zip}{simiam-coursera-week-3.zip}. This week you will be implementing the different parts of a PID regulator that steers the robot successfully to some goal location. This is known as the go-to-goal behavior:
 
 \begin{enumerate}
  \item Calculate the heading (angle), $\theta_g$, to the goal location $(x_g,y_g)$. Let $u$ be the vector from the robot located at $(x,y)$ to the goal located at $(x_g,y_g)$, then $\theta_g$ is the angle $u$ makes with the $x$-axis (positive $\theta_g$ is in the counterclockwise direction).
@@ -414,7 +489,7 @@ Here are a few pointers to help you migrate your own solutions from last week to
 \newpage
 \subsection{Week 4}
 
-Start by downloading the new robot simulator for this week from the Week 4 programming assignment. This week you will be implementing the different parts of a controller that steers the robot successfully away from obstacles to avoid a collision. This is known as the avoid-obstacles behavior. The IR sensors allow us to measure the distance to obstacles in the environment, but we need to compute the points in the world to which these distances correspond.
+Start by downloading the new robot simulator for this week from \href{https://github.com/jdelacroix/simiam/archive/simiam-coursera-week-4.zip}{simiam-coursera-week-4.zip}. This week you will be implementing the different parts of a controller that steers the robot successfully away from obstacles to avoid a collision. This is known as the avoid-obstacles behavior. The IR sensors allow us to measure the distance to obstacles in the environment, but we need to compute the points in the world to which these distances correspond.
 \begin{figure}[h]
  \centering
  \includegraphics[scale=0.5]{images/week-4-ir-points.png}
@@ -509,7 +584,7 @@ Here are a few pointers to help you migrate your own solutions from last week to
 
 \newpage
 \subsection{Week 5}
-Start by downloading the new robot simulator for this week from the Week 5 assignment. This week you will be adding small improvements to  testing two arbitration mechanisms: blending and hard switches. Arbitration between the two controllers will allow the robot to drive to a goal, while not colliding with any obstacles on the way.
+Start by downloading the new robot simulator for this week from \href{https://github.com/jdelacroix/simiam/archive/simiam-coursera-week-5.zip}{simiam-coursera-week-5.zip}. This week you will be adding small improvements to  testing two arbitration mechanisms: blending and hard switches. Arbitration between the two controllers will allow the robot to drive to a goal, while not colliding with any obstacles on the way.
 
 \begin{enumerate}
   \item Implement a simple control for the linear velocity, $v$, as a function of the angular velocity, $\omega$. Add it to both \texttt{+simiam/+controller/GoToGoal.m} and \texttt{+simiam/+controller/AvoidObstacles.m}.
@@ -621,7 +696,7 @@ Here are a few pointers to help you migrate your own solutions from last week to
 \newpage
 \subsection{Week 6}
 
-Start by downloading the new robot simulator for this week from the Week 6 programming assignment. This week you will be implementing a wall following behavior that will aid the robot in navigating around obstacles. Implement these parts in \texttt{+simiam/+controller/+FollowWall.m}.
+Start by downloading the new robot simulator for this week from \href{https://github.com/jdelacroix/simiam/archive/simiam-coursera-week-6.zip}{simiam-coursera-week-6.zip}. This week you will be implementing a wall following behavior that will aid the robot in navigating around obstacles. Implement these parts in \texttt{+simiam/+controller/+FollowWall.m}.
 
 \begin{enumerate}
 	\item Compute a vector, $u_{fw,t}$, that estimates a section of the obstacle (``wall'') next to the robot using the robot's right (or left) IR sensors.
@@ -717,7 +792,7 @@ Here are a few pointers to help you migrate your own solutions from last week to
 
 \newpage
 \subsection{Week 7}
-Start by downloading the new robot simulator for this week from the Week 7 programming assignment. This week you will be combining the go-to-goal, avoid-obstacles, and follow-wall controllers into a full navigation system for the robot. The robot will be able to navigate around a cluttered, complex environment without colliding with any obstacles and reaching the goal location successfully. Implement your solution in \texttt{+simiam/+controller/+quickbot/QBSupervisor.m}.
+Start by downloading the new robot simulator for this week from \href{https://github.com/jdelacroix/simiam/archive/simiam-coursera-week-7.zip}{simiam-coursera-week-7.zip}. This week you will be combining the go-to-goal, avoid-obstacles, and follow-wall controllers into a full navigation system for the robot. The robot will be able to navigate around a cluttered, complex environment without colliding with any obstacles and reaching the goal location successfully. Implement your solution in \texttt{+simiam/+controller/+quickbot/QBSupervisor.m}.
 
 \begin{enumerate}
   \item Implement the \texttt{progress\_made} event that will determine whether the robot is making any progress towards the goal.
