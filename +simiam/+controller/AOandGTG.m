@@ -33,7 +33,7 @@ classdef AOandGTG < simiam.controller.Controller
             obj = obj@simiam.controller.Controller('ao_and_gtg');            
             obj.calibrated = false;
             
-            obj.Kp = 4;
+            obj.Kp = 5;
             obj.Ki = 0.01;
             obj.Kd = 0.01;
             
@@ -106,6 +106,8 @@ classdef AOandGTG < simiam.controller.Controller
             
 %             fprintf('(v,w) = (%0.4g,%0.4g)\n', v,w);
 
+            v = 0.25/(log(abs(w)+2)+1);
+            
             outputs.v = v;
             outputs.w = w;
         end

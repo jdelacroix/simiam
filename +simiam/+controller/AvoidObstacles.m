@@ -33,7 +33,7 @@ classdef AvoidObstacles < simiam.controller.Controller
             obj = obj@simiam.controller.Controller('avoid_obstacles');            
             obj.calibrated = false;
             
-            obj.Kp = 4;
+            obj.Kp = 5;
             obj.Ki = 0.01;
             obj.Kd = 0.01;
             

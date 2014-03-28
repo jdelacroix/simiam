@@ -63,10 +63,10 @@ classdef Simulator < handle
 %                 split = max(obj.time_step,get(obj.clock, 'InstantPeriod'));
 %             end
 
-%             split = obj.time_step;
+            split = obj.time_step;
 %             fprintf('***TIMING***\nsimulator split: %0.3fs, %0.3fHz\n', split, 1/split);
             
-            tstart = tic;
+%             tstart = tic;
             nRobots = length(obj.world.robots);
             for k = 1:nRobots
                 robot_s = obj.world.robots.elementAt(k);
