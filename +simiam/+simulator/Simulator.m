@@ -63,7 +63,7 @@ classdef Simulator < handle
 %                 split = max(obj.time_step,get(obj.clock, 'InstantPeriod'));
 %             end
 
-            split = obj.time_step;
+%             split = obj.time_step;
 %             fprintf('***TIMING***\nsimulator split: %0.3fs, %0.3fHz\n', split, 1/split);
             
             tstart = tic;
@@ -109,7 +109,7 @@ classdef Simulator < handle
             obj.parent.ui_update(split, bool);
             drawnow;
 %             fprintf('ui: %0.3fs\n', toc(tstart));
-            fprintf('loop: %0.3fs\n', toc(tstart));
+%             fprintf('loop: %0.3fs\n', toc(tstart));
         end
         
         function start(obj)

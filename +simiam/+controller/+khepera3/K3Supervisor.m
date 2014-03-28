@@ -231,7 +231,7 @@ classdef K3Supervisor < simiam.controller.Supervisor
             [vel_r, vel_l] = obj.robot.dynamics.uni_to_diff(outputs.v, outputs.w);
             obj.robot.set_wheel_speeds(vel_r, vel_l);
             
-            fprintf('(v,w) = (%0.3f,%0.3f)\n', outputs.v, outputs.w);
+%             fprintf('(v,w) = (%0.3f,%0.3f)\n', outputs.v, outputs.w);
             
             obj.update_odometry();
 %             [x, y, theta] = obj.state_estimate.unpack();
