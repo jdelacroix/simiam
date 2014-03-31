@@ -1,7 +1,7 @@
 ---
 layout: post
-title: New Release: QuickBot Edition!
-categories: [release]
+title: "New Release: QuickBot Edition!"
+categories: [release, updates]
 tags: [quickbot, coursera, release]
 fullview: true
 ---
