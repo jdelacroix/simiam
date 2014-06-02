@@ -58,12 +58,12 @@ public class QuickBotConnector {
 	}
 	
 	public void reset() {
-		sendMessage("$RESET*\n");
+		sendMessageWaitForReply("$ENRESET*\n");
 	}
 	
 	public void setMotorPWM(int right_motor_pwm, int left_motor_pwm) {
 		String message = "$PWM=" + left_motor_pwm + "," + right_motor_pwm + "*\n";
-		sendMessage(message);
+		sendMessageWaitForReply(message);
 	}
 	
 	public double[] getEncoderTicks() {

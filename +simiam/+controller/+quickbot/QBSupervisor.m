@@ -63,8 +63,8 @@ classdef QBSupervisor < simiam.controller.Supervisor
             obj.controllers{7} = simiam.controller.SlidingMode();
             
             % set the initial controller
-            obj.current_controller = obj.controllers{5};
-            obj.current_state = 5;
+            obj.current_controller = obj.controllers{2};
+            obj.current_state = 2;
             
             % generate the set of states
             for i = 1:length(obj.controllers)
@@ -100,7 +100,7 @@ classdef QBSupervisor < simiam.controller.Supervisor
             
             %% START CODE BLOCK %%
             obj.v           = 0.15;
-            obj.goal        = [0,0];
+            obj.goal        = [1,-1];
             obj.d_stop      = 0.05;
             obj.d_at_obs    = 0.10;                
             obj.d_unsafe    = 0.05;
@@ -133,9 +133,7 @@ classdef QBSupervisor < simiam.controller.Supervisor
             inputs.y_g = obj.goal(2);
             
             %% START CODE BLOCK %%
-            
-            ir_distances = obj.robot.get_ir_distances();
-            
+                        
             if (obj.check_event('at_goal'))
                 if (~obj.is_in_state('stop'))
                     [x,y,theta] = obj.state_estimate.unpack();
@@ -143,7 +141,7 @@ classdef QBSupervisor < simiam.controller.Supervisor
                 end
                 obj.switch_to_state('stop');
             else
-                obj.switch_to_state('ao_and_gtg');
+                obj.switch_to_state('go_to_goal');
             end
             
             %% END CODE BLOCK %%
