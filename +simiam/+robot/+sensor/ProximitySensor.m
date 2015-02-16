@@ -68,8 +68,12 @@ classdef ProximitySensor < simiam.ui.Drawable
                     end
             end
         end
-               
+        
         function update_range(obj, distance)
+            obj.update_range_and_blit(distance, true);
+        end
+               
+        function update_range_and_blit(obj, distance, blit)
             obj.range = obj.limit_to_sensor(obj.noise_model.apply_noise(distance));            
             distance = obj.range;
             
@@ -93,7 +97,7 @@ classdef ProximitySensor < simiam.ui.Drawable
                 set(surface.handle_, 'EdgeColor', 'b')
                 set(surface.handle_, 'FaceColor', [0.8 0.8 1]);
             end
-            obj.draw_surfaces();
+            obj.draw_surfaces_and_blit(blit);
         end
         
         function raw = get_range(obj)

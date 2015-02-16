@@ -42,14 +42,18 @@ classdef Drawable < handle
             obj.surfaces.append_key(surface);
         end
         
-        function draw_surfaces(obj)
+        function draw_surfaces_and_blit(obj, blit)
             T = obj.pose.get_transformation_matrix();
             
             token_k = obj.surfaces.head_;
             while(~isempty(token_k))
-                token_k.key_.transform_surface(T);
+                token_k.key_.transform_surface_and_blit(T, blit);
                 token_k = token_k.next_;
             end
+        end
+        
+        function draw_surfaces(obj)
+            obj.draw_surfaces_and_blit(true);
         end
         
 %         function transform_surfaces(obj, T)

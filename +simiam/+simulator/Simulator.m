@@ -25,6 +25,8 @@ classdef Simulator < handle
         world           % A virtual world for the simulator
         physics
         
+        robots
+        
         origin
     end
     
@@ -50,6 +52,12 @@ classdef Simulator < handle
             obj.world = world;
             obj.physics = simiam.simulator.Physics(world);
             obj.origin = origin;
+%             
+%             obj.robots = simiam.robot.MotorPsychBot.empty(0,1);
+            obj.robots = cell(length(obj.world.robots),1);
+            for i = 1:length(obj.world.robots)
+                obj.robots{i} = obj.world.robots.elementAt(i);
+            end
         end
         
         function step(obj, src, event)
@@ -66,10 +74,12 @@ classdef Simulator < handle
             split = obj.time_step;
 %             fprintf('***TIMING***\nsimulator split: %0.3fs, %0.3fHz\n', split, 1/split);
             
-%             tstart = tic;
+            tstart_loop = tic;
+
+            tstart = tic;
             nRobots = length(obj.world.robots);
             for k = 1:nRobots
-                robot_s = obj.world.robots.elementAt(k);
+                robot_s = obj.robots{k};
                 
                 if (strcmp(obj.origin, 'hardware'))
                     pose_k_1 = robot_s.robot.update_state_from_hardware(robot_s.pose, split);
@@ -82,18 +92,18 @@ classdef Simulator < handle
                 
                 robot_s.supervisor.execute(split);
             end
-%             fprintf('controls: %0.3fs\n', toc(tstart));
+            fprintf('controls: %0.3fs\n', toc(tstart));
             
-%             tstart = tic;
+            tstart = tic;
             if strcmp(obj.origin, 'simulink')
                 % skip
             else
                 anApp = obj.world.apps.elementAt(1);
                 anApp.run(split);
             end
-%             fprintf('app: %0.3fs\n', toc(tstart));
+            fprintf('app: %0.3fs\n', toc(tstart));
             
-%             tstart = tic;
+            tstart = tic;
 %             if(~obj.islinked)
             if (strcmp(obj.origin, 'launcher') || strcmp(obj.origin, 'testing'))
                 bool = obj.physics.apply_physics();
@@ -103,13 +113,15 @@ classdef Simulator < handle
 %             else
 %                 bool = false;
 %             end
-%             fprintf('physics: %0.3fs\n', toc(tstart));
+            fprintf('physics: %0.3fs\n', toc(tstart));
             
-%             tstart = tic;
+            tstart = tic;
             obj.parent.ui_update(split, bool);
             drawnow;
-%             fprintf('ui: %0.3fs\n', toc(tstart));
-%             fprintf('loop: %0.3fs\n', toc(tstart));
+            fprintf('ui: %0.3fs\n', toc(tstart));
+            
+            t_loop = toc(tstart_loop);
+            fprintf('***TIMING*** loop: %0.3fs %0.3fHz\n', t_loop, 1/t_loop);
         end
         
         function start(obj)

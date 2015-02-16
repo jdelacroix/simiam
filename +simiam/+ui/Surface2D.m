@@ -46,12 +46,16 @@ classdef Surface2D < handle
         end
         
         function transform_surface(obj, T)
+            obj.transform_surface_and_blit(T, true);
+        end
+        
+        function transform_surface_and_blit(obj, T, blit)
             obj.geometry_ = obj.vertex_set_*T';
             n = size(obj.geometry_,1);
             obj.edge_set_(:,1:2) = obj.geometry_(:,1:2);
             obj.edge_set_(:,3:4) = obj.geometry_([2:n,1],1:2);
             obj.centroid_ = sum(obj.geometry_(:,1:2),1)/n;
-            if(obj.is_drawable_)
+            if(obj.is_drawable_ && blit)
                 geometry = obj.geometry_;
                 geometry(:,3) = obj.depth_;
                 set(obj.handle_, 'Vertices', geometry);

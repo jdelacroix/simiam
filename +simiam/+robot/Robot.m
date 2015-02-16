@@ -11,6 +11,8 @@ classdef Robot < simiam.ui.Drawable
         hostname
         port
         islinked
+        
+        internal_id
     end
     
     methods
@@ -19,6 +21,7 @@ classdef Robot < simiam.ui.Drawable
             obj.islinked = false;
             obj.driver = [];
             obj.optitrack = [];
+            obj.internal_id = 0;
         end
         
         function attach_supervisor(obj, supervisor)

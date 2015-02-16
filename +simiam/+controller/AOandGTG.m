@@ -66,7 +66,7 @@ classdef AOandGTG < simiam.controller.Controller
             if (nSensors == 5)
                 % QuickBot
                 sensor_gains = [1 1 0.5 1 1];
-            elseif (nSensors == 9)
+            elseif (nSensors == 6)
                 % Khepera3
                 sensor_gains = ones(1,nSensors);
             end
@@ -102,7 +102,7 @@ classdef AOandGTG < simiam.controller.Controller
             obj.e_k_1 = e_k;
                         
             % plot  
-            obj.p.plot_2d_ref(dt, theta, theta_ao_gtg, 'c');
+%             obj.p.plot_2d_ref(dt, theta, theta_ao_gtg, 'c');
             
 %             fprintf('(v,w) = (%0.4g,%0.4g)\n', v,w);
 

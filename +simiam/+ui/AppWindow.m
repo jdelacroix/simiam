@@ -83,6 +83,7 @@ classdef AppWindow < handle
             nRobots = length(world.robots);
             for k = 1:nRobots
                 robot = world.robots.elementAt(k).robot;
+                robot.internal_id = k;
                 set(robot.surfaces.head_.key_.handle_, 'ButtonDownFcn', {@obj.ui_focus_view,robot});
                 set(robot.surfaces.tail_.key_.handle_, 'ButtonDownFcn', {@obj.ui_focus_view,robot});
             end
@@ -313,11 +314,11 @@ classdef AppWindow < handle
             Update(obj.layout_);            
                     
             % Target Marker
-            obj.target_marker_ = plot(obj.view_, 0, 0, ...
-                'Marker', 'o', ...
-                'MarkerFaceColor', obj.ui_colors_.green, ...
-                'MarkerEdgeColor', obj.ui_colors_.green, ...
-                'MarkerSize', 5);
+%             obj.target_marker_ = plot(obj.view_, 0, 0, ...
+%                 'Marker', 'o', ...
+%                 'MarkerFaceColor', obj.ui_colors_.green, ...
+%                 'MarkerEdgeColor', obj.ui_colors_.green, ...
+%                 'MarkerSize', 5);
             
             set(obj.view_, 'XGrid', 'on');
             set(obj.view_, 'YGrid', 'on');
@@ -426,28 +427,44 @@ classdef AppWindow < handle
             switch(get(obj.parent_, 'SelectionType'))
                 case 'normal'
 %                     disp('single click')
+                    setptr(obj.parent_, 'closedhand');
+                    set(obj.parent_, 'WindowButtonMotionFcn', {@obj.ui_move_robot, robot});
                 case 'open'
 %                     disp('double click')
+                    pose = simiam.ui.Pose2D(0,0,0);
+                               
+                    robot.internal_id
+                    
+                    nRobots = length(obj.simulator_.world.robots);
+                    for k = 1:nRobots
+                        robot_f = obj.simulator_.world.robots.elementAt(k);
+                        if(robot_f.robot.internal_id == robot.internal_id)
+                            pose = robot_f.pose;
+                            break;
+                        end
+                    end
+
+                    obj.center_ = pose;
+                    obj.ui_set_axes();
+                    obj.is_tracking_ = true;
                 otherwise
             end
             
-            pose = simiam.ui.Pose2D(0,0,0);
-            
-%             token_k = obj.simulator_.world.robots.head_;
-            nRobots = length(obj.simulator_.world);
+            set(obj.parent_, 'WindowButtonUpFcn', @obj.ui_release_mouse);
+        end
+        
+        function ui_move_robot(obj, src, event, robot)
+            nRobots = length(obj.simulator_.world.robots);
             for k = 1:nRobots
-%             while(~isempty(token_k))
                 robot_f = obj.simulator_.world.robots.elementAt(k);
-                if(robot_f.robot == robot)
+                if(robot_f.robot.internal_id == robot.internal_id)
                     pose = robot_f.pose;
+                    click = get(obj.view_, 'CurrentPoint');
+                    obj.click_src_ = click(1,1:2)';
+                    robot_f.pose.set_pose([obj.click_src_(1) obj.click_src_(2) pose.theta]);
                     break;
                 end
-%                 token_k = token_k.next_;
             end
-            
-            obj.center_ = pose;
-            obj.ui_set_axes();
-            obj.is_tracking_ = true;
         end
         
         function ui_button_play(obj, src, event)
@@ -525,10 +542,10 @@ classdef AppWindow < handle
                     setptr(obj.parent_, 'closedhand');
                     set(obj.parent_, 'WindowButtonMotionFcn', @obj.ui_pan_view);
                 case 'open'
-                    set(obj.target_marker_, 'XData', obj.click_src_(1));
-                    set(obj.target_marker_, 'YData', obj.click_src_(2));
-                    anApp = obj.simulator_.world.apps.elementAt(1);
-                    anApp.ui_press_mouse(obj.click_src_);
+%                     set(obj.target_marker_, 'XData', obj.click_src_(1));
+%                     set(obj.target_marker_, 'YData', obj.click_src_(2));
+%                     anApp = obj.simulator_.world.apps.elementAt(1);
+%                     anApp.ui_press_mouse(obj.click_src_);
                 otherwise
                     % noop
             end

@@ -37,6 +37,10 @@ classdef Pose2D < handle
                   sin(obj.theta)  cos(obj.theta) obj.y;
                                0               0     1];
         end
+        
+        function d = get_norm(obj, pose)
+            d = sqrt((obj.x-pose.x)^2+(obj.y-pose.y)^2);
+        end
     end
     
     methods (Static)

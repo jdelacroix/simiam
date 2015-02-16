@@ -5,11 +5,21 @@ classdef Physics < handle
     
     properties
         world
+        robot_pose
+        robots
+        n_robots
     end
     
     methods
         function obj = Physics(world)
             obj.world = world;
+            obj.n_robots = length(world.robots);
+            obj.robot_pose = simiam.ui.Pose2D.empty(0, 1);
+            obj.robots = simiam.robot.GRITSBot.empty(0,1);
+            for i = 1:obj.n_robots
+                obj.robot_pose(i) = world.robots.elementAt(i).pose;
+                obj.robots(i) = world.robots.elementAt(i).robot;
+            end
         end
         
         function bool = apply_physics(obj)
@@ -32,9 +42,17 @@ classdef Physics < handle
 %             token_k = obj.world.robots.head_; 
 %             while (~isempty(token_k))
             nRobots = length(obj.world.robots);
+            d = zeros(nRobots, nRobots);
+            for i = 1:nRobots
+                for j = (i+1):nRobots
+                    d(i,j) = obj.robot_pose(i).get_norm(obj.robot_pose(j));
+                    d(j,i) = d(i,j);
+                end
+            end
+            
             for k = 1:nRobots
 %                 robot = token_k.key_.robot;
-                robot = obj.world.robots.elementAt(k).robot;
+                robot = obj.robots(k);
                 body_r_s = robot.surfaces.head_.key_;
                 
                 % check against obstacles
@@ -58,11 +76,15 @@ classdef Physics < handle
                 % check against other robots
 %                 token_l = obj.world.robots.head_;
 %                 while (~isempty(token_l))
+
                 for l = 1:nRobots
 %                     robot_o = token_l.key_.robot;
-                    robot_o =  obj.world.robots.elementAt(l).robot;
-                    if(robot_o ~= robot)
+                    robot_o =  obj.robots(l);
+                    if(robot_o ~= robot && (d(k,l) < 2*0.25));
+                        
                         body_o_s = robot_o.surfaces.head_.key_;
+                        
+                        fprintf('Checking for collision (%d,%d)\n', k,l);
                         
                         if(body_r_s.precheck_surface(body_o_s))
                             pts = body_r_s.intersection_with_surface(body_o_s, true);
@@ -86,12 +108,12 @@ classdef Physics < handle
             for k = 1:nRobots
 %             while (~isempty(token_k))
 %                 robot = token_k.key_.robot;
-                robot = obj.world.robots.elementAt(k).robot;
+                robot = obj.robots(k);
                 for i = 1:length(robot.ir_array)
                     ir = robot.ir_array(i);
                     body_ir_s = ir.surfaces.head_.key_;
                     d_min = ir.max_range;
-                    ir.update_range(d_min);
+                    ir.update_range_and_blit(d_min, false);
 
                     % check against obstacles
                     token_l = obj.world.obstacles.head_;
@@ -110,7 +132,7 @@ classdef Physics < handle
 %                     while (~isempty(token_l))
                     for l = 1:nRobots
 %                         robot_o = token_l.key_.robot;
-                        robot_o = obj.world.robots.elementAt(l).robot;
+                        robot_o = obj.robots(l);
                         if(robot_o ~= robot)
                             body_o_s = robot_o.surfaces.head_.key_;
                             
