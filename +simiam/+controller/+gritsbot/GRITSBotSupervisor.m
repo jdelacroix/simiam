@@ -96,7 +96,7 @@ classdef GRITSBotSupervisor < simiam.controller.Supervisor
             
             obj.v               = 0.15;
             
-            obj.goal            = [-1;1];
+            obj.goal            = [0;0.25];
             obj.goal_prev       = obj.goal;
             obj.d_stop          = 0.05; 
             obj.d_at_obs        = 0.10;                
@@ -114,117 +114,19 @@ classdef GRITSBotSupervisor < simiam.controller.Supervisor
         %   available controllers and execute it.
         %
         %   See also controller/execute
-                    
-%             if(~obj.is_init)
-%                 hold(obj.robot.parent, 'on');
-%                 obj.v_gtg = plot(obj.robot.parent, [0 0], [0 0], 'b-');
-%                 obj.v_ao = plot(obj.robot.parent, [0 0], [0 0], 'r-');
-%                 obj.v_fw = plot(obj.robot.parent, [0 0], [0 0], 'g-');
-%                 obj.is_init = true;
-%             end
         
-            inputs = obj.controllers{4}.inputs; 
+            inputs = obj.current_controller.inputs;
             inputs.x_g = obj.goal(1);
             inputs.y_g = obj.goal(2);
             inputs.v = obj.v;
 
-            
-%             if(~all(obj.goal==obj.goal_prev))
-% %                 [x,y,theta] = obj.state_estimate.unpack();
-% %                 if(norm(obj.goal-[x;y])<norm(obj.goal_prev-[x;y]))
-%                     obj.set_progress_point();
-% %                 end
-%                 obj.goal_prev = obj.goal;
-%                 obj.switch_to_state('go_to_goal');
-%             end
-%             
             if (obj.check_event('at_goal'))
                 obj.switch_to_state('stop');
-
 %                 [x,y,theta] = obj.state_estimate.unpack();
 %                 fprintf('stopped at (%0.3f,%0.3f)\n', x, y);
             else
                 obj.switch_to_state('ao_and_gtg');
             end
-%             elseif(obj.check_event('unsafe'))
-%                 obj.switch_to_state('avoid_obstacles');                
-%             else
-%                 if (obj.is_in_state('go_to_goal'))
-%                     if(obj.check_event('at_obstacle') && obj.check_event('sliding_left'))
-%                         obj.direction = 'left';
-% %                         fprintf('now following to the left\n');
-%                         obj.switch_to_state('follow_wall');
-%                         obj.set_progress_point();
-%                     elseif(obj.check_event('at_obstacle') && obj.check_event('sliding_right'))
-%                         obj.direction = 'right';
-% %                         fprintf('now following to the right\n');
-%                         obj.switch_to_state('follow_wall');
-%                         obj.set_progress_point();
-%                     end
-%                 elseif (obj.is_in_state('follow_wall') && strcmp(obj.direction,'left'))
-%                     if(obj.check_event('progress_made') && ~obj.check_event('sliding_left'))
-%                         obj.switch_to_state('go_to_goal');
-%                     end
-%                 elseif (obj.is_in_state('follow_wall') && strcmp(obj.direction, 'right'))
-%                     if(obj.check_event('progress_made') && ~obj.check_event('sliding_right'))
-%                         obj.switch_to_state('go_to_goal');
-%                     end
-%                 elseif (obj.is_in_state('avoid_obstacles'))
-%                     if(obj.check_event('obstacle_cleared'))
-% %                         if(obj.check_event('sliding_left'))
-% %                             obj.direction = 'left';
-% %                             obj.switch_to_state('follow_wall');
-% %                         elseif(obj.check_event('sliding_right'))
-% %                             obj.direction = 'right';
-% %                             obj.switch_to_state('follow_wall');
-% %                         else
-%                             obj.switch_to_state('go_to_goal');
-% %                         end
-%                     end
-%                 end
-%  
-%             end
-            
-%             elseif(obj.check_event('unsafe'))
-%                 obj.switch_to_state('avoid_obstacles');                
-%             else
-%                 if (obj.is_in_state('go_to_goal'))
-%                     if(obj.check_event('at_obstacle') && obj.check_event('sliding_left'))
-%                         obj.direction = 'left';
-% %                         fprintf('now following to the left\n');
-%                         obj.switch_to_state('follow_wall');
-%                         obj.set_progress_point();
-%                     elseif(obj.check_event('at_obstacle') && obj.check_event('sliding_right'))
-%                         obj.direction = 'right';
-% %                         fprintf('now following to the right\n');
-%                         obj.switch_to_state('follow_wall');
-%                         obj.set_progress_point();
-%                     end
-%                 elseif (obj.is_in_state('follow_wall') && strcmp(obj.direction,'left'))
-%                     if(obj.check_event('progress_made') && ~obj.check_event('sliding_left'))
-%                         obj.switch_to_state('go_to_goal');
-%                     end
-%                 elseif (obj.is_in_state('follow_wall') && strcmp(obj.direction, 'right'))
-%                     if(obj.check_event('progress_made') && ~obj.check_event('sliding_right'))
-%                         obj.switch_to_state('go_to_goal');
-%                     end
-%                 elseif (obj.is_in_state('avoid_obstacles'))
-%                     if(obj.check_event('obstacle_cleared'))
-% %                         if(obj.check_event('sliding_left'))
-% %                             obj.direction = 'left';
-% %                             obj.switch_to_state('follow_wall');
-% %                         elseif(obj.check_event('sliding_right'))
-% %                             obj.direction = 'right';
-% %                             obj.switch_to_state('follow_wall');
-% %                         else
-%                             obj.switch_to_state('go_to_goal');
-% %                         end
-%                     end
-%                 end
- 
-%             end
-            
-%             inputs.direction = obj.direction;
                                     
             outputs = obj.current_controller.execute(obj.robot, obj.state_estimate, inputs, dt);
                 
@@ -352,7 +254,7 @@ classdef GRITSBotSupervisor < simiam.controller.Supervisor
         function set_current_controller(obj, ctrl)
             % save plots
             obj.current_controller = ctrl;
-            obj.p.switch_2d_ref();
+%             obj.p.switch_2d_ref();
             obj.current_controller.p = obj.p;
         end
         

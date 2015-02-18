@@ -42,8 +42,8 @@ classdef GRITSBot < simiam.robot.Robot
             obj.add_surface(gb_top_plate, [ 51 0 85 ]/255);
             
             % Add sensors: wheel encoders and IR proximity sensors
-            obj.wheel_radius = 0.0205;              % 41mm
-            obj.wheel_base_length = 0.08841;        % 88.41mm
+            obj.wheel_radius = 0.005;           % 5mm
+            obj.wheel_base_length = 0.04;       % 40mm
             
             obj.firmware_3_0_plus = false;
             

@@ -83,13 +83,11 @@ classdef Simulator < handle
                 
                 if (strcmp(obj.origin, 'hardware'))
                     pose_k_1 = robot_s.robot.update_state_from_hardware(robot_s.pose, split);
-                    [x, y, theta] = pose_k_1.unpack();
                 else
-                    [x, y, theta] = robot_s.robot.update_state(robot_s.pose, split).unpack();
+                    pose_k_1 = robot_s.robot.update_state(robot_s.pose, split);
                 end
-                robot_s.pose.set_pose([x, y, theta]);
-%                 fprintf('current_pose: (%0.3f,%0.3f,%0.3f)\n', x, y, theta);
                 
+                robot_s.pose.set_pose_with_pose(pose_k_1);                
                 robot_s.supervisor.execute(split);
             end
             fprintf('controls: %0.3fs\n', toc(tstart));

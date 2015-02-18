@@ -16,14 +16,16 @@ classdef Pose2D < handle
            obj.theta = theta;
         end
         
-        function set_pose(obj, pose)
-%             if isa(pose, 'simiam.ui.Pose2D')
-%                 obj.set_pose(pose.unpack());
-%             else
-                obj.x = pose(1);
-                obj.y = pose(2);
-                obj.theta = pose(3);
-%             end
+        function set_pose(obj, array)
+            obj.x = array(1);
+            obj.y = array(2);
+            obj.theta = array(3);
+        end
+        
+        function set_pose_with_pose(obj, pose)
+            obj.x = pose.x;
+            obj.y = pose.y;
+            obj.theta = pose.theta;
         end
         
         function [x, y, theta] = unpack(obj)
