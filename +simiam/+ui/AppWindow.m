@@ -41,6 +41,8 @@ classdef AppWindow < handle
         is_state_crashed_
         
         origin_
+        
+        motd_
     end
     
     methods
@@ -70,6 +72,20 @@ classdef AppWindow < handle
             
             obj.origin_ = origin;
             obj.is_state_crashed_ = false;
+            
+            icon_file = fullfile(obj.root_, 'resources/splash/simiam_splash.png');
+            if(isunix)
+                icon_url = ['file://' icon_file];
+            else
+                icon_url = strrep(['file:/' icon_file],'\','/');
+            end
+            obj.motd_ = ['<html><div style="text-align: center"><img src="' icon_url '"/>' ...
+                         '<br>Welcome to <b>Sim.I.am</b>, a robot simulator.' ...
+                         '<br>This is <em>Sim the Fifth</em>, your companion for control theory and robotics.' ...
+                         '<br>The simulator is maintained by the GRITSLab at' ...
+                         '<br><a href="http://gritslab.gatech.edu/projects/robot-simulator">http://gritslab.gatech.edu/projects/robot-simulator</a>' ...
+                         '</div><br><ol><li>Start by clicking the play button.</li><li>Double-click to send the red robot to a new location.</li><li>Use the mouse to pan and zoom.</li><li>Select the robot to follow it</li><li>If any robot crashes, press the rewind button.</li></ol>' ...
+                         '</html>'];
         end
         
         function load_ui(obj)
@@ -119,20 +135,7 @@ classdef AppWindow < handle
             obj.controls_ui_ = uix.HBox('Parent', obj.layout_, 'BackgroundColor', [1 1 1]);
             obj.layout_.Heights = [24, -1, 36];
             % Create UI buttons
-            icon_file = fullfile(obj.root_, 'resources/splash/simiam_splash.png');
-            if(isunix)
-                icon_url = ['file://' icon_file];
-            else
-                icon_url = strrep(['file:/' icon_file],'\','/');
-            end
-            button_string = ['<html><div style="text-align: center"><img src="' icon_url '"/>' ...
-                   '<br>Welcome to <b>Sim.I.am</b>, a robot simulator.' ...
-                   '<br>This is <em>Sim the Fourth</em>, your companion for control theory and robotics.' ...
-                   '<br>The simulator is maintained by the GRITSLab at' ...
-                   '<br><a href="http://gritslab.gatech.edu/projects/robot-simulator">http://gritslab.gatech.edu/projects/robot-simulator</a>' ...
-                   '</div><br><ol><li>Start by clicking the play button.</li><li>Double-click to send the red robot to a new location.</li><li>Use the mouse to pan and zoom.</li><li>Select the robot to follow it</li><li>If any robot crashes, press the rewind button.</li></ol>' ...
-                   '</html>'];
-            ui_args = {'Style','pushbutton', 'String', button_string, 'ForegroundColor', 'w', 'FontWeight', 'bold', 'BackgroundColor', obj.ui_colors_.gray, 'Callback', @obj.ui_button_start};
+            ui_args = {'Style','pushbutton', 'String', obj.motd_, 'ForegroundColor', 'w', 'FontWeight', 'bold', 'BackgroundColor', obj.ui_colors_.gray, 'Callback', @obj.ui_button_start};
             obj.logo_ = uicontrol(obj.map_ui_, ui_args{:});
             set(obj.logo_, 'Enable', 'inactive');
             set(findjobj(obj.logo_), 'BorderPainted', 0);
@@ -301,7 +304,8 @@ classdef AppWindow < handle
             obj.map_ui_.Children = [];
             obj.view_ = axes('Parent', obj.map_ui_, ...
                         'ActivePositionProperty','Position', ...
-                        'Box', 'on');
+                        'Box', 'on', ...
+                        'GridColor', [0 1 0]);
                     
             % Target Marker
             obj.target_marker_ = plot(obj.view_, 0, 0, ...
@@ -374,20 +378,7 @@ classdef AppWindow < handle
             
             view_parent = obj.map_ui_;
             set(view_parent, 'Children', []);
-            icon_file = fullfile(obj.root_, 'resources/splash/simiam_splash.png');
-            if(isunix)
-                icon_url = ['file://' icon_file];
-            else
-                icon_url = strrep(['file:/' icon_file],'\','/');
-            end
-            button_string = ['<html><div style="text-align: center"><img src="' icon_url '"/>' ...
-                             '<br>Welcome to <b>Sim.I.am</b>, a robot simulator.' ...
-                             '<br>This is <em>Sim the Second</em>, your companion for control theory and robotics.' ...
-                             '<br>The simulator is maintained by the GRITSLab at' ...
-                             '<br><a href="http://gritslab.gatech.edu/projects/robot-simulator">http://gritslab.gatech.edu/projects/robot-simulator</a>' ...
-                             '</div><br><ol><li>Start by clicking the play button.</li><li>Double-click to send the red robot to a new location.</li><li>Use the mouse to pan and zoom.</li><li>Select the robot to follow it</li><li>If any robot crashes, press the rewind button.</li></ol>' ...
-                             '</html>'];
-            ui_args = {'Style','pushbutton', 'String', button_string, 'ForegroundColor', 'w', 'FontWeight', 'bold', 'BackgroundColor', obj.ui_colors_.gray, 'Callback', @obj.ui_button_start};
+            ui_args = {'Style','pushbutton', 'String', obj.motd_, 'ForegroundColor', 'w', 'FontWeight', 'bold', 'BackgroundColor', obj.ui_colors_.gray, 'Callback', @obj.ui_button_start};
             ui_parent = obj.map_ui_;
             obj.logo_ = uicontrol(ui_parent, ui_args{:});
             set(obj.logo_, 'Enable', 'inactive');
